@@ -10,7 +10,7 @@ const DoctorDashboard = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.viewMain}>
       <View style={styles.viewSub}>
-        <ESLabel text={store.var1} />
+        <ESLabel text={store.var2} />
       </View>
     </SafeAreaView>
   );
