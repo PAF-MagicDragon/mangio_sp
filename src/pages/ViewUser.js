@@ -4,7 +4,7 @@ import ESTextField from "../components/ESTextField";
 import ESButton from "../components/ESButton";
 import { openDatabase } from "react-native-sqlite-storage";
 
-var db = openDatabase({ name: "UserDatabase.db" });
+var db = openDatabase({ name: "ESDatabase.db" });
 
 const ViewUser = () => {
   let [inputUserId, setInputUserId] = useState("");

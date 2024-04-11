@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { styles, navOptions } from "./helpers/styles";
 import * as strings from "./helpers/strings";
 import * as constants from "./helpers/constants";
@@ -15,19 +15,46 @@ import DeleteUser from "./pages/DeleteUser";
 
 import ESContext from "./ESContext";
 import Home from "./pages/Home";
+import Profile from "./pages/Profile";
 import DoctorDashboard from "./pages/DoctorDashboard";
 import PatientDashboard from "./pages/PatientDashboard";
 
 const Stack = createNativeStackNavigator();
 
 const Main = () => {
+  let [initialPage, setInitialPage] = useState("");
   const store = useContext(ESContext);
-  useEffect(() => {
+
+  tempMethod = () => {
+    console.log("ASYNC 1");
     store.initializeAllTables();
+    console.log("ASYNC 2");
+    store.initializeMainUser(() => {
+      console.log("ASYNC 3");
+      let tempPage = "Home";
+      let type = store.mainUser.type;
+      console.log("CHECK TYPE", store.mainUser);
+      if (type != null) {
+        console.log("CHECK TYPE 2", store.mainUser);
+        if (type == constants.TYPE_MAIN_DOCTOR) {
+          console.log("CHECK TYPE 3", store.mainUser);
+          tempPage = "DoctorDashboard";
+        } else if (type == constants.TYPE_MAIN_PATIENT) {
+          console.log("CHECK TYPE 4", store.mainUser);
+          tempPage = "PatientDashboard";
+        }
+        console.log("CHECK TYPE 5", store.mainUser);
+      }
+      console.log("CHECK TYPE 6", store.mainUser);
+      setInitialPage(tempPage);
+      console.log("ASYNC 4", initialPage);
+    });
+  };
+
+  useEffect(() => {
+    this.tempMethod();
   }, []);
-  // state = {
-  //   myState: "The Quick Brown Fox Jumps Over The Lazy Dog 2",
-  // };
+
   // updateState = () => {
   //   const { store } = { ...this.props };
   //   this.setState({ myState: "The state is updated" });
@@ -46,83 +73,94 @@ const Main = () => {
   //     <Text style={styles.description}>{constants.CONSTANT1}</Text>
   //   </View>
   // );
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
-        <Stack.Screen
-          name="Home"
-          component={Home}
-          options={{
-            title: "Home",
-            ...navOptions,
-          }}
-        />
-        <Stack.Screen
-          name="DoctorDashboard"
-          component={DoctorDashboard}
-          options={{
-            title: "Dashboard",
-            ...navOptions,
-          }}
-        />
-        <Stack.Screen
-          name="PatientDashboard"
-          component={PatientDashboard}
-          options={{
-            title: "Dashboard",
-            ...navOptions,
-          }}
-        />
-        <Stack.Screen
-          name="HomeScreen"
-          component={HomeScreen}
-          options={{
-            title: "Home",
-            ...navOptions,
-          }}
-        />
-        <Stack.Screen
-          name="View"
-          component={ViewUser}
-          options={{
-            title: "View User",
-            ...navOptions,
-          }}
-        />
-        <Stack.Screen
-          name="ViewAll"
-          component={ViewAllUser}
-          options={{
-            title: "View Users",
-            ...navOptions,
-          }}
-        />
-        <Stack.Screen
-          name="Update"
-          component={UpdateUser}
-          options={{
-            title: "Update User",
-            ...navOptions,
-          }}
-        />
-        <Stack.Screen
-          name="Register"
-          component={RegisterUser}
-          options={{
-            title: "Register User",
-            ...navOptions,
-          }}
-        />
-        <Stack.Screen
-          name="Delete"
-          component={DeleteUser}
-          options={{
-            title: "Delete User",
-            ...navOptions,
-          }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    initialPage && (
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName={initialPage}>
+          <Stack.Screen
+            name="Home"
+            component={Home}
+            options={{
+              title: "Home",
+              ...navOptions,
+            }}
+          />
+          <Stack.Screen
+            name="Profile"
+            component={Profile}
+            options={{
+              title: "Profile",
+              ...navOptions,
+            }}
+          />
+          <Stack.Screen
+            name="DoctorDashboard"
+            component={DoctorDashboard}
+            options={{
+              title: "Dashboard",
+              ...navOptions,
+            }}
+          />
+          <Stack.Screen
+            name="PatientDashboard"
+            component={PatientDashboard}
+            options={{
+              title: "Dashboard",
+              ...navOptions,
+            }}
+          />
+          <Stack.Screen
+            name="HomeScreen"
+            component={HomeScreen}
+            options={{
+              title: "Home",
+              ...navOptions,
+            }}
+          />
+          <Stack.Screen
+            name="View"
+            component={ViewUser}
+            options={{
+              title: "View User",
+              ...navOptions,
+            }}
+          />
+          <Stack.Screen
+            name="ViewAll"
+            component={ViewAllUser}
+            options={{
+              title: "View Users",
+              ...navOptions,
+            }}
+          />
+          <Stack.Screen
+            name="Update"
+            component={UpdateUser}
+            options={{
+              title: "Update User",
+              ...navOptions,
+            }}
+          />
+          <Stack.Screen
+            name="Register"
+            component={RegisterUser}
+            options={{
+              title: "Register User",
+              ...navOptions,
+            }}
+          />
+          <Stack.Screen
+            name="Delete"
+            component={DeleteUser}
+            options={{
+              title: "Delete User",
+              ...navOptions,
+            }}
+          />
+        </Stack.Navigator>
+      </NavigationContainer>
+    )
   );
 };
 export default Main;

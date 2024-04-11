@@ -9,9 +9,10 @@ import {
 } from "react-native";
 import ESTextField from "../components/ESTextField";
 import ESButton from "../components/ESButton";
+import uuid from "react-native-uuid";
 import { openDatabase } from "react-native-sqlite-storage";
 
-var db = openDatabase({ name: "UserDatabase.db" });
+var db = openDatabase({ name: "ESDatabase.db" });
 
 const RegisterUser = ({ navigation }) => {
   let [userName, setUserName] = useState("");
@@ -35,9 +36,10 @@ const RegisterUser = ({ navigation }) => {
     }
 
     db.transaction(function (tx) {
+      let id = uuid.v4();
       tx.executeSql(
-        "INSERT INTO table_user (user_name, user_contact, user_address) VALUES (?,?,?)",
-        [userName, userContact, userAddress],
+        "INSERT INTO table_user (user_id, user_name, user_contact, user_address) VALUES (?,?,?,?)",
+        [id, userName, userContact, userAddress],
         (tx, results) => {
           console.log("Results", results.rowsAffected);
           if (results.rowsAffected > 0) {

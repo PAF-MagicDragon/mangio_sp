@@ -57,7 +57,9 @@ const styles = StyleSheet.create({
     marginTop: 10,
     borderColor: "#1e90ff",
     borderWidth: 1,
+    padding: 10,
   },
+  keyboardAvoid: { flex: 1, justifyContent: "space-between" },
   ///
   container: {
     flexDirection: "column",
