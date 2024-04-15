@@ -49,7 +49,7 @@ export class Store {
     weight: null,
   };
 
-  @action initializeTable = (name, cols) => {
+  @action initializeTable = (name, cols, cb) => {
     db.transaction(function (txn) {
       let sql1 =
         "SELECT name FROM sqlite_master WHERE type='table' AND name='" +
@@ -66,18 +66,21 @@ export class Store {
           console.log("sql3:", sql3);
           txn.executeSql(sql3, []);
         }
+        cb && cb();
       });
     });
   };
 
-  @action initializeAllTables = () => {
+  @action initializeAllTables = (cb) => {
+    console.log("ASYNC 1");
     // this.initializeTable(
     //   "table_user",
     //   "user_id VARCHAR(50) PRIMARY KEY, user_name VARCHAR(20), user_contact INT(10), user_address VARCHAR(255)"
     // );
     this.initializeTable(
       "ES_USER",
-      "ID VARCHAR(50) PRIMARY KEY, TYPE INT(1), NAME VARCHAR(100), ADDRESS VARCHAR(250), CONTACT_NUMBER VARCHAR(50), EMAIL VARCHAR(250), CLINIC_HOSPITAL VARCHAR(250), SPECIALIZATION VARCHAR(100), SIGNATURE BLOB, LICENSE_NO VARCHAR(50), PRT_NO VARCHAR(50), AGE INT(3), GENDER INT(1), HEIGHT DECIMAL(5,2), WEIGHT DECIMAL(5,2)"
+      "ID VARCHAR(50) PRIMARY KEY, TYPE INT(1), NAME VARCHAR(100), ADDRESS VARCHAR(250), CONTACT_NUMBER VARCHAR(50), EMAIL VARCHAR(250), CLINIC_HOSPITAL VARCHAR(250), SPECIALIZATION VARCHAR(100), SIGNATURE BLOB, LICENSE_NO VARCHAR(50), PRT_NO VARCHAR(50), AGE INT(3), GENDER INT(1), HEIGHT DECIMAL(5,2), WEIGHT DECIMAL(5,2)",
+      cb
     );
   };
 
@@ -92,6 +95,7 @@ export class Store {
   };
 
   @action initializeMainUser = (cb) => {
+    console.log("ASYNC 2");
     db.transaction((tx) => {
       tx.executeSql(
         "SELECT * FROM ES_USER WHERE TYPE = ? or TYPE = ?",
@@ -100,13 +104,8 @@ export class Store {
           console.log("FRANC RESULTS 1", results.rows);
           if (results.rows.length > 0) {
             this.mapUserFromDb(results.rows.item(0));
-            // for (let i = 0; i < results.rows.length; ++i) {
-            //   let item = results.rows.item(i);
-            // }
-            cb && cb();
-          } else {
-            //TODO
           }
+          cb && cb();
         }
       );
     });

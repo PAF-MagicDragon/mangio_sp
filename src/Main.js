@@ -25,34 +25,25 @@ const Main = () => {
   let [initialPage, setInitialPage] = useState("");
   const store = useContext(ESContext);
 
-  tempMethod = () => {
-    console.log("ASYNC 1");
-    store.initializeAllTables();
-    console.log("ASYNC 2");
-    store.initializeMainUser(() => {
-      console.log("ASYNC 3");
-      let tempPage = "Home";
-      let type = store.mainUser.type;
-      console.log("CHECK TYPE", store.mainUser);
-      if (type != null) {
-        console.log("CHECK TYPE 2", store.mainUser);
-        if (type == constants.TYPE_MAIN_DOCTOR) {
-          console.log("CHECK TYPE 3", store.mainUser);
-          tempPage = "DoctorDashboard";
-        } else if (type == constants.TYPE_MAIN_PATIENT) {
-          console.log("CHECK TYPE 4", store.mainUser);
-          tempPage = "PatientDashboard";
-        }
-        console.log("CHECK TYPE 5", store.mainUser);
+  initializePage = () => {
+    console.log("ASYNC 3");
+    let tempPage = "Home";
+    let type = store.mainUser.type;
+    if (type != null) {
+      if (type == constants.TYPE_MAIN_DOCTOR) {
+        tempPage = "DoctorDashboard";
+      } else if (type == constants.TYPE_MAIN_PATIENT) {
+        tempPage = "PatientDashboard";
       }
-      console.log("CHECK TYPE 6", store.mainUser);
-      setInitialPage(tempPage);
-      console.log("ASYNC 4", initialPage);
-    });
+    }
+    setInitialPage(tempPage);
   };
 
   useEffect(() => {
-    this.tempMethod();
+    //FOR RECODE USE CB FOR ASYNC
+    store.initializeAllTables(() =>
+      store.initializeMainUser(() => initializePage())
+    );
   }, []);
 
   // updateState = () => {
