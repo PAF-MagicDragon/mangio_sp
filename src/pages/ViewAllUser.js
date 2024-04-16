@@ -8,6 +8,7 @@ const ViewAllUser = () => {
   let [flatListItems, setFlatListItems] = useState([]);
 
   useEffect(() => {
+    console.log("USER SELECT");
     db.transaction((tx) => {
       tx.executeSql("SELECT * FROM table_user", [], (tx, results) => {
         var temp = [];

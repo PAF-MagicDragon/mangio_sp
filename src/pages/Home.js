@@ -9,20 +9,11 @@ import * as constants from "../helpers/constants";
 const Home = ({ navigation }) => {
   const store = useContext(ESContext);
 
-  let onClickDoctor = () => {
+  let onClick = (type) => {
     if (store.mainUser.id != null) {
-      navigation.navigate("DoctorDashboard");
+      navigation.navigate("Dashboard");
     } else {
-      store.mainUser.type = constants.TYPE_MAIN_DOCTOR;
-      navigation.navigate("Profile");
-    }
-  };
-
-  let onClickPatient = () => {
-    if (store.mainUser.id != null) {
-      navigation.navigate("PatientDashboard");
-    } else {
-      store.mainUser.type = constants.TYPE_MAIN_PATIENT;
+      store.mainUser.type = type;
       navigation.navigate("Profile");
     }
   };
@@ -30,8 +21,15 @@ const Home = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.viewMain}>
       <View style={styles.viewSub}>
-        <ESButton subButton title="I am a Doctor" customClick={onClickDoctor} />
-        <ESButton title="I am a Patient" customClick={onClickPatient} />
+        <ESButton
+          subButton
+          title="I am a Doctor"
+          customClick={() => onClick(constants.TYPE_MAIN_DOCTOR)}
+        />
+        <ESButton
+          title="I am a Patient"
+          customClick={() => onClick(constants.TYPE_MAIN_PATIENT)}
+        />
       </View>
     </SafeAreaView>
   );

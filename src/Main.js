@@ -3,7 +3,10 @@ import { styles, navOptions } from "./helpers/styles";
 import * as strings from "./helpers/strings";
 import * as constants from "./helpers/constants";
 
-import { NavigationContainer } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  useNavigationContainerRef,
+} from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 import HomeScreen from "./pages/HomeScreen";
@@ -16,25 +19,30 @@ import DeleteUser from "./pages/DeleteUser";
 import ESContext from "./ESContext";
 import Home from "./pages/Home";
 import Profile from "./pages/Profile";
+import Dashboard from "./pages/Dashboard";
 import DoctorDashboard from "./pages/DoctorDashboard";
 import PatientDashboard from "./pages/PatientDashboard";
+
+import { Text } from "react-native";
 
 const Stack = createNativeStackNavigator();
 
 const Main = () => {
   let [initialPage, setInitialPage] = useState("");
   const store = useContext(ESContext);
+  const navigationRef = useNavigationContainerRef();
 
   initializePage = () => {
     console.log("ASYNC 3");
     let tempPage = "Home";
     let type = store.mainUser.type;
     if (type != null) {
-      if (type == constants.TYPE_MAIN_DOCTOR) {
-        tempPage = "DoctorDashboard";
-      } else if (type == constants.TYPE_MAIN_PATIENT) {
-        tempPage = "PatientDashboard";
-      }
+      tempPage = "Dashboard";
+      // if (type == constants.TYPE_MAIN_DOCTOR) {
+      //   tempPage = "DoctorDashboard";
+      // } else if (type == constants.TYPE_MAIN_PATIENT) {
+      //   tempPage = "PatientDashboard";
+      // }
     }
     setInitialPage(tempPage);
   };
@@ -67,7 +75,7 @@ const Main = () => {
 
   return (
     initialPage && (
-      <NavigationContainer>
+      <NavigationContainer ref={navigationRef}>
         <Stack.Navigator initialRouteName={initialPage}>
           <Stack.Screen
             name="Home"
@@ -86,10 +94,24 @@ const Main = () => {
             }}
           />
           <Stack.Screen
+            name="Dashboard"
+            component={Dashboard}
+            options={{
+              title: "Dashboard",
+              // headerTitle: () => <Text>HELLO</Text>,
+              headerRight: () => (
+                <Text onPress={() => navigationRef.navigate("Profile")}>
+                  Profile
+                </Text>
+              ),
+              ...navOptions,
+            }}
+          />
+          <Stack.Screen
             name="DoctorDashboard"
             component={DoctorDashboard}
             options={{
-              title: "Dashboard",
+              title: "Doctor Dashboard",
               ...navOptions,
             }}
           />
@@ -97,7 +119,7 @@ const Main = () => {
             name="PatientDashboard"
             component={PatientDashboard}
             options={{
-              title: "Dashboard",
+              title: "Patient Dashboard",
               ...navOptions,
             }}
           />

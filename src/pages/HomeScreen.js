@@ -6,14 +6,14 @@ import styles from "../helpers/styles";
 import ESContext from "../ESContext";
 
 const HomeScreen = ({ navigation }) => {
-  // const store = useContext(ESContext);
+  const store = useContext(ESContext);
 
-  // useEffect(() => {
-  //   store.initializeTable(
-  //     "table_user",
-  //     "user_id INTEGER PRIMARY KEY, user_name VARCHAR(20), user_contact INT(10), user_address VARCHAR(255)"
-  //   );
-  // }, []);
+  useEffect(() => {
+    store.initializeTable(
+      "table_user",
+      "user_id INTEGER PRIMARY KEY, user_name VARCHAR(20), user_contact INT(10), user_address VARCHAR(255)"
+    );
+  }, []);
 
   return (
     <SafeAreaView style={styles.viewMain}>

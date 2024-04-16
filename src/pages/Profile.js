@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import {
   View,
   ScrollView,
@@ -12,10 +12,15 @@ import styles from "../helpers/styles";
 import ESContext from "../ESContext";
 import * as constants from "../helpers/constants";
 import ESLabel from "../components/ESLabel";
+import ESRadio from "../components/ESRadio";
 
 const Profile = ({ navigation }) => {
+  let [type, setType] = useState("");
   const store = useContext(ESContext);
-  let isDoctor = store.mainUser.type == constants.TYPE_MAIN_DOCTOR;
+
+  useEffect(() => {
+    setType(store.mainUser.type);
+  }, []);
 
   let temp = store.updateProfileRequest;
 
@@ -33,16 +38,21 @@ const Profile = ({ navigation }) => {
       if (results != null && results.rowsAffected > 0) {
         Alert.alert(
           "Success",
-          "You are Registered Successfully",
+          "Profile Updated",
           [
             {
               text: "Ok",
-              onPress: () => navigation.navigate("DoctorDashboard"),
+              onPress: () => {
+                store.initializeMainUser(
+                  () => navigation.navigate("Dashboard")
+                  // navigation.popToTop()
+                );
+              },
             },
           ],
           { cancelable: false }
         );
-      } else alert("Registration Failed");
+      } else alert("Profile Update Failed");
     });
   };
 
@@ -56,7 +66,11 @@ const Profile = ({ navigation }) => {
       <View style={styles.viewSub}>
         <ScrollView keyboardShouldPersistTaps="handled">
           <KeyboardAvoidingView behavior="padding" style={styles.keyboardAvoid}>
-            <ESLabel text={isDoctor ? "IM DOCTOR" : "IM PATIENT"} />
+            <ESLabel
+              text={
+                type == constants.TYPE_MAIN_DOCTOR ? "IM DOCTOR" : "IM PATIENT"
+              }
+            />
             <ESTextField
               placeholder="Enter Name"
               onChangeText={(val) => onChange(val, temp, "name")}
@@ -85,6 +99,20 @@ const Profile = ({ navigation }) => {
               style={{ textAlignVertical: "top", padding: 10 }}
             /> */}
             <ESButton title="Submit" customClick={updateProfile} />
+
+            <ESRadio
+              value={store.mainUser.type}
+              options={[
+                { label: "Doctor", value: constants.TYPE_MAIN_DOCTOR },
+                { label: "Patient", value: constants.TYPE_MAIN_PATIENT },
+              ]}
+              onChange={(val) => {
+                onChange(val, store.mainUser, "type");
+                setType(val);
+                store.updateType();
+                console.log("FRANC STATE", type);
+              }}
+            />
           </KeyboardAvoidingView>
         </ScrollView>
       </View>

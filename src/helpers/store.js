@@ -7,13 +7,7 @@ import uuid from "react-native-uuid";
 var db = openDatabase({ name: "ESDatabase.db" });
 
 export class Store {
-  @observable var1 = "my store var 1";
-  @observable var2 = "my store var 2";
-  @observable lists = [];
-
-  @action addList = (value) => {
-    this.lists.push(value);
-  };
+  @observable updateCounter = 0;
 
   @observable mainUser = {
     id: null,
@@ -73,10 +67,6 @@ export class Store {
 
   @action initializeAllTables = (cb) => {
     console.log("ASYNC 1");
-    // this.initializeTable(
-    //   "table_user",
-    //   "user_id VARCHAR(50) PRIMARY KEY, user_name VARCHAR(20), user_contact INT(10), user_address VARCHAR(255)"
-    // );
     this.initializeTable(
       "ES_USER",
       "ID VARCHAR(50) PRIMARY KEY, TYPE INT(1), NAME VARCHAR(100), ADDRESS VARCHAR(250), CONTACT_NUMBER VARCHAR(50), EMAIL VARCHAR(250), CLINIC_HOSPITAL VARCHAR(250), SPECIALIZATION VARCHAR(100), SIGNATURE BLOB, LICENSE_NO VARCHAR(50), PRT_NO VARCHAR(50), AGE INT(3), GENDER INT(1), HEIGHT DECIMAL(5,2), WEIGHT DECIMAL(5,2)",
@@ -91,7 +81,8 @@ export class Store {
     main.type = item["TYPE"];
     main.name = item["NAME"];
     main.address = item["ADDRESS"];
-    console.log("MAP 2", main);
+    this.updateCounter = this.updateCounter + 1;
+    console.log("MAP 2", main, this.updateCounter);
   };
 
   @action initializeMainUser = (cb) => {
@@ -114,26 +105,58 @@ export class Store {
   @action updateProfile = (cb) => {
     console.log("FRANC UPDATE PROFILE", this.mainUser);
     let main = this.mainUser;
+    let temp = this.updateProfileRequest;
     if (main.id != null) {
       //TODO update
       console.log("FRANC UPDATE PROFILE 1");
+      db.transaction(function (tx) {
+        console.log("FRANC UPDATE PROFILE 1.1");
+        let val = [temp.name, temp.address, main.id];
+        console.log("FRANC UPDATE PROFILE 1.2", val);
+        tx.executeSql(
+          "UPDATE ES_USER SET (NAME, ADDRESS) = (?,?) WHERE ID = ? ",
+          val,
+          (tx, results) => {
+            console.log("FRANC UPDATE PROFILE 1.3", results, cb);
+            cb != null && cb(results);
+          }
+        );
+      });
     } else {
       //TODO insert
       console.log("FRANC UPDATE PROFILE 2");
-      let temp = this.updateProfileRequest;
-      console.log("FRANC UPDATE PROFILE 3");
-
       db.transaction(function (tx) {
         let id = uuid.v4();
-        console.log("FRANC UPDATE PROFILE 4");
-        console.log("FRANC VAL 1", id, main, temp.name, temp.address);
+        console.log("FRANC UPDATE PROFILE 2.1");
         let val = [id, main.type, temp.name, temp.address];
-        console.log("FRANC VAL 2", val);
+        console.log("FRANC UPDATE PROFILE 2.2", val);
         tx.executeSql(
           "INSERT INTO ES_USER (ID, TYPE, NAME, ADDRESS) VALUES (?,?,?,?)",
           val,
           (tx, results) => {
-            console.log("FRANC UPDATE PROFILE 5", results, cb);
+            console.log("FRANC UPDATE PROFILE 2.3", results, cb);
+            cb != null && cb(results);
+          }
+        );
+      });
+    }
+  };
+
+  @action updateType = (cb) => {
+    console.log("FRANC UPDATE TYPE", this.mainUser);
+    let main = this.mainUser;
+    if (main.id != null) {
+      //TODO update
+      console.log("FRANC UPDATE TYPE 1");
+      db.transaction(function (tx) {
+        console.log("FRANC UPDATE TYPE 1.1");
+        let val = [main.type, main.id];
+        console.log("FRANC UPDATE TYPE 1.2", val);
+        tx.executeSql(
+          "UPDATE ES_USER SET (TYPE) = (?) WHERE ID = ? ",
+          val,
+          (tx, results) => {
+            console.log("FRANC UPDATE TYPE 1.3", results, cb);
             cb != null && cb(results);
           }
         );
