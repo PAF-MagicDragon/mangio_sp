@@ -15,25 +15,23 @@ import ESLabel from "../components/ESLabel";
 import ESRadio from "../components/ESRadio";
 
 const Profile = ({ navigation }) => {
-  let [type, setType] = useState("");
+  let [request, setRequest] = useState(null);
   const store = useContext(ESContext);
 
   useEffect(() => {
-    setType(store.mainUser.type);
+    setRequest(JSON.parse(JSON.stringify(store.mainUser)));
   }, []);
 
-  let temp = store.updateProfileRequest;
-
   let updateProfile = () => {
-    if (temp.name == null || temp.name.length == 0) {
+    if (request.name == null || request.name.length == 0) {
       alert("Name is required");
       return;
     }
-    if (temp.name == null || temp.name.address == 0) {
+    if (request.address == null || request.address.length == 0) {
       alert("Address is required");
       return;
     }
-    store.updateProfile((results) => {
+    store.updateProfile(request, (results) => {
       console.log("Results", results);
       if (results != null && results.rowsAffected > 0) {
         Alert.alert(
@@ -56,35 +54,55 @@ const Profile = ({ navigation }) => {
     });
   };
 
-  let onChange = (val, store, field) => {
-    console.log("FRANC ONCHANGE", val, store, field);
-    store[field] = val;
+  let onChange = (val, obj, field) => {
+    console.log("FRANC STATE CHANGE BEFORE", request);
+    // console.log("FRANC ONCHANGE", val, store, field);
+    obj[field] = val;
+
+    setRequest((request) => ({
+      ...request,
+      ...obj,
+    }));
+    console.log("FRANC STATE CHANGE AFTER", request);
+    // setType(
+    //   type == constants.TYPE_MAIN_DOCTOR
+    //     ? constants.TYPE_MAIN_PATIENT
+    //     : constants.TYPE_MAIN_DOCTOR
+    // );
   };
 
   return (
-    <SafeAreaView style={styles.viewMain}>
-      <View style={styles.viewSub}>
-        <ScrollView keyboardShouldPersistTaps="handled">
-          <KeyboardAvoidingView behavior="padding" style={styles.keyboardAvoid}>
-            <ESLabel
-              text={
-                type == constants.TYPE_MAIN_DOCTOR ? "IM DOCTOR" : "IM PATIENT"
-              }
-            />
-            <ESTextField
-              placeholder="Enter Name"
-              onChangeText={(val) => onChange(val, temp, "name")}
-              maxLength={100}
-            />
-            <ESTextField
-              placeholder="Enter Address"
-              onChangeText={(val) => onChange(val, temp, "address")}
-              maxLength={250}
-              numberOfLines={5}
-              multiline={true}
-              style={{ textAlignVertical: "top" }}
-            />
-            {/* <ESTextField
+    request && (
+      <SafeAreaView style={styles.viewMain}>
+        <View style={styles.viewSub}>
+          <ScrollView keyboardShouldPersistTaps="handled">
+            <KeyboardAvoidingView
+              behavior="padding"
+              style={styles.keyboardAvoid}
+            >
+              <ESLabel
+                text={
+                  request.type == constants.TYPE_MAIN_DOCTOR
+                    ? "IM DOCTOR"
+                    : "IM PATIENT"
+                }
+              />
+              <ESTextField
+                placeholder="Enter Name"
+                onChangeText={(val) => onChange(val, request, "name")}
+                maxLength={100}
+                value={request.name}
+              />
+              <ESTextField
+                placeholder="Enter Address"
+                onChangeText={(val) => onChange(val, request, "address")}
+                maxLength={250}
+                value={request.address}
+                numberOfLines={5}
+                multiline={true}
+                style={{ textAlignVertical: "top" }}
+              />
+              {/* <ESTextField
               placeholder="Enter Contact No"
               onChangeText={(userContact) => setUserContact(userContact)}
               maxLength={10}
@@ -98,25 +116,21 @@ const Profile = ({ navigation }) => {
               multiline={true}
               style={{ textAlignVertical: "top", padding: 10 }}
             /> */}
-            <ESButton title="Submit" customClick={updateProfile} />
+              <ESButton title="Submit" customClick={updateProfile} />
 
-            <ESRadio
-              value={store.mainUser.type}
-              options={[
-                { label: "Doctor", value: constants.TYPE_MAIN_DOCTOR },
-                { label: "Patient", value: constants.TYPE_MAIN_PATIENT },
-              ]}
-              onChange={(val) => {
-                onChange(val, store.mainUser, "type");
-                setType(val);
-                store.updateType();
-                console.log("FRANC STATE", type);
-              }}
-            />
-          </KeyboardAvoidingView>
-        </ScrollView>
-      </View>
-    </SafeAreaView>
+              <ESRadio
+                value={request.type}
+                options={[
+                  { label: "Doctor", value: constants.TYPE_MAIN_DOCTOR },
+                  { label: "Patient", value: constants.TYPE_MAIN_PATIENT },
+                ]}
+                onChange={(val) => onChange(val, request, "type")}
+              />
+            </KeyboardAvoidingView>
+          </ScrollView>
+        </View>
+      </SafeAreaView>
+    )
   );
 };
 

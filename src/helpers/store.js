@@ -27,22 +27,6 @@ export class Store {
     weight: null,
   };
 
-  @observable updateProfileRequest = {
-    name: null,
-    address: null,
-    contactNo: null,
-    email: null,
-    clinicHospital: null,
-    specialization: null,
-    signature: null,
-    licenseNo: null,
-    prtNo: null,
-    age: null,
-    gender: null,
-    height: null,
-    weight: null,
-  };
-
   @action initializeTable = (name, cols, cb) => {
     db.transaction(function (txn) {
       let sql1 =
@@ -102,19 +86,18 @@ export class Store {
     });
   };
 
-  @action updateProfile = (cb) => {
+  @action updateProfile = (request, cb) => {
     console.log("FRANC UPDATE PROFILE", this.mainUser);
     let main = this.mainUser;
-    let temp = this.updateProfileRequest;
     if (main.id != null) {
       //TODO update
       console.log("FRANC UPDATE PROFILE 1");
       db.transaction(function (tx) {
         console.log("FRANC UPDATE PROFILE 1.1");
-        let val = [temp.name, temp.address, main.id];
+        let val = [request.type, request.name, request.address, main.id];
         console.log("FRANC UPDATE PROFILE 1.2", val);
         tx.executeSql(
-          "UPDATE ES_USER SET (NAME, ADDRESS) = (?,?) WHERE ID = ? ",
+          "UPDATE ES_USER SET (TYPE, NAME, ADDRESS) = (?,?,?) WHERE ID = ? ",
           val,
           (tx, results) => {
             console.log("FRANC UPDATE PROFILE 1.3", results, cb);

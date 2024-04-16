@@ -15,6 +15,17 @@ const Dashboard = ({ navigation }) => {
   const store = useContext(ESContext);
   let type = store.mainUser.type;
   const isFocused = useIsFocused();
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Do something when the screen is focused
+      return () => {
+        // Do something when the screen is unfocused
+        // Useful for cleanup functions
+      };
+    }, [])
+  );
+
   return (
     isFocused && (
       <SafeAreaView style={styles.viewMain}>

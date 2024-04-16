@@ -28,7 +28,7 @@ import { Text } from "react-native";
 const Stack = createNativeStackNavigator();
 
 const Main = () => {
-  let [initialPage, setInitialPage] = useState("");
+  let [initialPage, setInitialPage] = useState(null);
   const store = useContext(ESContext);
   const navigationRef = useNavigationContainerRef();
 
