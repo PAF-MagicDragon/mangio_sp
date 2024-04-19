@@ -1,16 +1,31 @@
 import React, { useEffect, useContext } from "react";
-import { View, Text, SafeAreaView } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  KeyboardAvoidingView,
+  Alert,
+  SafeAreaView,
+} from "react-native";
 import ESButton from "../components/ESButton";
 import ESLabel from "../components/ESLabel";
+import ESValue from "../components/ESValue";
 import styles from "../helpers/styles";
 import ESContext from "../ESContext";
 
 const PatientDashboard = ({ navigation }) => {
   const store = useContext(ESContext);
+  let user = store.mainUser;
+
   return (
     <SafeAreaView style={styles.viewMain}>
       <View style={styles.viewSub}>
-        <ESLabel text="Patient Dashboard" />
+        <ScrollView keyboardShouldPersistTaps="handled">
+          <KeyboardAvoidingView behavior="padding" style={styles.keyboardAvoid}>
+            <ESLabel text="IM A PATIENT:" />
+            <ESValue text={JSON.stringify(user)} />
+          </KeyboardAvoidingView>
+        </ScrollView>
       </View>
     </SafeAreaView>
   );

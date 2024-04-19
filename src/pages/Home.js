@@ -10,12 +10,12 @@ const Home = ({ navigation }) => {
   const store = useContext(ESContext);
 
   let onClick = (type) => {
-    if (store.mainUser.id != null) {
-      navigation.navigate("Dashboard");
-    } else {
-      store.mainUser.type = type;
-      navigation.navigate("Profile");
-    }
+    // if (store.mainUser.id != null) {
+    //   navigation.replace("Dashboard");
+    // } else {
+    store.mainUser.type = type;
+    navigation.replace("Profile");
+    // }
   };
 
   return (

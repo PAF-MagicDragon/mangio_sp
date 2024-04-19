@@ -7,8 +7,6 @@ import uuid from "react-native-uuid";
 var db = openDatabase({ name: "ESDatabase.db" });
 
 export class Store {
-  @observable updateCounter = 0;
-
   @observable mainUser = {
     id: null,
     type: null,
@@ -22,7 +20,7 @@ export class Store {
     licenseNo: null,
     prtNo: null,
     age: null,
-    gender: null,
+    gender: constants.GENDER_MALE,
     height: null,
     weight: null,
   };
@@ -50,10 +48,9 @@ export class Store {
   };
 
   @action initializeAllTables = (cb) => {
-    console.log("ASYNC 1");
     this.initializeTable(
       "ES_USER",
-      "ID VARCHAR(50) PRIMARY KEY, TYPE INT(1), NAME VARCHAR(100), ADDRESS VARCHAR(250), CONTACT_NUMBER VARCHAR(50), EMAIL VARCHAR(250), CLINIC_HOSPITAL VARCHAR(250), SPECIALIZATION VARCHAR(100), SIGNATURE BLOB, LICENSE_NO VARCHAR(50), PRT_NO VARCHAR(50), AGE INT(3), GENDER INT(1), HEIGHT DECIMAL(5,2), WEIGHT DECIMAL(5,2)",
+      "ID VARCHAR(50) PRIMARY KEY, TYPE INT(1), NAME VARCHAR(100), ADDRESS VARCHAR(250), CONTACT_NUMBER VARCHAR(50), EMAIL VARCHAR(250), CLINIC_HOSPITAL VARCHAR(250), SPECIALIZATION VARCHAR(100), SIGNATURE BLOB, LICENSE_NO VARCHAR(50), PRT_NO VARCHAR(50), AGE VARCHAR(3), GENDER INT(1), HEIGHT VARCHAR(8), WEIGHT VARCHAR(8)",
       cb
     );
   };
@@ -65,12 +62,41 @@ export class Store {
     main.type = item["TYPE"];
     main.name = item["NAME"];
     main.address = item["ADDRESS"];
-    this.updateCounter = this.updateCounter + 1;
-    console.log("MAP 2", main, this.updateCounter);
+    main.contactNo = item["CONTACT_NUMBER"];
+    main.email = item["EMAIL"];
+    main.clinicHospital = item["CLINIC_HOSPITAL"];
+    main.specialization = item["SPECIALIZATION"];
+    main.signature = item["SIGNATURE"];
+    main.licenseNo = item["LICENSE_NO"];
+    main.prtNo = item["PRT_NO"];
+    main.age = item["AGE"];
+    main.gender = item["GENDER"];
+    main.height = item["HEIGHT"];
+    main.weight = item["WEIGHT"];
+  };
+
+  @action mapPatientFromDb = (item) => {
+    let patient = {};
+    console.log("MAP 1", main, item);
+    patient.id = item["ID"];
+    // patient.type = item["TYPE"];
+    patient.name = item["NAME"];
+    patient.address = item["ADDRESS"];
+    patient.contactNo = item["CONTACT_NUMBER"];
+    patient.email = item["EMAIL"];
+    // patient.clinicHospital = item["CLINIC_HOSPITAL"];
+    // patient.specialization = item["SPECIALIZATION"];
+    // patient.signature = item["SIGNATURE"];
+    // patient.licenseNo = item["LICENSE_NO"];
+    // patient.prtNo = item["PRT_NO"];
+    patient.age = item["AGE"];
+    patient.gender = item["GENDER"];
+    patient.height = item["HEIGHT"];
+    patient.weight = item["WEIGHT"];
+    return patient;
   };
 
   @action initializeMainUser = (cb) => {
-    console.log("ASYNC 2");
     db.transaction((tx) => {
       tx.executeSql(
         "SELECT * FROM ES_USER WHERE TYPE = ? or TYPE = ?",
@@ -86,6 +112,23 @@ export class Store {
     });
   };
 
+  @action getPatients = (cb) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM ES_USER WHERE TYPE = ?",
+        [constants.TYPE_SUB_PATIENT],
+        (tx, results) => {
+          console.log("FRANC PATIENTS 1", results.rows);
+          var temp = [];
+          for (let i = 0; i < results.rows.length; ++i) {
+            temp.push(this.mapPatientFromDb(results.rows.item(i)));
+          }
+          cb && cb(temp);
+        }
+      );
+    });
+  };
+
   @action updateProfile = (request, cb) => {
     console.log("FRANC UPDATE PROFILE", this.mainUser);
     let main = this.mainUser;
@@ -94,10 +137,26 @@ export class Store {
       console.log("FRANC UPDATE PROFILE 1");
       db.transaction(function (tx) {
         console.log("FRANC UPDATE PROFILE 1.1");
-        let val = [request.type, request.name, request.address, main.id];
+        let val = [
+          request.type,
+          request.name,
+          request.address,
+          request.contactNo,
+          request.email,
+          request.clinicHospital,
+          request.specialization,
+          request.signature,
+          request.licenseNo,
+          request.prtNo,
+          request.age,
+          request.gender,
+          request.height,
+          request.weight,
+          main.id,
+        ];
         console.log("FRANC UPDATE PROFILE 1.2", val);
         tx.executeSql(
-          "UPDATE ES_USER SET (TYPE, NAME, ADDRESS) = (?,?,?) WHERE ID = ? ",
+          "UPDATE ES_USER SET (TYPE,NAME,ADDRESS,CONTACT_NUMBER,EMAIL,CLINIC_HOSPITAL,SPECIALIZATION,SIGNATURE,LICENSE_NO,PRT_NO,AGE,GENDER,HEIGHT,WEIGHT) = (?,?,?,?,?,?,?,?,?,?,?,?,?,?) WHERE ID = ? ",
           val,
           (tx, results) => {
             console.log("FRANC UPDATE PROFILE 1.3", results, cb);
@@ -111,35 +170,29 @@ export class Store {
       db.transaction(function (tx) {
         let id = uuid.v4();
         console.log("FRANC UPDATE PROFILE 2.1");
-        let val = [id, main.type, temp.name, temp.address];
+        let val = [
+          id,
+          request.type,
+          request.name,
+          request.address,
+          request.contactNo,
+          request.email,
+          request.clinicHospital,
+          request.specialization,
+          request.signature,
+          request.licenseNo,
+          request.prtNo,
+          request.age,
+          request.gender,
+          request.height,
+          request.weight,
+        ];
         console.log("FRANC UPDATE PROFILE 2.2", val);
         tx.executeSql(
-          "INSERT INTO ES_USER (ID, TYPE, NAME, ADDRESS) VALUES (?,?,?,?)",
+          "INSERT INTO ES_USER (ID,TYPE,NAME,ADDRESS,CONTACT_NUMBER,EMAIL,CLINIC_HOSPITAL,SPECIALIZATION,SIGNATURE,LICENSE_NO,PRT_NO,AGE,GENDER,HEIGHT,WEIGHT) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
           val,
           (tx, results) => {
             console.log("FRANC UPDATE PROFILE 2.3", results, cb);
-            cb != null && cb(results);
-          }
-        );
-      });
-    }
-  };
-
-  @action updateType = (cb) => {
-    console.log("FRANC UPDATE TYPE", this.mainUser);
-    let main = this.mainUser;
-    if (main.id != null) {
-      //TODO update
-      console.log("FRANC UPDATE TYPE 1");
-      db.transaction(function (tx) {
-        console.log("FRANC UPDATE TYPE 1.1");
-        let val = [main.type, main.id];
-        console.log("FRANC UPDATE TYPE 1.2", val);
-        tx.executeSql(
-          "UPDATE ES_USER SET (TYPE) = (?) WHERE ID = ? ",
-          val,
-          (tx, results) => {
-            console.log("FRANC UPDATE TYPE 1.3", results, cb);
             cb != null && cb(results);
           }
         );

@@ -22,14 +22,8 @@ const DoctorDashboard = ({ navigation }) => {
       <View style={styles.viewSub}>
         <ScrollView keyboardShouldPersistTaps="handled">
           <KeyboardAvoidingView behavior="padding" style={styles.keyboardAvoid}>
-            <ESLabel text="Counter:" />
-            <ESValue text={store.updateCounter} />
-
-            <ESLabel text="Name:" />
-            <ESValue text={user.name} />
-
-            <ESLabel text="Address:" />
-            <ESValue text={user.address} />
+            <ESLabel text="IM A DOCTOR:" />
+            <ESValue text={JSON.stringify(user)} />
           </KeyboardAvoidingView>
         </ScrollView>
       </View>

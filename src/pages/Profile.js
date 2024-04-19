@@ -5,13 +5,14 @@ import {
   KeyboardAvoidingView,
   Alert,
   SafeAreaView,
+  Text,
 } from "react-native";
-import ESTextField from "../components/ESTextField";
+import ESTextFieldWithLabel from "../components/ESTextFieldWithLabel";
 import ESButton from "../components/ESButton";
 import styles from "../helpers/styles";
 import ESContext from "../ESContext";
 import * as constants from "../helpers/constants";
-import ESLabel from "../components/ESLabel";
+import ESRadioWithLabel from "../components/ESRadioWithLabel";
 import ESRadio from "../components/ESRadio";
 
 const Profile = ({ navigation }) => {
@@ -41,10 +42,7 @@ const Profile = ({ navigation }) => {
             {
               text: "Ok",
               onPress: () => {
-                store.initializeMainUser(
-                  () => navigation.navigate("Dashboard")
-                  // navigation.popToTop()
-                );
+                store.initializeMainUser(() => navigation.replace("Dashboard"));
               },
             },
           ],
@@ -56,19 +54,12 @@ const Profile = ({ navigation }) => {
 
   let onChange = (val, obj, field) => {
     console.log("FRANC STATE CHANGE BEFORE", request);
-    // console.log("FRANC ONCHANGE", val, store, field);
     obj[field] = val;
-
     setRequest((request) => ({
       ...request,
       ...obj,
     }));
     console.log("FRANC STATE CHANGE AFTER", request);
-    // setType(
-    //   type == constants.TYPE_MAIN_DOCTOR
-    //     ? constants.TYPE_MAIN_PATIENT
-    //     : constants.TYPE_MAIN_DOCTOR
-    // );
   };
 
   return (
@@ -80,44 +71,6 @@ const Profile = ({ navigation }) => {
               behavior="padding"
               style={styles.keyboardAvoid}
             >
-              <ESLabel
-                text={
-                  request.type == constants.TYPE_MAIN_DOCTOR
-                    ? "IM DOCTOR"
-                    : "IM PATIENT"
-                }
-              />
-              <ESTextField
-                placeholder="Enter Name"
-                onChangeText={(val) => onChange(val, request, "name")}
-                maxLength={100}
-                value={request.name}
-              />
-              <ESTextField
-                placeholder="Enter Address"
-                onChangeText={(val) => onChange(val, request, "address")}
-                maxLength={250}
-                value={request.address}
-                numberOfLines={5}
-                multiline={true}
-                style={{ textAlignVertical: "top" }}
-              />
-              {/* <ESTextField
-              placeholder="Enter Contact No"
-              onChangeText={(userContact) => setUserContact(userContact)}
-              maxLength={10}
-              keyboardType="numeric"
-            />
-            <ESTextField
-              placeholder="Enter Address"
-              onChangeText={(userAddress) => setUserAddress(userAddress)}
-              maxLength={225}
-              numberOfLines={5}
-              multiline={true}
-              style={{ textAlignVertical: "top", padding: 10 }}
-            /> */}
-              <ESButton title="Submit" customClick={updateProfile} />
-
               <ESRadio
                 value={request.type}
                 options={[
@@ -126,6 +79,113 @@ const Profile = ({ navigation }) => {
                 ]}
                 onChange={(val) => onChange(val, request, "type")}
               />
+              <ESTextFieldWithLabel
+                label="Name"
+                onChangeText={(val) => onChange(val, request, "name")}
+                maxLength={100}
+                value={request.name}
+              />
+              <ESTextFieldWithLabel
+                label="Address"
+                onChangeText={(val) => onChange(val, request, "address")}
+                maxLength={250}
+                value={request.address}
+                numberOfLines={3}
+                multiline={true}
+                style={{ textAlignVertical: "top" }}
+              />
+              <View style={styles.row}>
+                <ESTextFieldWithLabel
+                  label="Contact No"
+                  onChangeText={(val) => onChange(val, request, "contactNo")}
+                  maxLength={50}
+                  value={request.contactNo}
+                  keyboardType="number-pad"
+                />
+                <ESTextFieldWithLabel
+                  label="Email"
+                  onChangeText={(val) => onChange(val, request, "email")}
+                  maxLength={250}
+                  value={request.email}
+                  keyboardType="email-address"
+                />
+              </View>
+              {request.type == constants.TYPE_MAIN_DOCTOR && (
+                <View>
+                  <ESTextFieldWithLabel
+                    label="Clinic/Hospital"
+                    onChangeText={(val) =>
+                      onChange(val, request, "clinicHospital")
+                    }
+                    maxLength={250}
+                    value={request.clinicHospital}
+                  />
+                  <ESTextFieldWithLabel
+                    label="Specialization"
+                    onChangeText={(val) =>
+                      onChange(val, request, "specialization")
+                    }
+                    maxLength={100}
+                    value={request.specialization}
+                  />
+                  <Text>TODO SIGNATURE</Text>
+                  <View style={styles.row}>
+                    <ESTextFieldWithLabel
+                      label="License No"
+                      onChangeText={(val) =>
+                        onChange(val, request, "licenseNo")
+                      }
+                      maxLength={50}
+                      value={request.licenseNo}
+                    />
+                    <ESTextFieldWithLabel
+                      label="PRT No"
+                      onChangeText={(val) => onChange(val, request, "prtNo")}
+                      maxLength={50}
+                      value={request.prtNo}
+                    />
+                  </View>
+                </View>
+              )}
+              {request.type == constants.TYPE_MAIN_PATIENT && (
+                <View>
+                  <View style={styles.row}>
+                    <ESRadioWithLabel
+                      label="Gender"
+                      value={request.gender}
+                      options={[
+                        { label: "Male", value: constants.GENDER_MALE },
+                        { label: "Female", value: constants.GENDER_FEMALE },
+                      ]}
+                      onChange={(val) => onChange(val, request, "gender")}
+                    />
+                    <ESTextFieldWithLabel
+                      label="Age"
+                      onChangeText={(val) => onChange(val, request, "age")}
+                      maxLength={3}
+                      value={request.age}
+                      keyboardType="number-pad"
+                    />
+                  </View>
+                  <View style={styles.row}>
+                    <ESTextFieldWithLabel
+                      label="Height"
+                      onChangeText={(val) => onChange(val, request, "height")}
+                      maxLength={8}
+                      value={request.height}
+                      keyboardType="decimal-pad"
+                    />
+                    <ESTextFieldWithLabel
+                      label="Weight"
+                      onChangeText={(val) => onChange(val, request, "weight")}
+                      maxLength={8}
+                      value={request.weight}
+                      keyboardType="decimal-pad"
+                    />
+                  </View>
+                </View>
+              )}
+              <ESButton title="Submit" customClick={updateProfile} />
             </KeyboardAvoidingView>
           </ScrollView>
         </View>
