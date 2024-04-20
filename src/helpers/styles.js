@@ -92,6 +92,14 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   keyboardAvoid: { flex: 1, justifyContent: "space-between" },
+
+  listViewItemSeparator: {
+    height: 0.2,
+    width: "100%",
+    backgroundColor: "#808080",
+  },
+
+  listViewItem: { backgroundColor: "white", padding: 20 },
   ///
   // container: {
   //   flexDirection: "column",

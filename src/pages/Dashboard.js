@@ -35,9 +35,9 @@ const Dashboard = ({ navigation }) => {
           <Tab.Screen name="Profile" component={Profile} />
         </Tab.Navigator> */}
           {type == constants.TYPE_MAIN_DOCTOR ? (
-            <DoctorDashboard />
+            <DoctorDashboard {...{ navigation }} />
           ) : (
-            <PatientDashboard />
+            <PatientDashboard {...{ navigation }} />
           )}
         </View>
       </SafeAreaView>

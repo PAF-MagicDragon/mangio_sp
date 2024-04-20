@@ -22,6 +22,7 @@ import Profile from "./pages/Profile";
 import Dashboard from "./pages/Dashboard";
 import DoctorDashboard from "./pages/DoctorDashboard";
 import PatientDashboard from "./pages/PatientDashboard";
+import AddPatient from "./pages/AddPatient";
 
 import { Text } from "react-native";
 
@@ -32,7 +33,7 @@ const Main = () => {
   const store = useContext(ESContext);
   const navigationRef = useNavigationContainerRef();
 
-  initializePage = () => {
+  initializeScreen = () => {
     console.log("ASYNC 3");
     let tempPage = "Home";
     let type = store.mainUser.type;
@@ -50,7 +51,7 @@ const Main = () => {
   useEffect(() => {
     //FOR RECODE USE CB FOR ASYNC
     store.initializeAllTables(() =>
-      store.initializeMainUser(() => initializePage())
+      store.initializeMainUser(() => initializeScreen())
     );
   }, []);
 
@@ -124,6 +125,14 @@ const Main = () => {
             }}
           />
           <Stack.Screen
+            name="AddPatient"
+            component={AddPatient}
+            options={{
+              title: "Add Patient",
+              ...navOptions,
+            }}
+          />
+          {/* <Stack.Screen
             name="HomeScreen"
             component={HomeScreen}
             options={{
@@ -170,7 +179,7 @@ const Main = () => {
               title: "Delete User",
               ...navOptions,
             }}
-          />
+          /> */}
         </Stack.Navigator>
       </NavigationContainer>
     )

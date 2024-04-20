@@ -76,8 +76,9 @@ export class Store {
   };
 
   @action mapPatientFromDb = (item) => {
+    console.log("MAP 1.1", item);
     let patient = {};
-    console.log("MAP 1", main, item);
+    console.log("MAP 1.2", item);
     patient.id = item["ID"];
     // patient.type = item["TYPE"];
     patient.name = item["NAME"];
@@ -120,7 +121,9 @@ export class Store {
         (tx, results) => {
           console.log("FRANC PATIENTS 1", results.rows);
           var temp = [];
+          console.log("FRANC PATIENTS 2", results.rows);
           for (let i = 0; i < results.rows.length; ++i) {
+            console.log("FRANC PATIENTS ITEM", i, results.rows);
             temp.push(this.mapPatientFromDb(results.rows.item(i)));
           }
           cb && cb(temp);
@@ -129,10 +132,9 @@ export class Store {
     });
   };
 
-  @action updateProfile = (request, cb) => {
-    console.log("FRANC UPDATE PROFILE", this.mainUser);
-    let main = this.mainUser;
-    if (main.id != null) {
+  @action updateEsUser = (request, cb) => {
+    console.log("FRANC UPDATE PROFILE", request);
+    if (request.id != null) {
       //TODO update
       console.log("FRANC UPDATE PROFILE 1");
       db.transaction(function (tx) {
@@ -152,7 +154,7 @@ export class Store {
           request.gender,
           request.height,
           request.weight,
-          main.id,
+          request.id,
         ];
         console.log("FRANC UPDATE PROFILE 1.2", val);
         tx.executeSql(

@@ -32,7 +32,7 @@ const Profile = ({ navigation }) => {
       alert("Address is required");
       return;
     }
-    store.updateProfile(request, (results) => {
+    store.updateEsUser(request, (results) => {
       console.log("Results", results);
       if (results != null && results.rowsAffected > 0) {
         Alert.alert(
