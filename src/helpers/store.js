@@ -132,6 +132,25 @@ export class Store {
     });
   };
 
+  @action getPrescriptions = (cb) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM ES_USER WHERE TYPE = ?",
+        [constants.TYPE_SUB_PATIENT],
+        (tx, results) => {
+          console.log("FRANC PATIENTS 1", results.rows);
+          var temp = [];
+          console.log("FRANC PATIENTS 2", results.rows);
+          for (let i = 0; i < results.rows.length; ++i) {
+            console.log("FRANC PATIENTS ITEM", i, results.rows);
+            temp.push(this.mapPatientFromDb(results.rows.item(i)));
+          }
+          cb && cb(temp);
+        }
+      );
+    });
+  };
+
   @action updateEsUser = (request, cb) => {
     console.log("FRANC UPDATE PROFILE", request);
     if (request.id != null) {

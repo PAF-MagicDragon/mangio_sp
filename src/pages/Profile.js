@@ -101,6 +101,7 @@ const Profile = ({ navigation }) => {
                   maxLength={50}
                   value={request.contactNo}
                   keyboardType="number-pad"
+                  withMargin
                 />
                 <ESTextFieldWithLabel
                   label="Email"
@@ -137,6 +138,7 @@ const Profile = ({ navigation }) => {
                       }
                       maxLength={50}
                       value={request.licenseNo}
+                      withMargin
                     />
                     <ESTextFieldWithLabel
                       label="PRT No"

@@ -23,8 +23,10 @@ import Dashboard from "./pages/Dashboard";
 import DoctorDashboard from "./pages/DoctorDashboard";
 import PatientDashboard from "./pages/PatientDashboard";
 import AddPatient from "./pages/AddPatient";
+import ViewPatient from "./pages/ViewPatient";
 
 import { Text } from "react-native";
+import ESIcon from "./components/ESIcon";
 
 const Stack = createNativeStackNavigator();
 
@@ -101,9 +103,11 @@ const Main = () => {
               title: "Dashboard",
               // headerTitle: () => <Text>HELLO</Text>,
               headerRight: () => (
-                <Text onPress={() => navigationRef.navigate("Profile")}>
-                  Profile
-                </Text>
+                <ESIcon
+                  name="settings-outline"
+                  color="#ffffff"
+                  customClick={() => navigationRef.navigate("Profile")}
+                />
               ),
               ...navOptions,
             }}
@@ -129,6 +133,14 @@ const Main = () => {
             component={AddPatient}
             options={{
               title: "Add Patient",
+              ...navOptions,
+            }}
+          />
+          <Stack.Screen
+            name="ViewPatient"
+            component={ViewPatient}
+            options={{
+              title: "View Patient",
               ...navOptions,
             }}
           />

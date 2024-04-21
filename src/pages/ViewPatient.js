@@ -1,49 +1,42 @@
 import React, { useState, useEffect, useContext } from "react";
 import {
   View,
-  Text,
   ScrollView,
   KeyboardAvoidingView,
   Alert,
   SafeAreaView,
+  Text,
 } from "react-native";
+import ESTextFieldWithLabel from "../components/ESTextFieldWithLabel";
 import ESButton from "../components/ESButton";
-import ESIcon from "../components/ESIcon";
+import styles from "../helpers/styles";
+import ESContext from "../ESContext";
 import ESLabel from "../components/ESLabel";
 import ESValue from "../components/ESValue";
 import ESListView from "../components/ESListView";
-import styles from "../helpers/styles";
-import ESContext from "../ESContext";
+import * as constants from "../helpers/constants";
+import ESRadioWithLabel from "../components/ESRadioWithLabel";
 
-const DoctorDashboard = ({ navigation }) => {
-  let [patients, setPatients] = useState(null);
+const ViewPatient = ({ navigation, route }) => {
+  let [prescriptions, setPrescriptions] = useState(null);
   const store = useContext(ESContext);
-  let user = store.mainUser;
-
+  const patient = route.params;
   useEffect(() => {
-    store.getPatients((list) => setPatients(list));
+    store.getPrescriptions((list) => setPrescriptions(list));
   }, []);
-
-  let addPatient = () => {
-    navigation.navigate("AddPatient");
-  };
-
-  let viewPatient = (item) => {
-    navigation.navigate("ViewPatient", item);
-  };
 
   return (
     <SafeAreaView style={styles.viewMain}>
       <View style={styles.viewSub}>
         {/* <ScrollView keyboardShouldPersistTaps="handled">
           <KeyboardAvoidingView behavior="padding" style={styles.keyboardAvoid}> */}
-        <ESLabel text="IM A DOCTOR:" />
-        <ESValue text={JSON.stringify(user)} />
+        <ESLabel text="SELECTED PATIENT:" />
+        <ESValue text={JSON.stringify(patient)} />
         {/* </KeyboardAvoidingView>
         </ScrollView> */}
         <ESListView
-          header="Patients"
-          list={patients}
+          header="Prescriptions"
+          list={prescriptions}
           customPanel={(item) => {
             return (
               <View>
@@ -54,14 +47,16 @@ const DoctorDashboard = ({ navigation }) => {
               </View>
             );
           }}
-          customViewClick={(item) => viewPatient(item)}
-          customAddClick={addPatient}
+          customViewClick={(item) => alert("VIEW" + item)}
+          customAddClick={() => alert("ADD")}
           customEditClick={(item) => alert("EDIT" + item.id)}
           customDeleteClick={(item) => alert("DELETE" + item.id)}
+          customActionClick={(item) => alert("PRINT" + item.id)}
+          customActionIcon="print-outline"
         />
       </View>
     </SafeAreaView>
   );
 };
 
-export default DoctorDashboard;
+export default ViewPatient;

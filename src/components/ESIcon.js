@@ -5,11 +5,12 @@ import styles from "../helpers/styles";
 
 const ESIcon = (props) => {
   const name = props.name;
+  const color = props.color;
   return (
     <Icon
       //name={Platform.OS === "ios" ? "ios-" + { name } : "md-" + { name }}
-      name={"add-circle-outline"}
-      color="#1e90ff"
+      name={name}
+      color={color ? color : "#1e90ff"}
       size={25}
       onPress={props.customClick}
     />

@@ -6,7 +6,9 @@ import ESTextField from "./ESTextField";
 
 const ESTextFieldWithLabel = (props) => {
   return (
-    <View style={styles.rowitems}>
+    <View
+      style={props.withMargin ? styles.rowitemsWithMargin : styles.rowitems}
+    >
       <ESLabel {...props} text={props.label} />
       <ESTextField {...props} placeholder={"Enter " + props.label} />
     </View>

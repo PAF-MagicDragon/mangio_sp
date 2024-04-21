@@ -2,21 +2,25 @@ import { StyleSheet } from "react-native";
 
 export const navOptions = {
   headerStyle: {
-    backgroundColor: "#f4511e", //Set Header color
+    backgroundColor: "#008080", //Set Header color
   },
-  headerTintColor: "#fff", //Set Header text color
+  headerTintColor: "#ffffff", //Set Header text color
   headerTitleStyle: {
     fontWeight: "bold", //Set Header text style
   },
 };
 
 const styles = StyleSheet.create({
+  showBorder: {
+    borderColor: "#000000",
+    borderWidth: 0.5,
+  },
   viewMain: { flex: 1 },
   viewSub: {
     flex: 1,
     backgroundColor: "#ffffff",
-    marginLeft: 25,
-    marginRight: 25,
+    marginLeft: 10,
+    marginRight: 10,
   },
   row: {
     flexDirection: "row",
@@ -25,9 +29,12 @@ const styles = StyleSheet.create({
   rowitems: {
     flexGrow: 1,
     flexShrink: 1,
-    flexBasis: "0%",
-    // borderColor: "#1e90ff",
-    // borderWidth: 0.5,
+    flexBasis: 0,
+  },
+  rowitemsWithMargin: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
     marginRight: 10,
   },
   button1: {
@@ -57,29 +64,30 @@ const styles = StyleSheet.create({
   label: {
     color: "#000000",
     fontSize: 14,
-    marginTop: 5,
+    marginTop: 10,
     // marginLeft: 25,
     // marginRight: 25,
+    fontWeight: "bold",
   },
   value: {
     color: "#808080",
     fontSize: 14,
-    marginTop: 5,
+    marginTop: 10,
     // marginLeft: 25,
     // marginRight: 25,
   },
   textField: {
     // marginLeft: 25,
     // marginRight: 25,
-    marginTop: 5,
+    marginTop: 10,
     borderColor: "#1e90ff",
     borderWidth: 0.5,
-    padding: 10,
+    padding: 5,
   },
   radio: {
     // marginLeft: 25,
     // marginRight: 25,
-    marginTop: 5,
+    marginTop: 10,
     marginLeft: -10,
     padding: 10,
     // borderColor: "#1e90ff",
@@ -94,12 +102,34 @@ const styles = StyleSheet.create({
   keyboardAvoid: { flex: 1, justifyContent: "space-between" },
 
   listViewItemSeparator: {
-    height: 0.2,
+    height: 1,
     width: "100%",
     backgroundColor: "#808080",
+    marginTop: 10,
+    marginBottom: 10,
   },
 
-  listViewItem: { backgroundColor: "white", padding: 20 },
+  listViewItem: {
+    backgroundColor: "white",
+    paddingTop: 5,
+    paddingBottom: 5,
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+
+  listViewItem1: {
+    flexGrow: 9,
+    flexShrink: 9,
+    flexBasis: 0,
+  },
+
+  listViewItem2: {
+    flexGrow: 1,
+    flexShrink: 1,
+    flexBasis: 0,
+    alignSelf: "center",
+  },
+
   ///
   // container: {
   //   flexDirection: "column",
