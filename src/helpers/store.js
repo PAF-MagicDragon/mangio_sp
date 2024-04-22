@@ -43,43 +43,6 @@ export class Store {
     });
   };
 
-  @action initializeData = (name, cols, data, cb) => {
-    console.log("INITIALIZE TEMPLATE", name, cols, data);
-    db.transaction(function (tx) {
-      let sql1 = "INSERT INTO " + name + " (" + cols + ") VALUES ";
-      let append = "";
-      let val = [];
-      data.forEach((dataInner) => {
-        if (append.length > 0) {
-          append = append + ",";
-        }
-        append = append + "(";
-        let appendInner = "";
-        dataInner.forEach((t) => {
-          if (appendInner.length > 0) {
-            appendInner = appendInner + ",";
-          }
-          appendInner = appendInner + "?";
-          val.push(t);
-        });
-        append = append + appendInner;
-        append = append + ")";
-      });
-      sql1 = sql1 + append + ";";
-      console.log("INITIALIZE 1", sql1);
-      console.log("INITIALIZE 2", val);
-      tx.executeSql(sql1, val, (tx, results) => {
-        console.log("INITIALIZE 3", results);
-        if (results != null && results.rowsAffected > 0) {
-          console.log("INITIALIZE 4", results.rowsAffected);
-        } else {
-          console.log("INITIALIZE 5", results);
-        }
-        cb != null && cb(results);
-      });
-    });
-  };
-
   @action initializeAllTables = (cb) => {
     this.initializeTable(
       "ES_USER",
@@ -179,7 +142,6 @@ export class Store {
   };
 
   @action mapPrescriptionFromDb = (item) => {
-    console.log("MAP 1.1", item);
     let prescription = {};
     prescription.id = item["ID"];
     prescription.createDate = item["CREATE_DATE"];
@@ -221,7 +183,6 @@ export class Store {
   };
 
   @action getPrescriptions = (doctorId, patientId, cb) => {
-    console.log("GET PRESCRIPTIONS PARAM", doctorId, patientId);
     db.transaction((tx) => {
       tx.executeSql(
         "SELECT * FROM ES_PRESCRIPTION WHERE DOCTOR_ID = ? AND PATIENT_ID = ?",
@@ -297,7 +258,6 @@ export class Store {
   };
 
   @action addEditEsPrescription = (request, cb) => {
-    console.log("ADD PRESCRIPTION 0", request);
     if (request.id != null) {
       db.transaction(function (tx) {
         let val = [request.diagnosis, request.id];
@@ -310,7 +270,6 @@ export class Store {
         );
       });
     } else {
-      console.log("ADD PRESCRIPTION 1", request);
       db.transaction(function (tx) {
         let id = uuid.v4();
         let dateNow = new Date().getTime();
@@ -321,7 +280,6 @@ export class Store {
           request.doctorId,
           request.patientId,
         ];
-        console.log("ADD PRESCRIPTION 2", val);
         tx.executeSql(
           "INSERT INTO ES_PRESCRIPTION (ID,CREATE_DATE,DIAGNOSIS,DOCTOR_ID,PATIENT_ID) VALUES (?,?,?,?,?)",
           val,
@@ -334,7 +292,6 @@ export class Store {
   };
 
   @action deleteRecord = (table, id, cb) => {
-    console.log("DELETE RECORD", table, id);
     db.transaction(function (tx) {
       let val = [id];
       tx.executeSql(
