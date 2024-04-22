@@ -32,7 +32,7 @@ const Profile = ({ navigation }) => {
       alert("Address is required");
       return;
     }
-    store.updateEsUser(request, (results) => {
+    store.addEditEsUser(request, (results) => {
       console.log("Results", results);
       if (results != null && results.rowsAffected > 0) {
         Alert.alert(
@@ -53,13 +53,11 @@ const Profile = ({ navigation }) => {
   };
 
   let onChange = (val, obj, field) => {
-    console.log("FRANC STATE CHANGE BEFORE", request);
     obj[field] = val;
     setRequest((request) => ({
       ...request,
       ...obj,
     }));
-    console.log("FRANC STATE CHANGE AFTER", request);
   };
 
   return (

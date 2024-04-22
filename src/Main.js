@@ -24,6 +24,7 @@ import DoctorDashboard from "./pages/DoctorDashboard";
 import PatientDashboard from "./pages/PatientDashboard";
 import AddPatient from "./pages/AddPatient";
 import ViewPatient from "./pages/ViewPatient";
+import AddPrescription from "./pages/AddPrescription";
 
 import { Text } from "react-native";
 import ESIcon from "./components/ESIcon";
@@ -36,45 +37,19 @@ const Main = () => {
   const navigationRef = useNavigationContainerRef();
 
   initializeScreen = () => {
-    console.log("ASYNC 3");
     let tempPage = "Home";
     let type = store.mainUser.type;
     if (type != null) {
       tempPage = "Dashboard";
-      // if (type == constants.TYPE_MAIN_DOCTOR) {
-      //   tempPage = "DoctorDashboard";
-      // } else if (type == constants.TYPE_MAIN_PATIENT) {
-      //   tempPage = "PatientDashboard";
-      // }
     }
     setInitialPage(tempPage);
   };
 
   useEffect(() => {
-    //FOR RECODE USE CB FOR ASYNC
     store.initializeAllTables(() =>
       store.initializeMainUser(() => initializeScreen())
     );
   }, []);
-
-  // updateState = () => {
-  //   const { store } = { ...this.props };
-  //   this.setState({ myState: "The state is updated" });
-  //   store.var1 = "FRANC CHANGES 2";
-  // };
-  // const { store } = { ...this.props };
-  // return (
-  //   <View style={styles.container}>
-  //     <Text onPress={this.updateState}>{this.state.myState}</Text>
-  //     <View style={styles.blackbox} />
-  //     <Text style={styles.title}>{strings.LABEL1}</Text>
-  //     <View style={styles.redbox} />
-  //     <Text style={styles.title}>{temp1}</Text>
-  //     <View style={styles.bluebox} />
-  //     <Text style={styles.title}>{store.var1}</Text>
-  //     <Text style={styles.description}>{constants.CONSTANT1}</Text>
-  //   </View>
-  // );
 
   return (
     initialPage && (
@@ -141,6 +116,14 @@ const Main = () => {
             component={ViewPatient}
             options={{
               title: "View Patient",
+              ...navOptions,
+            }}
+          />
+          <Stack.Screen
+            name="AddPrescription"
+            component={AddPrescription}
+            options={{
+              title: "Add Prescription",
               ...navOptions,
             }}
           />

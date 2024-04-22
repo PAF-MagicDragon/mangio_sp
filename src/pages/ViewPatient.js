@@ -16,14 +16,58 @@ import ESValue from "../components/ESValue";
 import ESListView from "../components/ESListView";
 import * as constants from "../helpers/constants";
 import ESRadioWithLabel from "../components/ESRadioWithLabel";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 
 const ViewPatient = ({ navigation, route }) => {
   let [prescriptions, setPrescriptions] = useState(null);
   const store = useContext(ESContext);
   const patient = route.params;
-  useEffect(() => {
-    store.getPrescriptions((list) => setPrescriptions(list));
-  }, []);
+  const isFocused = useIsFocused();
+
+  let refreshList = () => {
+    store.getPrescriptions(store.mainUser.id, patient.id, (list) =>
+      setPrescriptions(list)
+    );
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      refreshList();
+      return () => {
+        // Do something when the screen is unfocused
+        // Useful for cleanup functions
+      };
+    }, [])
+  );
+
+  // useEffect(() => {
+  //   refreshList();
+  // }, []);
+
+  let addPrescription = (item) => {
+    navigation.navigate("AddPrescription", item);
+  };
+
+  let deletePrescription = (item) => {
+    store.deletePrescription(item.id, (results) => {
+      console.log("Results", results);
+      if (results != null && results.rowsAffected > 0) {
+        Alert.alert(
+          "Success",
+          "Prescription Deleted",
+          [
+            {
+              text: "Ok",
+              onPress: () => {
+                refreshList();
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      } else alert("Prescription Delete Failed");
+    });
+  };
 
   return (
     <SafeAreaView style={styles.viewMain}>
@@ -38,19 +82,22 @@ const ViewPatient = ({ navigation, route }) => {
           header="Prescriptions"
           list={prescriptions}
           customPanel={(item) => {
+            let dateString = new Date(item.createDate).toLocaleString("en-GB", {
+              hour12: false,
+            });
             return (
               <View>
                 <Text>Id: {item.id}</Text>
-                <Text>Name: {item.name}</Text>
-                <Text>Address: {item.address}</Text>
-                <Text>Contact: {item.contactNo}</Text>
+                <Text>Date: {item.createDate}</Text>
+                <Text>Date 2: {dateString}</Text>
+                <Text>Diagnosis: {item.diagnosis}</Text>
               </View>
             );
           }}
-          customViewClick={(item) => alert("VIEW" + item)}
-          customAddClick={() => alert("ADD")}
+          customViewClick={(item) => alert("VIEW" + item.id)}
+          customAddClick={() => addPrescription(patient)}
           customEditClick={(item) => alert("EDIT" + item.id)}
-          customDeleteClick={(item) => alert("DELETE" + item.id)}
+          customDeleteClick={(item) => deletePrescription(item)}
           customActionClick={(item) => alert("PRINT" + item.id)}
           customActionIcon="print-outline"
         />

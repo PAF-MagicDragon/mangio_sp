@@ -3,6 +3,7 @@ import { FlatList, View, TouchableOpacity, Text } from "react-native";
 import styles from "../helpers/styles";
 import ESIcon from "./ESIcon";
 import ESLabel from "./ESLabel";
+import ESValue from "./ESValue";
 
 let listViewItemSeparator = () => {
   return <View style={styles.listViewItemSeparator} />;
@@ -93,7 +94,7 @@ const ESListView = (props) => {
         />
       )}
       {(list == null || list.length == 0) && (
-        <ESLabel text="No Records Found" />
+        <ESValue text="No Records Found" />
       )}
     </View>
   );

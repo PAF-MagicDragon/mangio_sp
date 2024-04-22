@@ -20,8 +20,12 @@ const DoctorDashboard = ({ navigation }) => {
   const store = useContext(ESContext);
   let user = store.mainUser;
 
-  useEffect(() => {
+  let refreshList = () => {
     store.getPatients((list) => setPatients(list));
+  };
+
+  useEffect(() => {
+    refreshList();
   }, []);
 
   let addPatient = () => {
@@ -30,6 +34,27 @@ const DoctorDashboard = ({ navigation }) => {
 
   let viewPatient = (item) => {
     navigation.navigate("ViewPatient", item);
+  };
+
+  let deletePatient = (item) => {
+    store.deletePatient(item.id, (results) => {
+      console.log("Results", results);
+      if (results != null && results.rowsAffected > 0) {
+        Alert.alert(
+          "Success",
+          "Patient Deleted",
+          [
+            {
+              text: "Ok",
+              onPress: () => {
+                refreshList();
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      } else alert("Patient Delete Failed");
+    });
   };
 
   return (
@@ -57,7 +82,7 @@ const DoctorDashboard = ({ navigation }) => {
           customViewClick={(item) => viewPatient(item)}
           customAddClick={addPatient}
           customEditClick={(item) => alert("EDIT" + item.id)}
-          customDeleteClick={(item) => alert("DELETE" + item.id)}
+          customDeleteClick={(item) => deletePatient(item)}
         />
       </View>
     </SafeAreaView>

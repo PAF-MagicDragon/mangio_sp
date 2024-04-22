@@ -26,23 +26,56 @@ export class Store {
   };
 
   @action initializeTable = (name, cols, cb) => {
-    db.transaction(function (txn) {
+    db.transaction(function (tx) {
       let sql1 =
         "SELECT name FROM sqlite_master WHERE type='table' AND name='" +
         name +
         "'";
-      console.log("sql1:", sql1);
-      txn.executeSql(sql1, [], function (tx, res) {
-        console.log("res1:", res.rows.length);
+      tx.executeSql(sql1, [], function (tx, res) {
         if (res.rows.length == 0) {
           let sql2 = "DROP TABLE IF EXISTS " + name + "";
-          console.log("sql2:", sql2);
-          txn.executeSql(sql2, []);
+          tx.executeSql(sql2, []);
           let sql3 = "CREATE TABLE IF NOT EXISTS " + name + "(" + cols + ")";
-          console.log("sql3:", sql3);
-          txn.executeSql(sql3, []);
+          tx.executeSql(sql3, []);
         }
         cb && cb();
+      });
+    });
+  };
+
+  @action initializeData = (name, cols, data, cb) => {
+    console.log("INITIALIZE TEMPLATE", name, cols, data);
+    db.transaction(function (tx) {
+      let sql1 = "INSERT INTO " + name + " (" + cols + ") VALUES ";
+      let append = "";
+      let val = [];
+      data.forEach((dataInner) => {
+        if (append.length > 0) {
+          append = append + ",";
+        }
+        append = append + "(";
+        let appendInner = "";
+        dataInner.forEach((t) => {
+          if (appendInner.length > 0) {
+            appendInner = appendInner + ",";
+          }
+          appendInner = appendInner + "?";
+          val.push(t);
+        });
+        append = append + appendInner;
+        append = append + ")";
+      });
+      sql1 = sql1 + append + ";";
+      console.log("INITIALIZE 1", sql1);
+      console.log("INITIALIZE 2", val);
+      tx.executeSql(sql1, val, (tx, results) => {
+        console.log("INITIALIZE 3", results);
+        if (results != null && results.rowsAffected > 0) {
+          console.log("INITIALIZE 4", results.rowsAffected);
+        } else {
+          console.log("INITIALIZE 5", results);
+        }
+        cb != null && cb(results);
       });
     });
   };
@@ -53,11 +86,61 @@ export class Store {
       "ID VARCHAR(50) PRIMARY KEY, TYPE INT(1), NAME VARCHAR(100), ADDRESS VARCHAR(250), CONTACT_NUMBER VARCHAR(50), EMAIL VARCHAR(250), CLINIC_HOSPITAL VARCHAR(250), SPECIALIZATION VARCHAR(100), SIGNATURE BLOB, LICENSE_NO VARCHAR(50), PRT_NO VARCHAR(50), AGE VARCHAR(3), GENDER INT(1), HEIGHT VARCHAR(8), WEIGHT VARCHAR(8)",
       cb
     );
+    this.initializeTable(
+      "ES_PRESCRIPTION",
+      "ID VARCHAR(50) PRIMARY KEY, CREATE_DATE INT(15), DIAGNOSIS VARCHAR(250), DOCTOR_ID VARCHAR(50), PATIENT_ID VARCHAR(50)"
+    );
+    this.initializeTable(
+      "ES_TEMPLATE",
+      "ID VARCHAR(50) PRIMARY KEY, BRAND VARCHAR(100), GENERIC VARCHAR(100), FORMULATION VARCHAR(100), IS_DEFAULT INT(1)"
+    );
+    this.initializeDefaultData(
+      "ES_TEMPLATE",
+      "ID, BRAND, GENERIC, FORMULATION, IS_DEFAULT",
+      constants.templates
+    );
+  };
+
+  @action initializeDefaultData = (name, cols, data, cb) => {
+    db.transaction(function (tx) {
+      let sql1 = "SELECT * FROM " + name + " WHERE IS_DEFAULT = ?";
+      tx.executeSql(sql1, [1], function (tx, res) {
+        let count = res.rows.length;
+        console.log("SELECT TEMPLATE COUNT", count, res, data.length);
+        if (count == 0 || count != data.length) {
+          let sql2 = "DELETE FROM " + name + " WHERE IS_DEFAULT = ?";
+          tx.executeSql(sql2, [1]);
+          let sql3 = "INSERT INTO " + name + " (" + cols + ") VALUES ";
+          let append = "";
+          let val = [];
+          data.forEach((dataInner) => {
+            if (append.length > 0) {
+              append = append + ",";
+            }
+            append = append + "(";
+            let appendInner = "";
+            dataInner.forEach((t) => {
+              if (appendInner.length > 0) {
+                appendInner = appendInner + ",";
+              }
+              appendInner = appendInner + "?";
+              val.push(t);
+            });
+            append = append + appendInner;
+            append = append + ")";
+          });
+          sql3 = sql3 + append + ";";
+          tx.executeSql(sql3, val);
+        } else {
+          console.log("NO INSERT TEMPLATE");
+        }
+        cb && cb();
+      });
+    });
   };
 
   @action mapUserFromDb = (item) => {
     let main = this.mainUser;
-    console.log("MAP 1", main, item);
     main.id = item["ID"];
     main.type = item["TYPE"];
     main.name = item["NAME"];
@@ -76,9 +159,7 @@ export class Store {
   };
 
   @action mapPatientFromDb = (item) => {
-    console.log("MAP 1.1", item);
     let patient = {};
-    console.log("MAP 1.2", item);
     patient.id = item["ID"];
     // patient.type = item["TYPE"];
     patient.name = item["NAME"];
@@ -97,13 +178,23 @@ export class Store {
     return patient;
   };
 
+  @action mapPrescriptionFromDb = (item) => {
+    console.log("MAP 1.1", item);
+    let prescription = {};
+    prescription.id = item["ID"];
+    prescription.createDate = item["CREATE_DATE"];
+    prescription.diagnosis = item["DIAGNOSIS"];
+    prescription.doctorId = item["DOCTOR_ID"];
+    prescription.patientId = item["PATIENT_ID"];
+    return prescription;
+  };
+
   @action initializeMainUser = (cb) => {
     db.transaction((tx) => {
       tx.executeSql(
         "SELECT * FROM ES_USER WHERE TYPE = ? or TYPE = ?",
         [constants.TYPE_MAIN_DOCTOR, constants.TYPE_MAIN_PATIENT],
         (tx, results) => {
-          console.log("FRANC RESULTS 1", results.rows);
           if (results.rows.length > 0) {
             this.mapUserFromDb(results.rows.item(0));
           }
@@ -119,11 +210,8 @@ export class Store {
         "SELECT * FROM ES_USER WHERE TYPE = ?",
         [constants.TYPE_SUB_PATIENT],
         (tx, results) => {
-          console.log("FRANC PATIENTS 1", results.rows);
           var temp = [];
-          console.log("FRANC PATIENTS 2", results.rows);
           for (let i = 0; i < results.rows.length; ++i) {
-            console.log("FRANC PATIENTS ITEM", i, results.rows);
             temp.push(this.mapPatientFromDb(results.rows.item(i)));
           }
           cb && cb(temp);
@@ -132,18 +220,16 @@ export class Store {
     });
   };
 
-  @action getPrescriptions = (cb) => {
+  @action getPrescriptions = (doctorId, patientId, cb) => {
+    console.log("GET PRESCRIPTIONS PARAM", doctorId, patientId);
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT * FROM ES_USER WHERE TYPE = ?",
-        [constants.TYPE_SUB_PATIENT],
+        "SELECT * FROM ES_PRESCRIPTION WHERE DOCTOR_ID = ? AND PATIENT_ID = ?",
+        [doctorId, patientId],
         (tx, results) => {
-          console.log("FRANC PATIENTS 1", results.rows);
           var temp = [];
-          console.log("FRANC PATIENTS 2", results.rows);
           for (let i = 0; i < results.rows.length; ++i) {
-            console.log("FRANC PATIENTS ITEM", i, results.rows);
-            temp.push(this.mapPatientFromDb(results.rows.item(i)));
+            temp.push(this.mapPrescriptionFromDb(results.rows.item(i)));
           }
           cb && cb(temp);
         }
@@ -151,13 +237,9 @@ export class Store {
     });
   };
 
-  @action updateEsUser = (request, cb) => {
-    console.log("FRANC UPDATE PROFILE", request);
+  @action addEditEsUser = (request, cb) => {
     if (request.id != null) {
-      //TODO update
-      console.log("FRANC UPDATE PROFILE 1");
       db.transaction(function (tx) {
-        console.log("FRANC UPDATE PROFILE 1.1");
         let val = [
           request.type,
           request.name,
@@ -175,22 +257,17 @@ export class Store {
           request.weight,
           request.id,
         ];
-        console.log("FRANC UPDATE PROFILE 1.2", val);
         tx.executeSql(
           "UPDATE ES_USER SET (TYPE,NAME,ADDRESS,CONTACT_NUMBER,EMAIL,CLINIC_HOSPITAL,SPECIALIZATION,SIGNATURE,LICENSE_NO,PRT_NO,AGE,GENDER,HEIGHT,WEIGHT) = (?,?,?,?,?,?,?,?,?,?,?,?,?,?) WHERE ID = ? ",
           val,
           (tx, results) => {
-            console.log("FRANC UPDATE PROFILE 1.3", results, cb);
             cb != null && cb(results);
           }
         );
       });
     } else {
-      //TODO insert
-      console.log("FRANC UPDATE PROFILE 2");
       db.transaction(function (tx) {
         let id = uuid.v4();
-        console.log("FRANC UPDATE PROFILE 2.1");
         let val = [
           id,
           request.type,
@@ -208,17 +285,74 @@ export class Store {
           request.height,
           request.weight,
         ];
-        console.log("FRANC UPDATE PROFILE 2.2", val);
         tx.executeSql(
           "INSERT INTO ES_USER (ID,TYPE,NAME,ADDRESS,CONTACT_NUMBER,EMAIL,CLINIC_HOSPITAL,SPECIALIZATION,SIGNATURE,LICENSE_NO,PRT_NO,AGE,GENDER,HEIGHT,WEIGHT) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
           val,
           (tx, results) => {
-            console.log("FRANC UPDATE PROFILE 2.3", results, cb);
             cb != null && cb(results);
           }
         );
       });
     }
+  };
+
+  @action addEditEsPrescription = (request, cb) => {
+    console.log("ADD PRESCRIPTION 0", request);
+    if (request.id != null) {
+      db.transaction(function (tx) {
+        let val = [request.diagnosis, request.id];
+        tx.executeSql(
+          "UPDATE ES_PRESCRIPTION SET (PRESCRIPTION) = (?) WHERE ID = ? ",
+          val,
+          (tx, results) => {
+            cb != null && cb(results);
+          }
+        );
+      });
+    } else {
+      console.log("ADD PRESCRIPTION 1", request);
+      db.transaction(function (tx) {
+        let id = uuid.v4();
+        let dateNow = new Date().getTime();
+        let val = [
+          id,
+          dateNow,
+          request.diagnosis,
+          request.doctorId,
+          request.patientId,
+        ];
+        console.log("ADD PRESCRIPTION 2", val);
+        tx.executeSql(
+          "INSERT INTO ES_PRESCRIPTION (ID,CREATE_DATE,DIAGNOSIS,DOCTOR_ID,PATIENT_ID) VALUES (?,?,?,?,?)",
+          val,
+          (tx, results) => {
+            cb != null && cb(results);
+          }
+        );
+      });
+    }
+  };
+
+  @action deleteRecord = (table, id, cb) => {
+    console.log("DELETE RECORD", table, id);
+    db.transaction(function (tx) {
+      let val = [id];
+      tx.executeSql(
+        "DELETE FROM " + table + " WHERE ID = ? ",
+        val,
+        (tx, results) => {
+          cb != null && cb(results);
+        }
+      );
+    });
+  };
+
+  @action deletePatient = (id, cb) => {
+    this.deleteRecord("ES_USER", id, cb);
+  };
+
+  @action deletePrescription = (id, cb) => {
+    this.deleteRecord("ES_PRESCRIPTION", id, cb);
   };
 
   //   @computed get filteredLists() {

@@ -25,7 +25,7 @@ const AddPatient = ({ navigation }) => {
     });
   }, []);
 
-  let updatePatient = () => {
+  let addEditPatient = () => {
     if (request.name == null || request.name.length == 0) {
       alert("Name is required");
       return;
@@ -34,7 +34,7 @@ const AddPatient = ({ navigation }) => {
       alert("Address is required");
       return;
     }
-    store.updateEsUser(request, (results) => {
+    store.addEditEsUser(request, (results) => {
       console.log("Results", results);
       if (results != null && results.rowsAffected > 0) {
         Alert.alert(
@@ -44,8 +44,7 @@ const AddPatient = ({ navigation }) => {
             {
               text: "Ok",
               onPress: () => {
-                //navigation.replace("Dashboard");
-                navigation.popToTop();
+                navigation.pop();
               },
             },
           ],
@@ -56,13 +55,11 @@ const AddPatient = ({ navigation }) => {
   };
 
   let onChange = (val, obj, field) => {
-    console.log("FRANC STATE CHANGE BEFORE", request);
     obj[field] = val;
     setRequest((request) => ({
       ...request,
       ...obj,
     }));
-    console.log("FRANC STATE CHANGE AFTER", request);
   };
 
   return (
@@ -141,7 +138,7 @@ const AddPatient = ({ navigation }) => {
                   />
                 </View>
               </View>
-              <ESButton title="Submit" customClick={updatePatient} />
+              <ESButton title="Submit" customClick={addEditPatient} />
             </KeyboardAvoidingView>
           </ScrollView>
         </View>
