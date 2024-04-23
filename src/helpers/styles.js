@@ -31,10 +31,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexBasis: 0,
   },
-  rowitemsWithMargin: {
-    flexGrow: 1,
-    flexShrink: 1,
-    flexBasis: 0,
+  withMargin: {
     marginRight: 10,
   },
   button1: {
@@ -79,9 +76,11 @@ const styles = StyleSheet.create({
   textField: {
     // marginLeft: 25,
     // marginRight: 25,
+    // height: 40,
     marginTop: 10,
     borderColor: "#1e90ff",
     borderWidth: 0.5,
+    borderRadius: 5,
     padding: 5,
   },
   radio: {
@@ -128,6 +127,33 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexBasis: 0,
     alignSelf: "center",
+  },
+
+  dropdown: {
+    backgroundColor: "white",
+    marginTop: 10,
+    height: 50,
+    borderColor: "#1e90ff",
+    borderWidth: 0.5,
+    borderRadius: 5,
+    padding: 10,
+  },
+  placeholderStyle: {
+    fontSize: 14,
+    color: "#1e90ff",
+  },
+  selectedTextStyle: {
+    fontSize: 14,
+    color: "#1e90ff",
+  },
+  itemTextStyle: {
+    fontSize: 14,
+    color: "#1e90ff",
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 14,
+    color: "#1e90ff",
   },
 
   ///

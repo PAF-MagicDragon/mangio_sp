@@ -12,10 +12,12 @@ import ESButton from "../components/ESButton";
 import styles from "../helpers/styles";
 import ESContext from "../ESContext";
 import * as constants from "../helpers/constants";
-import ESRadioWithLabel from "../components/ESRadioWithLabel";
+import ESValueWithLabel from "../components/ESValueWithLabel";
+import ESListView from "../components/ESListView";
 
 const AddPrescription = ({ navigation, route }) => {
   let [request, setRequest] = useState(null);
+  let [drugs, setDrugs] = useState(null);
   const store = useContext(ESContext);
   const patient = route.params;
 
@@ -25,6 +27,14 @@ const AddPrescription = ({ navigation, route }) => {
       patientId: patient.id,
     });
   }, []);
+
+  let addDrug = (item) => {
+    navigation.navigate("AddDrug", item);
+  };
+
+  let deleteDrug = (item) => {
+    alert("TODO Delete Drug");
+  };
 
   let addEditPrescription = () => {
     if (request.diagnosis == null || request.diagnosis.length == 0) {
@@ -59,6 +69,10 @@ const AddPrescription = ({ navigation, route }) => {
     }));
   };
 
+  let currDate = new Date().toLocaleString("en-GB", {
+    hour12: false,
+  });
+
   return (
     request && (
       <SafeAreaView style={styles.viewMain}>
@@ -68,6 +82,8 @@ const AddPrescription = ({ navigation, route }) => {
               behavior="padding"
               style={styles.keyboardAvoid}
             >
+              <ESValueWithLabel label="Patient Name" value={patient.name} />
+              <ESValueWithLabel label="Date" value={currDate} />
               <ESTextFieldWithLabel
                 label="Diagnosis"
                 onChangeText={(val) => onChange(val, request, "diagnosis")}
@@ -76,6 +92,21 @@ const AddPrescription = ({ navigation, route }) => {
                 numberOfLines={3}
                 multiline={true}
                 style={{ textAlignVertical: "top" }}
+              />
+              <ESListView
+                header="Drugs"
+                list={drugs}
+                customPanel={(item) => {
+                  return (
+                    <View>
+                      <Text>Id: {item.id}</Text>
+                    </View>
+                  );
+                }}
+                customViewClick={(item) => alert("VIEW" + item.id)}
+                customAddClick={() => addDrug(request)}
+                customEditClick={(item) => alert("EDIT" + item.id)}
+                customDeleteClick={(item) => deleteDrug(item)}
               />
               <ESButton title="Submit" customClick={addEditPrescription} />
             </KeyboardAvoidingView>

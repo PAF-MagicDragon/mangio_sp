@@ -2,15 +2,15 @@ import React from "react";
 import { View, TextInput } from "react-native";
 import styles from "../helpers/styles";
 import ESLabel from "./ESLabel";
-import ESTextField from "./ESTextField";
+import ESDropDown from "./ESDropDown";
 
-const ESTextFieldWithLabel = (props) => {
+const ESDropDownWithLabel = (props) => {
   return (
     <View style={[styles.rowitems, props.withMargin && styles.withMargin]}>
       <ESLabel {...props} text={props.label} />
-      <ESTextField {...props} placeholder={"Enter " + props.label} />
+      <ESDropDown {...props} />
     </View>
   );
 };
 
-export default ESTextFieldWithLabel;
+export default ESDropDownWithLabel;

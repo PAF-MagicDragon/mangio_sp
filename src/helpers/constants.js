@@ -7,9 +7,11 @@ export const GENDER_MALE = 1;
 export const GENDER_FEMALE = 0;
 
 export const templates = [
-  ["1", "A1", "B1", "C1", 1],
-  ["2", "A2", "B2", "C2", 1],
+  ["1", "Biogesic", "B1", "tablet", 1],
+  ["2", "Bonamine", "B2", "syrup", 1],
   ["3", "A3", "B3", "C3", 1],
   ["4", "A4", "B4", "C4", 1],
   ["5", "A5", "B5", "C5", 1],
+  ["6", "A6", "B6", "C6", 1],
+  ["7", "A7", "B7", "C7", 1],
 ];

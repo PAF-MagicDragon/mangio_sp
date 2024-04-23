@@ -72,28 +72,32 @@ export class Store {
         console.log("SELECT TEMPLATE COUNT", count, res, data.length);
         if (count == 0 || count != data.length) {
           let sql2 = "DELETE FROM " + name + " WHERE IS_DEFAULT = ?";
+          console.log("DELETE TEMPLATE", sql2);
           tx.executeSql(sql2, [1]);
-          let sql3 = "INSERT INTO " + name + " (" + cols + ") VALUES ";
-          let append = "";
-          let val = [];
-          data.forEach((dataInner) => {
-            if (append.length > 0) {
-              append = append + ",";
-            }
-            append = append + "(";
-            let appendInner = "";
-            dataInner.forEach((t) => {
-              if (appendInner.length > 0) {
-                appendInner = appendInner + ",";
+          if (data.length > 0) {
+            let sql3 = "INSERT INTO " + name + " (" + cols + ") VALUES ";
+            let append = "";
+            let val = [];
+            data.forEach((dataInner) => {
+              if (append.length > 0) {
+                append = append + ",";
               }
-              appendInner = appendInner + "?";
-              val.push(t);
+              append = append + "(";
+              let appendInner = "";
+              dataInner.forEach((t) => {
+                if (appendInner.length > 0) {
+                  appendInner = appendInner + ",";
+                }
+                appendInner = appendInner + "?";
+                val.push(t);
+              });
+              append = append + appendInner;
+              append = append + ")";
             });
-            append = append + appendInner;
-            append = append + ")";
-          });
-          sql3 = sql3 + append + ";";
-          tx.executeSql(sql3, val);
+            sql3 = sql3 + append + ";";
+            console.log("INSERT TEMPLATE", sql3, val);
+            tx.executeSql(sql3, val);
+          }
         } else {
           console.log("NO INSERT TEMPLATE");
         }
@@ -151,6 +155,16 @@ export class Store {
     return prescription;
   };
 
+  @action mapTemplateFromDb = (item) => {
+    console.log("TEMPLATE MAP", item);
+    let template = {};
+    template.id = item["ID"];
+    template.brand = item["BRAND"];
+    template.generic = item["GENERIC"];
+    template.formulation = item["FORMULATION"];
+    return template;
+  };
+
   @action initializeMainUser = (cb) => {
     db.transaction((tx) => {
       tx.executeSql(
@@ -191,6 +205,23 @@ export class Store {
           var temp = [];
           for (let i = 0; i < results.rows.length; ++i) {
             temp.push(this.mapPrescriptionFromDb(results.rows.item(i)));
+          }
+          cb && cb(temp);
+        }
+      );
+    });
+  };
+
+  @action getTemplates = (cb) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM ES_TEMPLATE ORDER BY BRAND, GENERIC",
+        [],
+        (tx, results) => {
+          console.log("TEMPLATE RESULTS");
+          var temp = [];
+          for (let i = 0; i < results.rows.length; ++i) {
+            temp.push(this.mapTemplateFromDb(results.rows.item(i)));
           }
           cb && cb(temp);
         }
@@ -289,6 +320,13 @@ export class Store {
         );
       });
     }
+  };
+
+  @action addEditEsDrug = (request, cb) => {
+    if (request.id != null) {
+    } else {
+    }
+    return null;
   };
 
   @action deleteRecord = (table, id, cb) => {
