@@ -15,7 +15,9 @@ const styles = StyleSheet.create({
     borderColor: "#000000",
     borderWidth: 0.5,
   },
-  viewMain: { flex: 1 },
+  viewMain: {
+    flex: 1,
+  },
   viewSub: {
     flex: 1,
     backgroundColor: "#ffffff",

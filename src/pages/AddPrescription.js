@@ -28,9 +28,9 @@ const AddPrescription = ({ navigation, route }) => {
   useFocusEffect(
     React.useCallback(() => {
       // Do something when the screen is focused
-      console.log("DRUG LIST ON FOCUS", drugList);
+      console.log("DRUG LIST ON FOCUS", store.tempDrugList);
       setDrugList([...store.tempDrugList]);
-      console.log("DRUG LIST ON FOCUS 2", drugList);
+      console.log("DRUG LIST ON FOCUS 2", store.tempDrugList);
       return () => {
         // Do something when the screen is unfocused
         // Useful for cleanup functions
@@ -39,23 +39,26 @@ const AddPrescription = ({ navigation, route }) => {
   );
 
   useEffect(() => {
+    console.log("DRUG LIST ON USE EFFECT", store.tempDrugList);
     setRequest({
       doctorId: store.mainUser.id,
       patientId: patient.id,
     });
+    store.tempDrugList = [];
+    setDrugList([...store.tempDrugList]);
   }, []);
 
   let addDrug = () => {
-    console.log("DRUG LIST ON NAV", drugList);
+    console.log("DRUG LIST ON NAV", store.tempDrugList);
     navigation.navigate("AddDrug");
   };
 
   let deleteDrug = (item, index) => {
     alert("TODO Delete Drug:" + index);
-    console.log("DRUG LIST ON DEL 1", drugList);
+    console.log("DRUG LIST ON DEL 1", store.tempDrugList);
     store.tempDrugList.splice(index, 1);
     setDrugList([...store.tempDrugList]);
-    console.log("DRUG LIST ON DEL 2", drugList);
+    console.log("DRUG LIST ON DEL 2", store.tempDrugList);
   };
 
   let addEditPrescription = () => {
