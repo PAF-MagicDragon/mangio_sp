@@ -76,8 +76,6 @@ const ViewPatient = ({ navigation, route }) => {
           <KeyboardAvoidingView behavior="padding" style={styles.keyboardAvoid}> */}
         <ESLabel text="SELECTED PATIENT:" />
         <ESValue text={JSON.stringify(patient)} />
-        {/* </KeyboardAvoidingView>
-        </ScrollView> */}
         <ESListView
           header="Prescriptions"
           list={prescriptions}
@@ -101,6 +99,8 @@ const ViewPatient = ({ navigation, route }) => {
           customActionClick={(item) => alert("PRINT" + item.id)}
           customActionIcon="print-outline"
         />
+        {/* </KeyboardAvoidingView>
+        </ScrollView> */}
       </View>
     </SafeAreaView>
   );

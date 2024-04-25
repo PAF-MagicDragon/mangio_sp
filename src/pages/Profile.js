@@ -99,6 +99,7 @@ const Profile = ({ navigation }) => {
                   maxLength={50}
                   value={request.contactNo}
                   keyboardType="number-pad"
+                  isRowItem
                   withMargin
                 />
                 <ESTextFieldWithLabel
@@ -107,6 +108,7 @@ const Profile = ({ navigation }) => {
                   maxLength={250}
                   value={request.email}
                   keyboardType="email-address"
+                  isRowItem
                 />
               </View>
               {request.type == constants.TYPE_MAIN_DOCTOR && (
@@ -136,6 +138,7 @@ const Profile = ({ navigation }) => {
                       }
                       maxLength={50}
                       value={request.licenseNo}
+                      isRowItem
                       withMargin
                     />
                     <ESTextFieldWithLabel
@@ -143,6 +146,7 @@ const Profile = ({ navigation }) => {
                       onChangeText={(val) => onChange(val, request, "prtNo")}
                       maxLength={50}
                       value={request.prtNo}
+                      isRowItem
                     />
                   </View>
                 </View>
@@ -158,6 +162,7 @@ const Profile = ({ navigation }) => {
                         { label: "Female", value: constants.GENDER_FEMALE },
                       ]}
                       onChange={(val) => onChange(val, request, "gender")}
+                      isRowItem
                     />
                     <ESTextFieldWithLabel
                       label="Age"
@@ -165,6 +170,7 @@ const Profile = ({ navigation }) => {
                       maxLength={3}
                       value={request.age}
                       keyboardType="number-pad"
+                      isRowItem
                     />
                   </View>
                   <View style={styles.row}>
@@ -174,6 +180,7 @@ const Profile = ({ navigation }) => {
                       maxLength={8}
                       value={request.height}
                       keyboardType="decimal-pad"
+                      isRowItem
                     />
                     <ESTextFieldWithLabel
                       label="Weight"
@@ -181,6 +188,7 @@ const Profile = ({ navigation }) => {
                       maxLength={8}
                       value={request.weight}
                       keyboardType="decimal-pad"
+                      isRowItem
                     />
                   </View>
                 </View>

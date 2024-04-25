@@ -93,6 +93,8 @@ const AddPatient = ({ navigation }) => {
                   maxLength={50}
                   value={request.contactNo}
                   keyboardType="number-pad"
+                  isRowItem
+                  withMargin
                 />
                 <ESTextFieldWithLabel
                   label="Email"
@@ -100,6 +102,7 @@ const AddPatient = ({ navigation }) => {
                   maxLength={250}
                   value={request.email}
                   keyboardType="email-address"
+                  isRowItem
                 />
               </View>
               <View>
@@ -112,6 +115,8 @@ const AddPatient = ({ navigation }) => {
                       { label: "Female", value: constants.GENDER_FEMALE },
                     ]}
                     onChange={(val) => onChange(val, request, "gender")}
+                    isRowItem
+                    withMargin
                   />
                   <ESTextFieldWithLabel
                     label="Age"
@@ -119,6 +124,7 @@ const AddPatient = ({ navigation }) => {
                     maxLength={3}
                     value={request.age}
                     keyboardType="number-pad"
+                    isRowItem
                   />
                 </View>
                 <View style={styles.row}>
@@ -128,6 +134,8 @@ const AddPatient = ({ navigation }) => {
                     maxLength={8}
                     value={request.height}
                     keyboardType="decimal-pad"
+                    isRowItem
+                    withMargin
                   />
                   <ESTextFieldWithLabel
                     label="Weight"
@@ -135,6 +143,7 @@ const AddPatient = ({ navigation }) => {
                     maxLength={8}
                     value={request.weight}
                     keyboardType="decimal-pad"
+                    isRowItem
                   />
                 </View>
               </View>

@@ -14,12 +14,29 @@ import ESContext from "../ESContext";
 import * as constants from "../helpers/constants";
 import ESValueWithLabel from "../components/ESValueWithLabel";
 import ESListView from "../components/ESListView";
+import ESLabel from "../components/ESLabel";
+import ESValue from "../components/ESValue";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 
 const AddPrescription = ({ navigation, route }) => {
   let [request, setRequest] = useState(null);
-  let [drugs, setDrugs] = useState(null);
+  let [drugList, setDrugList] = useState([]);
   const store = useContext(ESContext);
+  const isFocused = useIsFocused();
   const patient = route.params;
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Do something when the screen is focused
+      console.log("DRUG LIST ON FOCUS", drugList);
+      setDrugList([...store.tempDrugList]);
+      console.log("DRUG LIST ON FOCUS 2", drugList);
+      return () => {
+        // Do something when the screen is unfocused
+        // Useful for cleanup functions
+      };
+    }, [])
+  );
 
   useEffect(() => {
     setRequest({
@@ -28,12 +45,17 @@ const AddPrescription = ({ navigation, route }) => {
     });
   }, []);
 
-  let addDrug = (item) => {
-    navigation.navigate("AddDrug", item);
+  let addDrug = () => {
+    console.log("DRUG LIST ON NAV", drugList);
+    navigation.navigate("AddDrug");
   };
 
-  let deleteDrug = (item) => {
-    alert("TODO Delete Drug");
+  let deleteDrug = (item, index) => {
+    alert("TODO Delete Drug:" + index);
+    console.log("DRUG LIST ON DEL 1", drugList);
+    store.tempDrugList.splice(index, 1);
+    setDrugList([...store.tempDrugList]);
+    console.log("DRUG LIST ON DEL 2", drugList);
   };
 
   let addEditPrescription = () => {
@@ -74,43 +96,52 @@ const AddPrescription = ({ navigation, route }) => {
   });
 
   return (
-    request && (
+    request &&
+    isFocused && (
       <SafeAreaView style={styles.viewMain}>
         <View style={styles.viewSub}>
-          <ScrollView keyboardShouldPersistTaps="handled">
+          {/* <ScrollView keyboardShouldPersistTaps="handled">
             <KeyboardAvoidingView
               behavior="padding"
               style={styles.keyboardAvoid}
-            >
-              <ESValueWithLabel label="Patient Name" value={patient.name} />
-              <ESValueWithLabel label="Date" value={currDate} />
-              <ESTextFieldWithLabel
-                label="Diagnosis"
-                onChangeText={(val) => onChange(val, request, "diagnosis")}
-                maxLength={250}
-                value={request.diagnosis}
-                numberOfLines={3}
-                multiline={true}
-                style={{ textAlignVertical: "top" }}
-              />
-              <ESListView
-                header="Drugs"
-                list={drugs}
-                customPanel={(item) => {
-                  return (
-                    <View>
-                      <Text>Id: {item.id}</Text>
-                    </View>
-                  );
-                }}
-                customViewClick={(item) => alert("VIEW" + item.id)}
-                customAddClick={() => addDrug(request)}
-                customEditClick={(item) => alert("EDIT" + item.id)}
-                customDeleteClick={(item) => deleteDrug(item)}
-              />
-              <ESButton title="Submit" customClick={addEditPrescription} />
-            </KeyboardAvoidingView>
-          </ScrollView>
+            > */}
+          <ESValueWithLabel label="Patient Name" value={patient.name} />
+          <ESValueWithLabel label="Date" value={currDate} />
+          <ESTextFieldWithLabel
+            label="Diagnosis"
+            onChangeText={(val) => onChange(val, request, "diagnosis")}
+            maxLength={250}
+            value={request.diagnosis}
+            numberOfLines={3}
+            multiline={true}
+            style={{ textAlignVertical: "top" }}
+          />
+          <ESListView
+            header="Drugs"
+            list={drugList}
+            customPanel={(item) => {
+              return (
+                <View>
+                  <Text>Name: {item.name}</Text>
+                  <Text>Strength: {item.strength}</Text>
+                  <Text>Dose: {item.dose}</Text>
+                  <Text>Prescription: {item.prescription}</Text>
+                  <Text>Route: {item.route}</Text>
+                  <Text>Direction: {item.direction}</Text>
+                  <Text>Route: {item.route}</Text>
+                </View>
+              );
+            }}
+            customViewClick={(item) => alert("VIEW" + item.id)}
+            customAddClick={addDrug}
+            customEditClick={(item, index) =>
+              alert("EDIT: " + item.id + "INDEX: " + index)
+            }
+            customDeleteClick={(item, index) => deleteDrug(item, index)}
+          />
+          <ESButton title="Submit" customClick={addEditPrescription} />
+          {/* </KeyboardAvoidingView>
+          </ScrollView> */}
         </View>
       </SafeAreaView>
     )

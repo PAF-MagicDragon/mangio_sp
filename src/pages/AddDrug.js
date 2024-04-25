@@ -15,55 +15,30 @@ import * as constants from "../helpers/constants";
 import ESValueWithLabel from "../components/ESValueWithLabel";
 import ESDropDownWithLabel from "../components/ESDropDownWithLabel";
 
-const AddDrug = ({ navigation, route }) => {
+const AddDrug = ({ navigation }) => {
   let [request, setRequest] = useState(null);
   let [templateData, setTemplateData] = useState([]);
+  let [preparationData, setPreparationData] = useState([]);
+  let [routeData, setRouteData] = useState([]);
+  let [directionData, setDirectionData] = useState([]);
+  let [frequencyData, setFrequencyData] = useState([]);
   const store = useContext(ESContext);
-  const prescription = route.params;
-
-  let initializeTemplateData = () => {
-    store.getTemplates((list) => {
-      let temp = [];
-      list.forEach((x, i) => {
-        let s = x.brand;
-        if (x.generic != null) {
-          s = s + " (" + x.generic + ") ";
-        }
-        if (x.formulation != null) {
-          s = s + " - " + x.formulation;
-        }
-        temp.push({ label: s, value: s });
-      });
-      setTemplateData(temp);
-    });
-  };
 
   useEffect(() => {
-    setRequest({
-      prescriptionId: prescription.id,
+    setRequest({});
+    store.initializeTemplateData((list) => {
+      setTemplateData(list);
     });
-    initializeTemplateData();
+    setPreparationData(store.formDropDownData(constants.LIST_PREPARATION));
+    setRouteData(store.formDropDownData(constants.LIST_ROUTE));
+    setDirectionData(store.formDropDownData(constants.LIST_DIRECTION));
+    setFrequencyData(store.formDropDownData(constants.LIST_FREQUENCY));
   }, []);
 
   let addEditDrug = () => {
-    store.addEditEsDrug(request, (results) => {
-      console.log("Results", results);
-      if (results != null && results.rowsAffected > 0) {
-        Alert.alert(
-          "Success",
-          "Drug Added",
-          [
-            {
-              text: "Ok",
-              onPress: () => {
-                navigation.pop();
-              },
-            },
-          ],
-          { cancelable: false }
-        );
-      } else alert("Drug Add Failed");
-    });
+    console.log("ADD DRUG REQUEST", request);
+    store.tempDrugList.push(request);
+    navigation.pop();
   };
 
   let onChange = (val, obj, field) => {
@@ -85,20 +60,62 @@ const AddDrug = ({ navigation, route }) => {
             >
               <ESDropDownWithLabel
                 label="Drug"
-                placeholder="Choose One"
                 data={templateData}
-                // data={[
-                //   { label: "Item 1", value: "1" },
-                //   { label: "Item 2", value: "2" },
-                //   { label: "Item 3", value: "3" },
-                //   { label: "Item 4", value: "4" },
-                //   { label: "Item 5", value: "5" },
-                //   { label: "Item 6", value: "6" },
-                //   { label: "Item 7", value: "7" },
-                //   { label: "Item 8", value: "8" },
-                // ]}
+                onChange={(val) => onChange(val, request, "name")}
+                value={request.name}
               />
-              <ESButton title="Submit" customClick={addEditDrug} />
+              <View style={styles.row}>
+                <ESTextFieldWithLabel
+                  label="Strength"
+                  onChangeText={(val) => onChange(val, request, "strength")}
+                  maxLength={50}
+                  value={request.strength}
+                  isRowItem
+                  withMargin
+                />
+                <ESTextFieldWithLabel
+                  label="Dose"
+                  onChangeText={(val) => onChange(val, request, "dose")}
+                  maxLength={50}
+                  value={request.dose}
+                  isRowItem
+                />
+              </View>
+              <View style={styles.row}>
+                <ESDropDownWithLabel
+                  label="Preparation"
+                  data={preparationData}
+                  onChange={(val) => onChange(val, request, "preparation")}
+                  value={request.preparation}
+                  isRowItem
+                  withMargin
+                />
+                <ESDropDownWithLabel
+                  label="Route"
+                  data={routeData}
+                  onChange={(val) => onChange(val, request, "route")}
+                  value={request.route}
+                  isRowItem
+                />
+              </View>
+              <View style={styles.row}>
+                <ESDropDownWithLabel
+                  label="Direction"
+                  data={directionData}
+                  onChange={(val) => onChange(val, request, "direction")}
+                  value={request.direction}
+                  isRowItem
+                  withMargin
+                />
+                <ESDropDownWithLabel
+                  label="Frequency"
+                  data={frequencyData}
+                  onChange={(val) => onChange(val, request, "frequency")}
+                  value={request.frequency}
+                  isRowItem
+                />
+              </View>
+              <ESButton title="Add" customClick={addEditDrug} />
             </KeyboardAvoidingView>
           </ScrollView>
         </View>

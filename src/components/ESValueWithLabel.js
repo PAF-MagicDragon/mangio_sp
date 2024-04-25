@@ -6,7 +6,12 @@ import ESValue from "./ESValue";
 
 const ESValueWithLabel = (props) => {
   return (
-    <View style={[styles.rowitems, props.withMargin && styles.withMargin]}>
+    <View
+      style={[
+        props.isRowItem && styles.rowitems,
+        props.withMargin && styles.withMargin,
+      ]}
+    >
       <ESLabel {...props} text={props.label} />
       <ESValue {...props} text={props.value} />
     </View>

@@ -6,7 +6,12 @@ import ESRadio from "./ESRadio";
 
 const ESRadioWithLabel = (props) => {
   return (
-    <View style={[styles.rowitems, props.withMargin && styles.withMargin]}>
+    <View
+      style={[
+        props.isRowItem && styles.rowitems,
+        props.withMargin && styles.withMargin,
+      ]}
+    >
       <ESLabel {...props} text={props.label} />
       <ESRadio {...props} />
     </View>

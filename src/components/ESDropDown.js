@@ -7,11 +7,12 @@ const ESDropDown = (props) => {
   const [value, setValue] = useState(null);
   const [isFocus, setIsFocus] = useState(false);
 
-  if (props.value != null) {
+  if (props.value != null && value == null) {
     setValue(props.value);
   }
   const data = props.data;
-  const placeholder = props.placeholder;
+  const placeholder = props.label != null ? props.label : "Choose One";
+  const onChange = props.onChange;
   return (
     <Dropdown
       style={[styles.dropdown, isFocus && { borderColor: "#1e90ff" }]}
@@ -31,6 +32,7 @@ const ESDropDown = (props) => {
       onBlur={() => setIsFocus(false)}
       onChange={(item) => {
         setValue(item.value);
+        onChange && onChange(item.value);
         setIsFocus(false);
       }}
     />

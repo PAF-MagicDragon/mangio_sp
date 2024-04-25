@@ -11,6 +11,7 @@ let listViewItemSeparator = () => {
 
 let listViewItem = (
   item,
+  index,
   panel,
   customViewClick,
   customEditClick,
@@ -27,19 +28,19 @@ let listViewItem = (
             {customEditClick && (
               <ESIcon
                 name="pencil-outline"
-                customClick={() => customEditClick(item)}
+                customClick={() => customEditClick(item, index)}
               />
             )}
             {customDeleteClick && (
               <ESIcon
                 name="trash-outline"
-                customClick={() => customDeleteClick(item)}
+                customClick={() => customDeleteClick(item, index)}
               />
             )}
             {customActionClick && (
               <ESIcon
                 name={customActionIcon}
-                customClick={() => customActionClick(item)}
+                customClick={() => customActionClick(item, index)}
               />
             )}
           </View>
@@ -80,9 +81,10 @@ const ESListView = (props) => {
           data={props.list}
           ItemSeparatorComponent={listViewItemSeparator}
           keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) =>
+          renderItem={({ item, index }) =>
             listViewItem(
               item,
+              index,
               customPanel(item),
               customViewClick,
               customEditClick,

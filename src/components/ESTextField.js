@@ -3,7 +3,6 @@ import { View, TextInput } from "react-native";
 import styles from "../helpers/styles";
 
 const ESTextField = (props) => {
-  console.log("FRANC ES FIELD PROPS", props);
   return (
     <View style={styles.textField}>
       <TextInput

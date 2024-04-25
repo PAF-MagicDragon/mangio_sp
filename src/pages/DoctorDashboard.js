@@ -60,12 +60,10 @@ const DoctorDashboard = ({ navigation }) => {
   return (
     <SafeAreaView style={styles.viewMain}>
       <View style={styles.viewSub}>
-        {/* <ScrollView keyboardShouldPersistTaps="handled">
-          <KeyboardAvoidingView behavior="padding" style={styles.keyboardAvoid}> */}
+        {/* <ScrollView keyboardShouldPersistTaps="handled"> */}
+        {/* <KeyboardAvoidingView behavior="padding" style={styles.keyboardAvoid}> */}
         <ESLabel text="IM A DOCTOR:" />
         <ESValue text={JSON.stringify(user)} />
-        {/* </KeyboardAvoidingView>
-        </ScrollView> */}
         <ESListView
           header="Patients"
           list={patients}
@@ -84,6 +82,8 @@ const DoctorDashboard = ({ navigation }) => {
           customEditClick={(item) => alert("EDIT" + item.id)}
           customDeleteClick={(item) => deletePatient(item)}
         />
+        {/* </KeyboardAvoidingView> */}
+        {/* </ScrollView> */}
       </View>
     </SafeAreaView>
   );

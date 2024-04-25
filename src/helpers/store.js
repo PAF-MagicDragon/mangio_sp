@@ -25,6 +25,8 @@ export class Store {
     weight: null,
   };
 
+  @observable tempDrugList = [];
+
   @action initializeTable = (name, cols, cb) => {
     db.transaction(function (tx) {
       let sql1 =
@@ -57,10 +59,14 @@ export class Store {
       "ES_TEMPLATE",
       "ID VARCHAR(50) PRIMARY KEY, BRAND VARCHAR(100), GENERIC VARCHAR(100), FORMULATION VARCHAR(100), IS_DEFAULT INT(1)"
     );
+    this.initializeTable(
+      "ES_DRUG",
+      "ID VARCHAR(50) PRIMARY KEY, PRESCRIPTION_ID VARCHAR(50), NAME VARCHAR(250), STRENGTH VARCHAR(50), DOSE VARCHAR(50), PREPARATION INT(2), ROUTE INT(2), DIRECTION INT(2), FREQUENCY INT(2), DURATION VARCHAR(50), INSTRUCTIONS VARCHAR(200), TOTAL INT(3), REFILLS INT(3)"
+    );
     this.initializeDefaultData(
       "ES_TEMPLATE",
       "ID, BRAND, GENERIC, FORMULATION, IS_DEFAULT",
-      constants.templates
+      constants.TEMPLATES
     );
   };
 
@@ -156,7 +162,6 @@ export class Store {
   };
 
   @action mapTemplateFromDb = (item) => {
-    console.log("TEMPLATE MAP", item);
     let template = {};
     template.id = item["ID"];
     template.brand = item["BRAND"];
@@ -322,13 +327,6 @@ export class Store {
     }
   };
 
-  @action addEditEsDrug = (request, cb) => {
-    if (request.id != null) {
-    } else {
-    }
-    return null;
-  };
-
   @action deleteRecord = (table, id, cb) => {
     db.transaction(function (tx) {
       let val = [id];
@@ -356,4 +354,29 @@ export class Store {
   //       (list) => !this.filter || matchCase.test(list.value)
   //     );
   //   }
+
+  @action initializeTemplateData = (cb) => {
+    this.getTemplates((list) => {
+      let temp = [];
+      list.forEach((x, i) => {
+        let s = x.brand;
+        if (x.generic != null) {
+          s = s + " (" + x.generic + ") ";
+        }
+        if (x.formulation != null) {
+          s = s + " - " + x.formulation;
+        }
+        temp.push({ label: s, value: s });
+      });
+      cb && cb(temp);
+    });
+  };
+
+  @action formDropDownData = (list) => {
+    let temp = [];
+    list.forEach((data) => {
+      temp.push({ label: data[1], value: data[0] });
+    });
+    return temp;
+  };
 }
