@@ -26,6 +26,7 @@ import AddPatient from "./pages/AddPatient";
 import ViewPatient from "./pages/ViewPatient";
 import AddPrescription from "./pages/AddPrescription";
 import AddDrug from "./pages/AddDrug";
+import ViewPrescription from "./pages/ViewPrescription";
 
 import { Text } from "react-native";
 import ESIcon from "./components/ESIcon";
@@ -133,6 +134,14 @@ const Main = () => {
             component={AddDrug}
             options={{
               title: "Add Drug",
+              ...navOptions,
+            }}
+          />
+          <Stack.Screen
+            name="ViewPrescription"
+            component={ViewPrescription}
+            options={{
+              title: "View Prescription",
               ...navOptions,
             }}
           />

@@ -69,7 +69,7 @@ const UpdateUser = ({ navigation }) => {
         "UPDATE table_user set user_name=?, user_contact=? , user_address=? where user_id=?",
         [userName, userContact, userAddress, inputUserId],
         (tx, results) => {
-          console.log("Results", results.rowsAffected);
+          console.log("Results update user", results.rowsAffected);
           if (results.rowsAffected > 0) {
             Alert.alert(
               "Success",

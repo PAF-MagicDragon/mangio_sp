@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
   },
   selectedTextStyle: {
     fontSize: 14,
-    color: "#1e90ff",
+    color: "#000000",
   },
   itemTextStyle: {
     fontSize: 14,

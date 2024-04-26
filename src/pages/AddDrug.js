@@ -115,6 +115,15 @@ const AddDrug = ({ navigation }) => {
                   isRowItem
                 />
               </View>
+              <ESTextFieldWithLabel
+                label="Instructions"
+                onChangeText={(val) => onChange(val, request, "instructions")}
+                maxLength={250}
+                value={request.instructions}
+                numberOfLines={5}
+                multiline={true}
+                style={{ textAlignVertical: "top" }}
+              />
               <ESButton title="Add" customClick={addEditDrug} />
             </KeyboardAvoidingView>
           </ScrollView>

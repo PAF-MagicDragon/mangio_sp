@@ -33,7 +33,7 @@ const Profile = ({ navigation }) => {
       return;
     }
     store.addEditEsUser(request, (results) => {
-      console.log("Results", results);
+      console.log("Results edit user", results);
       if (results != null && results.rowsAffected > 0) {
         Alert.alert(
           "Success",

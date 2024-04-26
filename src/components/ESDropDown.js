@@ -11,7 +11,8 @@ const ESDropDown = (props) => {
     setValue(props.value);
   }
   const data = props.data;
-  const placeholder = props.label != null ? props.label : "Choose One";
+  const placeholder =
+    props.label != null ? "Choose " + props.label : "Choose One";
   const onChange = props.onChange;
   return (
     <Dropdown

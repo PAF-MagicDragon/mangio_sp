@@ -48,9 +48,13 @@ const ViewPatient = ({ navigation, route }) => {
     navigation.navigate("AddPrescription", item);
   };
 
+  let viewPrescription = (item) => {
+    navigation.navigate("ViewPrescription", item);
+  };
+
   let deletePrescription = (item) => {
     store.deletePrescription(item.id, (results) => {
-      console.log("Results", results);
+      console.log("Results delete prescription", results);
       if (results != null && results.rowsAffected > 0) {
         Alert.alert(
           "Success",
@@ -92,7 +96,7 @@ const ViewPatient = ({ navigation, route }) => {
               </View>
             );
           }}
-          customViewClick={(item) => alert("VIEW" + item.id)}
+          customViewClick={(item) => viewPrescription(item)}
           customAddClick={() => addPrescription(patient)}
           customEditClick={(item) => alert("EDIT" + item.id)}
           customDeleteClick={(item) => deletePrescription(item)}

@@ -38,7 +38,7 @@ const DoctorDashboard = ({ navigation }) => {
 
   let deletePatient = (item) => {
     store.deletePatient(item.id, (results) => {
-      console.log("Results", results);
+      console.log("Results delete patient", results);
       if (results != null && results.rowsAffected > 0) {
         Alert.alert(
           "Success",

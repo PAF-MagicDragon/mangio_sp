@@ -161,6 +161,24 @@ export class Store {
     return prescription;
   };
 
+  @action mapDrugFromDb = (item) => {
+    let drug = {};
+    drug.id = item["ID"];
+    drug.prescriptionId = item["PRESCRIPTION_ID"];
+    drug.name = item["NAME"];
+    drug.strength = item["STRENGTH"];
+    drug.dose = item["DOSE"];
+    drug.preparation = item["PREPARATION"];
+    drug.route = item["ROUTE"];
+    drug.direction = item["DIRECTION"];
+    drug.frequency = item["FREQUENCY"];
+    drug.duration = item["DURATION"];
+    drug.instructions = item["INSTRUCTIONS"];
+    drug.total = item["TOTAL"];
+    drug.refills = item["REFILLS"];
+    return drug;
+  };
+
   @action mapTemplateFromDb = (item) => {
     let template = {};
     template.id = item["ID"];
@@ -188,7 +206,7 @@ export class Store {
   @action getPatients = (cb) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT * FROM ES_USER WHERE TYPE = ?",
+        "SELECT * FROM ES_USER WHERE TYPE = ? ORDER BY NAME",
         [constants.TYPE_SUB_PATIENT],
         (tx, results) => {
           var temp = [];
@@ -204,12 +222,28 @@ export class Store {
   @action getPrescriptions = (doctorId, patientId, cb) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT * FROM ES_PRESCRIPTION WHERE DOCTOR_ID = ? AND PATIENT_ID = ?",
+        "SELECT * FROM ES_PRESCRIPTION WHERE DOCTOR_ID = ? AND PATIENT_ID = ? ORDER BY CREATE_DATE DESC",
         [doctorId, patientId],
         (tx, results) => {
           var temp = [];
           for (let i = 0; i < results.rows.length; ++i) {
             temp.push(this.mapPrescriptionFromDb(results.rows.item(i)));
+          }
+          cb && cb(temp);
+        }
+      );
+    });
+  };
+
+  @action getDrugs = (prescriptionId, cb) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT * FROM ES_DRUG WHERE PRESCRIPTION_ID = ? ORDER BY ID",
+        [prescriptionId],
+        (tx, results) => {
+          var temp = [];
+          for (let i = 0; i < results.rows.length; ++i) {
+            temp.push(this.mapDrugFromDb(results.rows.item(i)));
           }
           cb && cb(temp);
         }
@@ -320,6 +354,29 @@ export class Store {
           "INSERT INTO ES_PRESCRIPTION (ID,CREATE_DATE,DIAGNOSIS,DOCTOR_ID,PATIENT_ID) VALUES (?,?,?,?,?)",
           val,
           (tx, results) => {
+            request.drugList.forEach((drug, i) => {
+              let innerId = uuid.v4();
+              let innerVal = [
+                innerId,
+                id,
+                drug.name,
+                drug.strength,
+                drug.dose,
+                drug.preparation,
+                drug.route,
+                drug.direction,
+                drug.frequency,
+                drug.duration,
+                drug.instructions,
+                drug.total,
+                drug.refills,
+              ];
+              tx.executeSql(
+                "INSERT INTO ES_DRUG (ID,PRESCRIPTION_ID,NAME,STRENGTH,DOSE,PREPARATION,ROUTE,DIRECTION,FREQUENCY,DURATION,INSTRUCTIONS,TOTAL,REFILLS) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                innerVal,
+                (tx, results) => {}
+              );
+            });
             cb != null && cb(results);
           }
         );
@@ -327,25 +384,31 @@ export class Store {
     }
   };
 
-  @action deleteRecord = (table, id, cb) => {
+  @action deleteRecord = (table, id, whereField, cb) => {
     db.transaction(function (tx) {
       let val = [id];
-      tx.executeSql(
-        "DELETE FROM " + table + " WHERE ID = ? ",
-        val,
-        (tx, results) => {
-          cb != null && cb(results);
-        }
-      );
+      let sql = "DELETE FROM " + table + " WHERE " + whereField + "";
+      console.log("DELETE RECORD SQL:", sql);
+      tx.executeSql(sql, val, (tx, results) => {
+        cb != null && cb(results);
+      });
     });
   };
 
   @action deletePatient = (id, cb) => {
-    this.deleteRecord("ES_USER", id, cb);
+    this.deleteRecord(
+      "ES_DRUG",
+      id,
+      "PRESCRIPTION_ID IN (SELECT ID FROM ES_PRESCRIPTION WHERE PATIENT_ID = ?)",
+      null
+    );
+    this.deleteRecord("ES_PRESCRIPTION", id, "PATIENT_ID = ?", null);
+    this.deleteRecord("ES_USER", id, "ID = ?", cb);
   };
 
   @action deletePrescription = (id, cb) => {
-    this.deleteRecord("ES_PRESCRIPTION", id, cb);
+    this.deleteRecord("ES_DRUG", id, "PRESCRIPTION_ID = ?", null);
+    this.deleteRecord("ES_PRESCRIPTION", id, "ID = ?", cb);
   };
 
   //   @computed get filteredLists() {
@@ -375,8 +438,15 @@ export class Store {
   @action formDropDownData = (list) => {
     let temp = [];
     list.forEach((data) => {
-      temp.push({ label: data[1], value: data[0] });
+      temp.push({ label: data.label, value: data.value });
     });
     return temp;
   };
+
+  @action getLabelFromValue(value, list) {
+    console.log("GET LABEL 1", value, list);
+    let found = list.find((i) => i.value == value);
+    console.log("GET LABEL 2", found);
+    return found != null ? found.label : "";
+  }
 }
