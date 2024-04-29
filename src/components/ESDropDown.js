@@ -16,7 +16,7 @@ const ESDropDown = (props) => {
   const onChange = props.onChange;
   return (
     <Dropdown
-      style={[styles.dropdown, isFocus && { borderColor: "#1e90ff" }]}
+      style={[styles.dropdown, isFocus && { borderColor: "#57A4FF" }]}
       placeholderStyle={styles.placeholderStyle}
       selectedTextStyle={styles.selectedTextStyle}
       itemTextStyle={styles.itemTextStyle}

@@ -22,6 +22,7 @@ const AddDrug = ({ navigation }) => {
   let [routeData, setRouteData] = useState([]);
   let [directionData, setDirectionData] = useState([]);
   let [frequencyData, setFrequencyData] = useState([]);
+  let [typeData, setTypeData] = useState([]);
   const store = useContext(ESContext);
 
   useEffect(() => {
@@ -33,10 +34,10 @@ const AddDrug = ({ navigation }) => {
     setRouteData(store.formDropDownData(constants.LIST_ROUTE));
     setDirectionData(store.formDropDownData(constants.LIST_DIRECTION));
     setFrequencyData(store.formDropDownData(constants.LIST_FREQUENCY));
+    setTypeData(store.formDropDownData(constants.LIST_TYPE));
   }, []);
 
   let addEditDrug = () => {
-    console.log("ADD DRUG REQUEST", request);
     store.tempDrugList.push(request);
     navigation.pop();
   };
@@ -112,6 +113,23 @@ const AddDrug = ({ navigation }) => {
                   data={frequencyData}
                   onChange={(val) => onChange(val, request, "frequency")}
                   value={request.frequency}
+                  isRowItem
+                />
+              </View>
+              <View style={styles.row}>
+                <ESTextFieldWithLabel
+                  label="Duration"
+                  onChangeText={(val) => onChange(val, request, "duration")}
+                  maxLength={8}
+                  value={request.duration}
+                  keyboardType="decimal-pad"
+                  isRowItem
+                />
+                <ESDropDownWithLabel
+                  label="Type"
+                  data={typeData}
+                  onChange={(val) => onChange(val, request, "type")}
+                  value={request.type}
                   isRowItem
                 />
               </View>

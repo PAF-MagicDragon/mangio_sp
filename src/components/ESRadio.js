@@ -7,24 +7,22 @@ const ESRadio = (props) => {
   let initial = -1;
   if (props.options != null) {
     props.options.forEach((x, i) => {
-      console.log("FRANC ES RADIO", x, i, props.value);
       if (x.value == props.value) {
         initial = i;
       }
     });
   }
-  console.log("FRANC ES RADIO INITIAL", initial);
   return (
-    <View style={styles.radio}>
+    <View style={props.customStyle ? props.customStyle : styles.radio}>
       <RadioForm
         radio_props={props.options}
         initial={initial}
         formHorizontal={true}
         labelHorizontal={true}
-        buttonColor={"#1e90ff"}
-        selectedButtonColor={"#1e90ff"}
-        labelColor={"#1e90ff"}
-        selectedLabelColor={"#1e90ff"}
+        buttonColor={"#57A4FF"}
+        selectedButtonColor={"#57A4FF"}
+        labelColor={"#000000"}
+        selectedLabelColor={"#000000"}
         animation={false}
         onPress={(val) => {
           const onChange = props.onChange;

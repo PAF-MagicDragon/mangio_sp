@@ -94,6 +94,11 @@ const ViewPrescription = ({ navigation, route }) => {
                     Route:
                     {store.getLabelFromValue(item.route, constants.LIST_ROUTE)}
                   </Text>
+                  <Text>Duration: {item.duration}</Text>
+                  <Text>
+                    Type:
+                    {store.getLabelFromValue(item.type, constants.LIST_TYPE)}
+                  </Text>
                   <Text>Instructions: {item.instructions}</Text>
                 </View>
               );

@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const navOptions = {
   headerStyle: {
-    backgroundColor: "#008080", //Set Header color
+    backgroundColor: "#004FAC", //Set Header color
   },
   headerTintColor: "#ffffff", //Set Header text color
   headerTitleStyle: {
@@ -28,6 +28,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
   },
+  rowReverse: {
+    flexDirection: "row-reverse",
+    flexWrap: "wrap",
+  },
   rowitems: {
     flexGrow: 1,
     flexShrink: 1,
@@ -36,69 +40,84 @@ const styles = StyleSheet.create({
   withMargin: {
     marginRight: 10,
   },
+  withPadding: {
+    paddingTop: 10,
+  },
   button1: {
     alignItems: "center",
-    backgroundColor: "#008080",
+    backgroundColor: "#004FAC",
     color: "#ffffff",
     padding: 10,
     marginTop: 15,
-    // marginLeft: 25,
-    // marginRight: 25,
   },
   buttonLabel1: {
     color: "#ffffff",
   },
   button2: {
     alignItems: "center",
-    backgroundColor: "#20b2aa",
+    backgroundColor: "#57A4FF",
     color: "#ffffff",
     padding: 10,
     marginTop: 15,
-    // marginLeft: 25,
-    // marginRight: 25,
   },
   buttonLabel2: {
     color: "#ffffff",
+  },
+  header: {
+    color: "#000000",
+    fontSize: 24,
+    marginTop: 10,
+    fontWeight: "bold",
   },
   label: {
     color: "#000000",
     fontSize: 14,
     marginTop: 10,
-    // marginLeft: 25,
-    // marginRight: 25,
     fontWeight: "bold",
   },
   value: {
     color: "#808080",
     fontSize: 14,
     marginTop: 10,
-    // marginLeft: 25,
-    // marginRight: 25,
+  },
+  valueNoMargin: {
+    color: "#808080",
+    fontSize: 14,
   },
   textField: {
-    // marginLeft: 25,
-    // marginRight: 25,
     // height: 40,
     marginTop: 10,
-    borderColor: "#1e90ff",
+    borderColor: "#57A4FF",
     borderWidth: 0.5,
     borderRadius: 5,
     padding: 5,
   },
+  textFieldMulti: {
+    // height: 40,
+    marginTop: 10,
+    borderColor: "#57A4FF",
+    borderWidth: 0.5,
+    borderRadius: 5,
+    padding: 5,
+    textAlignVertical: "top",
+  },
   radio: {
-    // marginLeft: 25,
-    // marginRight: 25,
     marginTop: 10,
     marginLeft: -10,
     padding: 10,
-    // borderColor: "#1e90ff",
+    // borderColor: "#57A4FF",
     // borderWidth: 0.5,
   },
   radioLabelStyle: {
-    // borderColor: "#1e90ff",
+    // borderColor: "#57A4FF",
     // borderWidth: 0.5,
     marginLeft: -5,
     marginRight: 10,
+  },
+  datePicker: {
+    marginTop: 10,
+    // borderColor: "#57A4FF",
+    // borderWidth: 0.5,
   },
   keyboardAvoid: { flex: 1, justifyContent: "space-between" },
 
@@ -111,7 +130,7 @@ const styles = StyleSheet.create({
   },
 
   listViewItem: {
-    backgroundColor: "white",
+    backgroundColor: "#ffffff",
     paddingTop: 5,
     paddingBottom: 5,
     flexDirection: "row",
@@ -135,14 +154,14 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     marginTop: 10,
     height: 50,
-    borderColor: "#1e90ff",
+    borderColor: "#57A4FF",
     borderWidth: 0.5,
     borderRadius: 5,
     padding: 10,
   },
   placeholderStyle: {
     fontSize: 14,
-    color: "#1e90ff",
+    color: "#57A4FF",
   },
   selectedTextStyle: {
     fontSize: 14,
@@ -150,12 +169,12 @@ const styles = StyleSheet.create({
   },
   itemTextStyle: {
     fontSize: 14,
-    color: "#1e90ff",
+    color: "#57A4FF",
   },
   inputSearchStyle: {
     height: 40,
     fontSize: 14,
-    color: "#1e90ff",
+    color: "#57A4FF",
   },
 
   ///

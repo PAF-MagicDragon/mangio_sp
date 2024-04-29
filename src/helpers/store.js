@@ -19,10 +19,8 @@ export class Store {
     signature: null,
     licenseNo: null,
     prtNo: null,
-    age: null,
+    bday: null,
     gender: constants.GENDER_MALE,
-    height: null,
-    weight: null,
   };
 
   @observable tempDrugList = [];
@@ -48,12 +46,12 @@ export class Store {
   @action initializeAllTables = (cb) => {
     this.initializeTable(
       "ES_USER",
-      "ID VARCHAR(50) PRIMARY KEY, TYPE INT(1), NAME VARCHAR(100), ADDRESS VARCHAR(250), CONTACT_NUMBER VARCHAR(50), EMAIL VARCHAR(250), CLINIC_HOSPITAL VARCHAR(250), SPECIALIZATION VARCHAR(100), SIGNATURE BLOB, LICENSE_NO VARCHAR(50), PRT_NO VARCHAR(50), AGE VARCHAR(3), GENDER INT(1), HEIGHT VARCHAR(8), WEIGHT VARCHAR(8)",
+      "ID VARCHAR(50) PRIMARY KEY, TYPE INT(1), NAME VARCHAR(100), ADDRESS VARCHAR(250), CONTACT_NUMBER VARCHAR(50), EMAIL VARCHAR(250), CLINIC_HOSPITAL VARCHAR(250), SPECIALIZATION VARCHAR(100), SIGNATURE BLOB, LICENSE_NO VARCHAR(50), PRT_NO VARCHAR(50), BDAY INT(15), GENDER INT(1)",
       cb
     );
     this.initializeTable(
       "ES_PRESCRIPTION",
-      "ID VARCHAR(50) PRIMARY KEY, CREATE_DATE INT(15), DIAGNOSIS VARCHAR(250), DOCTOR_ID VARCHAR(50), PATIENT_ID VARCHAR(50)"
+      "ID VARCHAR(50) PRIMARY KEY, CREATE_DATE INT(15), DIAGNOSIS VARCHAR(250), DOCTOR_ID VARCHAR(50), PATIENT_ID VARCHAR(50), HEIGHT VARCHAR(8), WEIGHT VARCHAR(8)"
     );
     this.initializeTable(
       "ES_TEMPLATE",
@@ -61,7 +59,7 @@ export class Store {
     );
     this.initializeTable(
       "ES_DRUG",
-      "ID VARCHAR(50) PRIMARY KEY, PRESCRIPTION_ID VARCHAR(50), NAME VARCHAR(250), STRENGTH VARCHAR(50), DOSE VARCHAR(50), PREPARATION INT(2), ROUTE INT(2), DIRECTION INT(2), FREQUENCY INT(2), DURATION VARCHAR(50), INSTRUCTIONS VARCHAR(200), TOTAL INT(3), REFILLS INT(3)"
+      "ID VARCHAR(50) PRIMARY KEY, PRESCRIPTION_ID VARCHAR(50), NAME VARCHAR(250), STRENGTH VARCHAR(50), DOSE VARCHAR(50), PREPARATION INT(2), ROUTE INT(2), DIRECTION INT(2), FREQUENCY INT(2), DURATION VARCHAR(50), TYPE INT(2), INSTRUCTIONS VARCHAR(200), TOTAL INT(3), REFILLS INT(3)"
     );
     this.initializeDefaultData(
       "ES_TEMPLATE",
@@ -125,10 +123,8 @@ export class Store {
     main.signature = item["SIGNATURE"];
     main.licenseNo = item["LICENSE_NO"];
     main.prtNo = item["PRT_NO"];
-    main.age = item["AGE"];
+    main.bday = item["BDAY"];
     main.gender = item["GENDER"];
-    main.height = item["HEIGHT"];
-    main.weight = item["WEIGHT"];
   };
 
   @action mapPatientFromDb = (item) => {
@@ -144,10 +140,8 @@ export class Store {
     // patient.signature = item["SIGNATURE"];
     // patient.licenseNo = item["LICENSE_NO"];
     // patient.prtNo = item["PRT_NO"];
-    patient.age = item["AGE"];
+    patient.bday = item["BDAY"];
     patient.gender = item["GENDER"];
-    patient.height = item["HEIGHT"];
-    patient.weight = item["WEIGHT"];
     return patient;
   };
 
@@ -158,6 +152,8 @@ export class Store {
     prescription.diagnosis = item["DIAGNOSIS"];
     prescription.doctorId = item["DOCTOR_ID"];
     prescription.patientId = item["PATIENT_ID"];
+    prescription.height = item["HEIGHT"];
+    prescription.weight = item["WEIGHT"];
     return prescription;
   };
 
@@ -173,6 +169,7 @@ export class Store {
     drug.direction = item["DIRECTION"];
     drug.frequency = item["FREQUENCY"];
     drug.duration = item["DURATION"];
+    drug.type = item["TYPE"];
     drug.instructions = item["INSTRUCTIONS"];
     drug.total = item["TOTAL"];
     drug.refills = item["REFILLS"];
@@ -282,14 +279,12 @@ export class Store {
           request.signature,
           request.licenseNo,
           request.prtNo,
-          request.age,
+          request.bday,
           request.gender,
-          request.height,
-          request.weight,
           request.id,
         ];
         tx.executeSql(
-          "UPDATE ES_USER SET (TYPE,NAME,ADDRESS,CONTACT_NUMBER,EMAIL,CLINIC_HOSPITAL,SPECIALIZATION,SIGNATURE,LICENSE_NO,PRT_NO,AGE,GENDER,HEIGHT,WEIGHT) = (?,?,?,?,?,?,?,?,?,?,?,?,?,?) WHERE ID = ? ",
+          "UPDATE ES_USER SET (TYPE,NAME,ADDRESS,CONTACT_NUMBER,EMAIL,CLINIC_HOSPITAL,SPECIALIZATION,SIGNATURE,LICENSE_NO,PRT_NO,BDAY,GENDER) = (?,?,?,?,?,?,?,?,?,?,?,?) WHERE ID = ? ",
           val,
           (tx, results) => {
             cb != null && cb(results);
@@ -311,13 +306,11 @@ export class Store {
           request.signature,
           request.licenseNo,
           request.prtNo,
-          request.age,
+          request.bday,
           request.gender,
-          request.height,
-          request.weight,
         ];
         tx.executeSql(
-          "INSERT INTO ES_USER (ID,TYPE,NAME,ADDRESS,CONTACT_NUMBER,EMAIL,CLINIC_HOSPITAL,SPECIALIZATION,SIGNATURE,LICENSE_NO,PRT_NO,AGE,GENDER,HEIGHT,WEIGHT) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+          "INSERT INTO ES_USER (ID,TYPE,NAME,ADDRESS,CONTACT_NUMBER,EMAIL,CLINIC_HOSPITAL,SPECIALIZATION,SIGNATURE,LICENSE_NO,PRT_NO,BDAY,GENDER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
           val,
           (tx, results) => {
             cb != null && cb(results);
@@ -330,9 +323,14 @@ export class Store {
   @action addEditEsPrescription = (request, cb) => {
     if (request.id != null) {
       db.transaction(function (tx) {
-        let val = [request.diagnosis, request.id];
+        let val = [
+          request.diagnosis,
+          request.height,
+          request.weight,
+          request.id,
+        ];
         tx.executeSql(
-          "UPDATE ES_PRESCRIPTION SET (PRESCRIPTION) = (?) WHERE ID = ? ",
+          "UPDATE ES_PRESCRIPTION SET (PRESCRIPTION,HEIGHT,WEIGHT) = (?,?,?) WHERE ID = ? ",
           val,
           (tx, results) => {
             cb != null && cb(results);
@@ -349,9 +347,11 @@ export class Store {
           request.diagnosis,
           request.doctorId,
           request.patientId,
+          request.height,
+          request.weight,
         ];
         tx.executeSql(
-          "INSERT INTO ES_PRESCRIPTION (ID,CREATE_DATE,DIAGNOSIS,DOCTOR_ID,PATIENT_ID) VALUES (?,?,?,?,?)",
+          "INSERT INTO ES_PRESCRIPTION (ID,CREATE_DATE,DIAGNOSIS,DOCTOR_ID,PATIENT_ID,HEIGHT,WEIGHT) VALUES (?,?,?,?,?,?,?)",
           val,
           (tx, results) => {
             request.drugList.forEach((drug, i) => {
@@ -367,12 +367,13 @@ export class Store {
                 drug.direction,
                 drug.frequency,
                 drug.duration,
+                drug.type,
                 drug.instructions,
                 drug.total,
                 drug.refills,
               ];
               tx.executeSql(
-                "INSERT INTO ES_DRUG (ID,PRESCRIPTION_ID,NAME,STRENGTH,DOSE,PREPARATION,ROUTE,DIRECTION,FREQUENCY,DURATION,INSTRUCTIONS,TOTAL,REFILLS) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO ES_DRUG (ID,PRESCRIPTION_ID,NAME,STRENGTH,DOSE,PREPARATION,ROUTE,DIRECTION,FREQUENCY,DURATION,TYPE,INSTRUCTIONS,TOTAL,REFILLS) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 innerVal,
                 (tx, results) => {}
               );

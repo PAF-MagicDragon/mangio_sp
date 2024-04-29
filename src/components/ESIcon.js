@@ -10,7 +10,7 @@ const ESIcon = (props) => {
     <Icon
       //name={Platform.OS === "ios" ? "ios-" + { name } : "md-" + { name }}
       name={name}
-      color={color ? color : "#1e90ff"}
+      color={color ? color : "#57A4FF"}
       size={25}
       onPress={props.customClick}
     />

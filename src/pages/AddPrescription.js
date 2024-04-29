@@ -115,6 +115,24 @@ const AddPrescription = ({ navigation, route }) => {
             > */}
           <ESValueWithLabel label="Patient Name" value={patient.name} />
           <ESValueWithLabel label="Date" value={currDate} />
+          <View style={styles.row}>
+            <ESTextFieldWithLabel
+              label="Height"
+              onChangeText={(val) => onChange(val, request, "height")}
+              maxLength={8}
+              value={request.height}
+              keyboardType="decimal-pad"
+              isRowItem
+            />
+            <ESTextFieldWithLabel
+              label="Weight"
+              onChangeText={(val) => onChange(val, request, "weight")}
+              maxLength={8}
+              value={request.weight}
+              keyboardType="decimal-pad"
+              isRowItem
+            />
+          </View>
           <ESTextFieldWithLabel
             label="Diagnosis"
             onChangeText={(val) => onChange(val, request, "diagnosis")}
@@ -122,7 +140,6 @@ const AddPrescription = ({ navigation, route }) => {
             value={request.diagnosis}
             numberOfLines={3}
             multiline={true}
-            style={{ textAlignVertical: "top" }}
           />
           <ESListView
             header="Drugs"

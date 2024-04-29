@@ -4,11 +4,11 @@ import styles from "../helpers/styles";
 
 const ESTextField = (props) => {
   return (
-    <View style={styles.textField}>
+    <View style={props.multiline ? styles.textFieldMulti : styles.textField}>
       <TextInput
         underlineColorAndroid="transparent"
         placeholder={props.placeholder}
-        placeholderTextColor="#007FFF"
+        placeholderTextColor="#57A4FF"
         keyboardType={props.keyboardType}
         onChangeText={props.onChangeText}
         returnKeyType={props.returnKeyType}

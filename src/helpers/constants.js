@@ -66,3 +66,9 @@ export const LIST_FREQUENCY = [
   { value: 12, label: "Once a week" },
   { value: 13, label: "Three times a week" },
 ];
+
+export const LIST_TYPE = [
+  { value: 1, label: "Days" },
+  { value: 2, label: "Weeks" },
+  { value: 3, label: "Months" },
+];
