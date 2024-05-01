@@ -12,8 +12,8 @@ const ESValueWithLabel = (props) => {
         props.withMargin && styles.withMargin,
       ]}
     >
-      <ESLabel {...props} text={props.label} />
-      <ESValue {...props} text={props.value} />
+      <ESLabel customStyle={props.customStyleLabel} text={props.label} />
+      <ESValue customStyle={props.customStyleValue} text={props.value} />
     </View>
   );
 };

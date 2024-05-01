@@ -69,6 +69,11 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontWeight: "bold",
   },
+  subHeader: {
+    color: "#000000",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
   label: {
     color: "#000000",
     fontSize: 14,
@@ -79,6 +84,15 @@ const styles = StyleSheet.create({
     color: "#808080",
     fontSize: 14,
     marginTop: 10,
+  },
+  datePickerValue: {
+    color: "#000000",
+    fontSize: 14,
+    marginTop: 25,
+  },
+  datePickerIcon: {
+    marginTop: 50,
+    marginRight: 70,
   },
   valueNoMargin: {
     color: "#808080",
@@ -92,13 +106,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 5,
   },
-  textFieldMulti: {
+  alignTop: {
     // height: 40,
-    marginTop: 10,
-    borderColor: "#57A4FF",
-    borderWidth: 0.5,
-    borderRadius: 5,
-    padding: 5,
     textAlignVertical: "top",
   },
   radio: {
@@ -114,11 +123,7 @@ const styles = StyleSheet.create({
     marginLeft: -5,
     marginRight: 10,
   },
-  datePicker: {
-    marginTop: 10,
-    // borderColor: "#57A4FF",
-    // borderWidth: 0.5,
-  },
+
   keyboardAvoid: { flex: 1, justifyContent: "space-between" },
 
   listViewItemSeparator: {

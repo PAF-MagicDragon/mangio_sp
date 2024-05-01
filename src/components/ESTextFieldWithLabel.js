@@ -12,7 +12,7 @@ const ESTextFieldWithLabel = (props) => {
         props.withMargin && styles.withMargin,
       ]}
     >
-      <ESLabel {...props} text={props.label} />
+      <ESLabel text={props.label} />
       <ESTextField {...props} placeholder={"Enter " + props.label} />
     </View>
   );

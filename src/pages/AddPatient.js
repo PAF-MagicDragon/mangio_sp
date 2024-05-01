@@ -13,6 +13,7 @@ import styles from "../helpers/styles";
 import ESContext from "../ESContext";
 import * as constants from "../helpers/constants";
 import ESRadioWithLabel from "../components/ESRadioWithLabel";
+import ESDatePicker from "../components/ESDatePicker";
 
 const AddPatient = ({ navigation }) => {
   let [request, setRequest] = useState(null);
@@ -84,7 +85,6 @@ const AddPatient = ({ navigation }) => {
                 value={request.address}
                 numberOfLines={3}
                 multiline={true}
-                style={{ textAlignVertical: "top" }}
               />
               <View style={styles.row}>
                 <ESTextFieldWithLabel
@@ -110,39 +110,15 @@ const AddPatient = ({ navigation }) => {
                   <ESRadioWithLabel
                     label="Gender"
                     value={request.gender}
-                    options={[
-                      { label: "Male", value: constants.GENDER_MALE },
-                      { label: "Female", value: constants.GENDER_FEMALE },
-                    ]}
+                    options={constants.LIST_GENDER}
                     onChange={(val) => onChange(val, request, "gender")}
                     isRowItem
                     withMargin
                   />
-                  <ESTextFieldWithLabel
-                    label="Age"
-                    onChangeText={(val) => onChange(val, request, "age")}
-                    maxLength={3}
-                    value={request.age}
-                    keyboardType="number-pad"
-                    isRowItem
-                  />
-                </View>
-                <View style={styles.row}>
-                  <ESTextFieldWithLabel
-                    label="Height"
-                    onChangeText={(val) => onChange(val, request, "height")}
-                    maxLength={8}
-                    value={request.height}
-                    keyboardType="decimal-pad"
-                    isRowItem
-                    withMargin
-                  />
-                  <ESTextFieldWithLabel
-                    label="Weight"
-                    onChangeText={(val) => onChange(val, request, "weight")}
-                    maxLength={8}
-                    value={request.weight}
-                    keyboardType="decimal-pad"
+                  <ESDatePicker
+                    label="Birthday"
+                    value={request.bday}
+                    onChange={(val) => onChange(val, request, "bday")}
                     isRowItem
                   />
                 </View>

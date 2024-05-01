@@ -12,7 +12,7 @@ const ESRadioWithLabel = (props) => {
         props.withMargin && styles.withMargin,
       ]}
     >
-      <ESLabel {...props} text={props.label} />
+      <ESLabel text={props.label} />
       <ESRadio {...props} />
     </View>
   );

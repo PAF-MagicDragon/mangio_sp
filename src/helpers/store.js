@@ -21,6 +21,7 @@ export class Store {
     prtNo: null,
     bday: null,
     gender: constants.GENDER_MALE,
+    tempDate: null,
   };
 
   @observable tempDrugList = [];
@@ -123,8 +124,11 @@ export class Store {
     main.signature = item["SIGNATURE"];
     main.licenseNo = item["LICENSE_NO"];
     main.prtNo = item["PRT_NO"];
-    main.bday = item["BDAY"];
+    let temp = item["BDAY"];
+    main.bday = temp != null ? new Date(temp) : null;
     main.gender = item["GENDER"];
+    main.tempDate = new Date();
+    console.log("FRANC MAIN USER", main, item);
   };
 
   @action mapPatientFromDb = (item) => {
@@ -140,7 +144,8 @@ export class Store {
     // patient.signature = item["SIGNATURE"];
     // patient.licenseNo = item["LICENSE_NO"];
     // patient.prtNo = item["PRT_NO"];
-    patient.bday = item["BDAY"];
+    let temp = item["BDAY"];
+    patient.bday = temp != null ? new Date(temp) : null;
     patient.gender = item["GENDER"];
     return patient;
   };
@@ -148,7 +153,8 @@ export class Store {
   @action mapPrescriptionFromDb = (item) => {
     let prescription = {};
     prescription.id = item["ID"];
-    prescription.createDate = item["CREATE_DATE"];
+    let temp = item["CREATE_DATE"];
+    prescription.createDate = temp != null ? new Date(temp) : null;
     prescription.diagnosis = item["DIAGNOSIS"];
     prescription.doctorId = item["DOCTOR_ID"];
     prescription.patientId = item["PATIENT_ID"];
@@ -266,6 +272,8 @@ export class Store {
   };
 
   @action addEditEsUser = (request, cb) => {
+    console.log("ES USER", request);
+    let bdayInt = request.bday != null ? request.bday.getTime() : null;
     if (request.id != null) {
       db.transaction(function (tx) {
         let val = [
@@ -279,7 +287,7 @@ export class Store {
           request.signature,
           request.licenseNo,
           request.prtNo,
-          request.bday,
+          bdayInt,
           request.gender,
           request.id,
         ];
@@ -306,7 +314,7 @@ export class Store {
           request.signature,
           request.licenseNo,
           request.prtNo,
-          request.bday,
+          bdayInt,
           request.gender,
         ];
         tx.executeSql(
@@ -449,5 +457,19 @@ export class Store {
     let found = list.find((i) => i.value == value);
     console.log("GET LABEL 2", found);
     return found != null ? found.label : "";
+  }
+
+  @action confirm(cb, header, subHeader) {
+    Alert.alert(header, subHeader, [
+      {
+        text: "Yes",
+        onPress: () => {
+          cb && cb();
+        },
+      },
+      {
+        text: "No",
+      },
+    ]);
   }
 }

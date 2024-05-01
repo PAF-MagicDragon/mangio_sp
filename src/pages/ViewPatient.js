@@ -119,7 +119,7 @@ const ViewPatient = ({ navigation, route }) => {
           header="Prescriptions"
           list={prescriptions}
           customPanel={(item) => {
-            let dateString = new Date(item.createDate).toLocaleString("en-GB", {
+            let dateString = item.createDate.toLocaleString("en-GB", {
               hour12: false,
             });
             return (

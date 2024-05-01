@@ -72,3 +72,8 @@ export const LIST_TYPE = [
   { value: 2, label: "Weeks" },
   { value: 3, label: "Months" },
 ];
+
+export const LIST_GENDER = [
+  { value: GENDER_MALE, label: "Male" },
+  { value: GENDER_FEMALE, label: "Female" },
+];

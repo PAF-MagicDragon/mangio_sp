@@ -4,7 +4,7 @@ import styles from "../helpers/styles";
 
 const ESTextField = (props) => {
   return (
-    <View style={props.multiline ? styles.textFieldMulti : styles.textField}>
+    <View style={[styles.textField]}>
       <TextInput
         underlineColorAndroid="transparent"
         placeholder={props.placeholder}
@@ -15,7 +15,7 @@ const ESTextField = (props) => {
         numberOfLines={props.numberOfLines}
         multiline={props.multiline}
         onSubmitEditing={props.onSubmitEditing}
-        style={props.style}
+        style={[props.style, props.multiline && styles.alignTop]}
         blurOnSubmit={false}
         value={props.value}
         maxLength={props.maxLength}

@@ -15,6 +15,7 @@ import ESValueWithLabel from "../components/ESValueWithLabel";
 import ESListView from "../components/ESListView";
 import styles from "../helpers/styles";
 import ESContext from "../ESContext";
+import * as constants from "../helpers/constants";
 
 const DoctorDashboard = ({ navigation }) => {
   let [patients, setPatients] = useState(null);
@@ -75,19 +76,57 @@ const DoctorDashboard = ({ navigation }) => {
             header="Patients"
             list={patients}
             customPanel={(item) => {
+              const bdayString =
+                item.bday != null ? item.bday.toLocaleDateString() : "";
               return (
                 <View>
-                  <Text>Id: {item.id}</Text>
-                  <Text>Name: {item.name}</Text>
-                  <Text>Address: {item.address}</Text>
-                  <Text>Contact: {item.contactNo}</Text>
+                  <ESLabel text={item.name} customStyle={styles.subHeader} />
+                  <ESValue
+                    text={item.address}
+                    customStyle={styles.valueNoMargin}
+                  />
+                  <View style={styles.row}>
+                    <ESValue
+                      text={item.email}
+                      customStyle={styles.valueNoMargin}
+                      isRowItem
+                      withMargin
+                    />
+                    <ESValue
+                      text={item.contactNo}
+                      customStyle={styles.valueNoMargin}
+                      isRowItem
+                    />
+                  </View>
+                  <View style={styles.row}>
+                    <ESValue
+                      text={store.getLabelFromValue(
+                        item.gender,
+                        constants.LIST_GENDER
+                      )}
+                      customStyle={styles.valueNoMargin}
+                      isRowItem
+                      withMargin
+                    />
+                    <ESValue
+                      text={bdayString}
+                      customStyle={styles.valueNoMargin}
+                      isRowItem
+                    />
+                  </View>
                 </View>
               );
             }}
             customViewClick={(item) => viewPatient(item)}
             customAddClick={addPatient}
             customEditClick={(item) => alert("EDIT" + item.id)}
-            customDeleteClick={(item) => deletePatient(item)}
+            customDeleteClick={(item) =>
+              store.confirm(
+                () => deletePatient(item),
+                "Confirm",
+                "Are you sure you want to delete this patient?"
+              )
+            }
           />
         </View>
         {/* </KeyboardAvoidingView> */}

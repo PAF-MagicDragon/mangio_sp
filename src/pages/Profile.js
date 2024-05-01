@@ -15,13 +15,18 @@ import * as constants from "../helpers/constants";
 import ESRadioWithLabel from "../components/ESRadioWithLabel";
 import ESRadio from "../components/ESRadio";
 import ESDatePicker from "../components/ESDatePicker";
+import cloneDeep from "lodash/cloneDeep";
 
 const Profile = ({ navigation }) => {
   let [request, setRequest] = useState(null);
   const store = useContext(ESContext);
 
   useEffect(() => {
-    setRequest(JSON.parse(JSON.stringify(store.mainUser)));
+    // let tempDate = store.mainUser.bday;
+    // let newReq = JSON.parse(JSON.stringify(store.mainUser));
+    // newReq.bday = tempDate;
+    // setRequest(newReq);
+    setRequest(cloneDeep(store.mainUser));
   }, []);
 
   let updateProfile = () => {
@@ -164,17 +169,17 @@ const Profile = ({ navigation }) => {
                   <ESRadioWithLabel
                     label="Gender"
                     value={request.gender}
-                    options={[
-                      { label: "Male", value: constants.GENDER_MALE },
-                      { label: "Female", value: constants.GENDER_FEMALE },
-                    ]}
+                    options={constants.LIST_GENDER}
                     onChange={(val) => onChange(val, request, "gender")}
                     isRowItem
+                    withMargin
                   />
-                  {/* <ESDatePicker
-                    value={new Date()}
+                  <ESDatePicker
+                    label="Birthday"
+                    value={request.bday}
                     onChange={(val) => onChange(val, request, "bday")}
-                  /> */}
+                    isRowItem
+                  />
                 </View>
               )}
               <View style={styles.withPadding}>

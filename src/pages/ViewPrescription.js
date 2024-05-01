@@ -45,10 +45,6 @@ const ViewPrescription = ({ navigation, route }) => {
 
   useEffect(() => {}, []);
 
-  let currDate = new Date().toLocaleString("en-GB", {
-    hour12: false,
-  });
-
   return (
     isFocused && (
       <SafeAreaView style={styles.viewMain}>
