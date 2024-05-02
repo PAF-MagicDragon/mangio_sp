@@ -8,7 +8,7 @@ import {
   Text,
   Platform,
 } from "react-native";
-import ESTextFieldWithLabel from "../components/ESTextFieldWithLabel";
+import ESValueWithLabel from "../components/ESValueWithLabel";
 import ESButton from "../components/ESButton";
 import styles from "../helpers/styles";
 import ESContext from "../ESContext";
@@ -49,8 +49,11 @@ const ViewPatient = ({ navigation, route }) => {
   //   refreshList();
   // }, []);
 
-  let addPrescription = (item) => {
-    navigation.navigate("AddPrescription", item);
+  let addEditPrescription = (item) => {
+    navigation.navigate("AddPrescription", {
+      patientId: patient.id,
+      item: item,
+    });
   };
 
   let viewPrescription = (item) => {
@@ -112,38 +115,103 @@ const ViewPatient = ({ navigation, route }) => {
       <View style={styles.viewSub}>
         {/* <ScrollView keyboardShouldPersistTaps="handled">
           <KeyboardAvoidingView behavior="padding" style={styles.keyboardAvoid}> */}
-        <ESLabel text="SELECTED PATIENT:" />
-        <ESValue text={JSON.stringify(patient)} />
-
-        <ESListView
-          header="Prescriptions"
-          list={prescriptions}
-          customPanel={(item) => {
-            let dateString = item.createDate.toLocaleString("en-GB", {
-              hour12: false,
-            });
-            return (
-              <View>
-                <Text>Id: {item.id}</Text>
-                <Text>Date: {item.createDate}</Text>
-                <Text>Date 2: {dateString}</Text>
-                <Text>Diagnosis: {item.diagnosis}</Text>
-                <View style={{ opacity: 0, height: 0 }}>
-                  <QRCode
-                    value={item.id}
-                    getRef={(c) => (refMap[item.id] = c)}
+        <View style={styles.withPadding}>
+          <ESValueWithLabel
+            label="Name"
+            value={patient.name}
+            noMarginTopValue
+          />
+          <ESValueWithLabel
+            label="Address"
+            value={patient.address}
+            noMarginTopValue
+          />
+          <View style={styles.row}>
+            <ESValueWithLabel
+              label="Contact No"
+              value={patient.contactNo}
+              noMarginTopValue
+              isRowItem
+              withMarginRight
+            />
+            <ESValueWithLabel
+              label="Email"
+              value={patient.email}
+              noMarginTopValue
+              isRowItem
+            />
+          </View>
+          <View style={styles.row}>
+            <ESValueWithLabel
+              label="Gender"
+              value={store.getLabelFromValue(
+                patient.gender,
+                constants.LIST_GENDER
+              )}
+              noMarginTopValue
+              isRowItem
+              withMarginRight
+            />
+            <ESValueWithLabel
+              label="Birthday"
+              value={store.convertDateIntToString(patient.bday)}
+              noMarginTopValue
+              isRowItem
+            />
+          </View>
+        </View>
+        <View style={styles.withPadding}>
+          <ESListView
+            header="Prescriptions"
+            list={prescriptions}
+            customPanel={(item) => {
+              return (
+                <View>
+                  <ESLabel
+                    text={store.convertDateIntToString(item.createDate)}
+                    customStyle={styles.subHeader}
                   />
+                  <ESValue
+                    text={item.diagnosis}
+                    customStyle={styles.valueNoMargin}
+                  />
+                  <View style={styles.row}>
+                    <ESValue
+                      text={item.height}
+                      customStyle={styles.valueNoMargin}
+                      isRowItem
+                      withMarginRight
+                    />
+                    <ESValue
+                      text={item.weight}
+                      customStyle={styles.valueNoMargin}
+                      isRowItem
+                    />
+                  </View>
+                  <View style={{ opacity: 0, height: 0 }}>
+                    <QRCode
+                      value={item.id}
+                      getRef={(c) => (refMap[item.id] = c)}
+                    />
+                  </View>
                 </View>
-              </View>
-            );
-          }}
-          customViewClick={(item) => viewPrescription(item)}
-          customAddClick={() => addPrescription(patient)}
-          customEditClick={(item) => alert("EDIT" + item.id)}
-          customDeleteClick={(item) => deletePrescription(item)}
-          customActionClick={(item) => printPDF(item)}
-          customActionIcon="print-outline"
-        />
+              );
+            }}
+            customViewClick={(item) => viewPrescription(item)}
+            customAddClick={() => addEditPrescription()}
+            customEditClick={(item) => addEditPrescription(item)}
+            customDeleteClick={(item) =>
+              store.confirm(
+                () => deletePrescription(item),
+                "Confirm",
+                "Are you sure you want to delete this prescription?"
+              )
+            }
+            customActionClick={(item) => printPDF(item)}
+            customActionIcon="print-outline"
+          />
+        </View>
+
         {/* </KeyboardAvoidingView>
         </ScrollView> */}
       </View>

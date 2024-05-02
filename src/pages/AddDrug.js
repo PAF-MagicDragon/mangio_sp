@@ -72,7 +72,7 @@ const AddDrug = ({ navigation }) => {
                   maxLength={50}
                   value={request.strength}
                   isRowItem
-                  withMargin
+                  withMarginRight
                 />
                 <ESTextFieldWithLabel
                   label="Dose"
@@ -89,7 +89,7 @@ const AddDrug = ({ navigation }) => {
                   onChange={(val) => onChange(val, request, "preparation")}
                   value={request.preparation}
                   isRowItem
-                  withMargin
+                  withMarginRight
                 />
                 <ESDropDownWithLabel
                   label="Route"
@@ -106,7 +106,7 @@ const AddDrug = ({ navigation }) => {
                   onChange={(val) => onChange(val, request, "direction")}
                   value={request.direction}
                   isRowItem
-                  withMargin
+                  withMarginRight
                 />
                 <ESDropDownWithLabel
                   label="Frequency"
@@ -124,6 +124,7 @@ const AddDrug = ({ navigation }) => {
                   value={request.duration}
                   keyboardType="decimal-pad"
                   isRowItem
+                  withMarginRight
                 />
                 <ESDropDownWithLabel
                   label="Type"

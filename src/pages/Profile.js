@@ -22,10 +22,6 @@ const Profile = ({ navigation }) => {
   const store = useContext(ESContext);
 
   useEffect(() => {
-    // let tempDate = store.mainUser.bday;
-    // let newReq = JSON.parse(JSON.stringify(store.mainUser));
-    // newReq.bday = tempDate;
-    // setRequest(newReq);
     setRequest(cloneDeep(store.mainUser));
   }, []);
 
@@ -114,7 +110,7 @@ const Profile = ({ navigation }) => {
                   value={request.contactNo}
                   keyboardType="number-pad"
                   isRowItem
-                  withMargin
+                  withMarginRight
                 />
                 <ESTextFieldWithLabel
                   label="Email"
@@ -152,7 +148,7 @@ const Profile = ({ navigation }) => {
                       maxLength={50}
                       value={request.licenseNo}
                       isRowItem
-                      withMargin
+                      withMarginRight
                     />
                     <ESTextFieldWithLabel
                       label="PRT No"
@@ -172,7 +168,7 @@ const Profile = ({ navigation }) => {
                     options={constants.LIST_GENDER}
                     onChange={(val) => onChange(val, request, "gender")}
                     isRowItem
-                    withMargin
+                    withMarginRight
                   />
                   <ESDatePicker
                     label="Birthday"

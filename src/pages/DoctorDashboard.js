@@ -30,8 +30,8 @@ const DoctorDashboard = ({ navigation }) => {
     refreshList();
   }, []);
 
-  let addPatient = () => {
-    navigation.navigate("AddPatient");
+  let addEditPatient = (item) => {
+    navigation.navigate("AddPatient", item);
   };
 
   let viewPatient = (item) => {
@@ -66,7 +66,7 @@ const DoctorDashboard = ({ navigation }) => {
         {/* <KeyboardAvoidingView behavior="padding" style={styles.keyboardAvoid}> */}
         <ESLabel
           text={"Hello Doctor " + user.name + "!"}
-          customStyle={styles.header}
+          customStyle={[styles.header, styles.withPadding]}
         />
         <ESValue text={user.address} customStyle={styles.valueNoMargin} />
         <ESValue text={user.email} customStyle={styles.valueNoMargin} />
@@ -76,8 +76,6 @@ const DoctorDashboard = ({ navigation }) => {
             header="Patients"
             list={patients}
             customPanel={(item) => {
-              const bdayString =
-                item.bday != null ? item.bday.toLocaleDateString() : "";
               return (
                 <View>
                   <ESLabel text={item.name} customStyle={styles.subHeader} />
@@ -87,13 +85,13 @@ const DoctorDashboard = ({ navigation }) => {
                   />
                   <View style={styles.row}>
                     <ESValue
-                      text={item.email}
+                      text={item.contactNo}
                       customStyle={styles.valueNoMargin}
                       isRowItem
-                      withMargin
+                      withMarginRight
                     />
                     <ESValue
-                      text={item.contactNo}
+                      text={item.email}
                       customStyle={styles.valueNoMargin}
                       isRowItem
                     />
@@ -106,10 +104,10 @@ const DoctorDashboard = ({ navigation }) => {
                       )}
                       customStyle={styles.valueNoMargin}
                       isRowItem
-                      withMargin
+                      withMarginRight
                     />
                     <ESValue
-                      text={bdayString}
+                      text={store.convertDateIntToString(item.bday)}
                       customStyle={styles.valueNoMargin}
                       isRowItem
                     />
@@ -118,8 +116,8 @@ const DoctorDashboard = ({ navigation }) => {
               );
             }}
             customViewClick={(item) => viewPatient(item)}
-            customAddClick={addPatient}
-            customEditClick={(item) => alert("EDIT" + item.id)}
+            customAddClick={() => addEditPatient()}
+            customEditClick={(item) => addEditPatient(item)}
             customDeleteClick={(item) =>
               store.confirm(
                 () => deletePatient(item),

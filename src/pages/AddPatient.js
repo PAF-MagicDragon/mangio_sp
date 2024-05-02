@@ -14,16 +14,22 @@ import ESContext from "../ESContext";
 import * as constants from "../helpers/constants";
 import ESRadioWithLabel from "../components/ESRadioWithLabel";
 import ESDatePicker from "../components/ESDatePicker";
+import cloneDeep from "lodash/cloneDeep";
 
-const AddPatient = ({ navigation }) => {
+const AddPatient = ({ navigation, route }) => {
   let [request, setRequest] = useState(null);
   const store = useContext(ESContext);
+  const patient = route.params;
 
   useEffect(() => {
-    setRequest({
-      type: constants.TYPE_SUB_PATIENT,
-      gender: constants.GENDER_MALE,
-    });
+    if (patient != null) {
+      setRequest(cloneDeep(patient));
+    } else {
+      setRequest({
+        type: constants.TYPE_SUB_PATIENT,
+        gender: constants.GENDER_MALE,
+      });
+    }
   }, []);
 
   let addEditPatient = () => {
@@ -94,7 +100,7 @@ const AddPatient = ({ navigation }) => {
                   value={request.contactNo}
                   keyboardType="number-pad"
                   isRowItem
-                  withMargin
+                  withMarginRight
                 />
                 <ESTextFieldWithLabel
                   label="Email"
@@ -113,7 +119,7 @@ const AddPatient = ({ navigation }) => {
                     options={constants.LIST_GENDER}
                     onChange={(val) => onChange(val, request, "gender")}
                     isRowItem
-                    withMargin
+                    withMarginRight
                   />
                   <ESDatePicker
                     label="Birthday"
@@ -123,7 +129,7 @@ const AddPatient = ({ navigation }) => {
                   />
                 </View>
               </View>
-              <ESButton title="Submit" customClick={addEditPatient} />
+              <ESButton title="Save" customClick={addEditPatient} />
             </KeyboardAvoidingView>
           </ScrollView>
         </View>

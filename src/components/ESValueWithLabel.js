@@ -9,11 +9,19 @@ const ESValueWithLabel = (props) => {
     <View
       style={[
         props.isRowItem && styles.rowitems,
-        props.withMargin && styles.withMargin,
+        props.withMarginRight && styles.withMarginRight,
       ]}
     >
-      <ESLabel customStyle={props.customStyleLabel} text={props.label} />
-      <ESValue customStyle={props.customStyleValue} text={props.value} />
+      <ESLabel
+        customStyle={props.customStyleLabel}
+        noMarginTop={props.noMarginTopLabel}
+        text={props.label}
+      />
+      <ESValue
+        customStyle={props.customStyleValue}
+        noMarginTop={props.noMarginTopValue}
+        text={props.value}
+      />
     </View>
   );
 };

@@ -21,7 +21,6 @@ export class Store {
     prtNo: null,
     bday: null,
     gender: constants.GENDER_MALE,
-    tempDate: null,
   };
 
   @observable tempDrugList = [];
@@ -124,17 +123,15 @@ export class Store {
     main.signature = item["SIGNATURE"];
     main.licenseNo = item["LICENSE_NO"];
     main.prtNo = item["PRT_NO"];
-    let temp = item["BDAY"];
-    main.bday = temp != null ? new Date(temp) : null;
+    main.bday = item["BDAY"];
     main.gender = item["GENDER"];
-    main.tempDate = new Date();
     console.log("FRANC MAIN USER", main, item);
   };
 
   @action mapPatientFromDb = (item) => {
     let patient = {};
     patient.id = item["ID"];
-    // patient.type = item["TYPE"];
+    patient.type = item["TYPE"];
     patient.name = item["NAME"];
     patient.address = item["ADDRESS"];
     patient.contactNo = item["CONTACT_NUMBER"];
@@ -144,8 +141,7 @@ export class Store {
     // patient.signature = item["SIGNATURE"];
     // patient.licenseNo = item["LICENSE_NO"];
     // patient.prtNo = item["PRT_NO"];
-    let temp = item["BDAY"];
-    patient.bday = temp != null ? new Date(temp) : null;
+    patient.bday = item["BDAY"];
     patient.gender = item["GENDER"];
     return patient;
   };
@@ -153,8 +149,7 @@ export class Store {
   @action mapPrescriptionFromDb = (item) => {
     let prescription = {};
     prescription.id = item["ID"];
-    let temp = item["CREATE_DATE"];
-    prescription.createDate = temp != null ? new Date(temp) : null;
+    prescription.createDate = item["CREATE_DATE"];
     prescription.diagnosis = item["DIAGNOSIS"];
     prescription.doctorId = item["DOCTOR_ID"];
     prescription.patientId = item["PATIENT_ID"];
@@ -273,7 +268,6 @@ export class Store {
 
   @action addEditEsUser = (request, cb) => {
     console.log("ES USER", request);
-    let bdayInt = request.bday != null ? request.bday.getTime() : null;
     if (request.id != null) {
       db.transaction(function (tx) {
         let val = [
@@ -287,7 +281,7 @@ export class Store {
           request.signature,
           request.licenseNo,
           request.prtNo,
-          bdayInt,
+          request.bday,
           request.gender,
           request.id,
         ];
@@ -314,7 +308,7 @@ export class Store {
           request.signature,
           request.licenseNo,
           request.prtNo,
-          bdayInt,
+          request.bday,
           request.gender,
         ];
         tx.executeSql(
@@ -329,39 +323,82 @@ export class Store {
   };
 
   @action addEditEsPrescription = (request, cb) => {
+    console.log("FRANC ADD PRESCRIPTION 1", request);
     if (request.id != null) {
+      console.log("FRANC ADD PRESCRIPTION 2", request);
       db.transaction(function (tx) {
         let val = [
+          request.createDate,
           request.diagnosis,
           request.height,
           request.weight,
           request.id,
         ];
+        console.log("FRANC ADD PRESCRIPTION 2.1", val);
         tx.executeSql(
-          "UPDATE ES_PRESCRIPTION SET (PRESCRIPTION,HEIGHT,WEIGHT) = (?,?,?) WHERE ID = ? ",
+          "UPDATE ES_PRESCRIPTION SET (CREATE_DATE,DIAGNOSIS,HEIGHT,WEIGHT) = (?,?,?,?) WHERE ID = ? ",
           val,
           (tx, results) => {
+            console.log("FRANC ADD PRESCRIPTION 2.2", results);
+            tx.executeSql(
+              "DELETE FROM ES_DRUG WHERE PRESCRIPTION_ID = ?",
+              [request.id],
+              (tx, results) => {
+                console.log("FRANC ADD PRESCRIPTION 2.3", results);
+                request.drugList.forEach((drug, i) => {
+                  let innerId = uuid.v4();
+                  let innerVal = [
+                    innerId,
+                    request.id,
+                    drug.name,
+                    drug.strength,
+                    drug.dose,
+                    drug.preparation,
+                    drug.route,
+                    drug.direction,
+                    drug.frequency,
+                    drug.duration,
+                    drug.type,
+                    drug.instructions,
+                    drug.total,
+                    drug.refills,
+                  ];
+                  tx.executeSql(
+                    "INSERT INTO ES_DRUG (ID,PRESCRIPTION_ID,NAME,STRENGTH,DOSE,PREPARATION,ROUTE,DIRECTION,FREQUENCY,DURATION,TYPE,INSTRUCTIONS,TOTAL,REFILLS) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    innerVal,
+                    (tx, results) => {
+                      console.log("FRANC ADD PRESCRIPTION 2.4", results);
+                    }
+                  );
+                });
+              }
+            );
             cb != null && cb(results);
           }
         );
       });
     } else {
+      console.log("FRANC ADD PRESCRIPTION 3", request);
       db.transaction(function (tx) {
         let id = uuid.v4();
-        let dateNow = new Date().getTime();
         let val = [
           id,
-          dateNow,
+          request.createDate,
           request.diagnosis,
           request.doctorId,
           request.patientId,
           request.height,
           request.weight,
         ];
+        console.log("FRANC ADD PRESCRIPTION 4", val);
         tx.executeSql(
           "INSERT INTO ES_PRESCRIPTION (ID,CREATE_DATE,DIAGNOSIS,DOCTOR_ID,PATIENT_ID,HEIGHT,WEIGHT) VALUES (?,?,?,?,?,?,?)",
           val,
           (tx, results) => {
+            console.log("FRANC ADD PRESCRIPTION 5", results);
+            console.log("FRANC ADD PRESCRIPTION 5.1", tx, request, id);
+            // this.saveDrugList(tx, request, id);
+            console.log("FRANC ADD PRESCRIPTION 5.2", tx, request, id);
             request.drugList.forEach((drug, i) => {
               let innerId = uuid.v4();
               let innerVal = [
@@ -383,7 +420,9 @@ export class Store {
               tx.executeSql(
                 "INSERT INTO ES_DRUG (ID,PRESCRIPTION_ID,NAME,STRENGTH,DOSE,PREPARATION,ROUTE,DIRECTION,FREQUENCY,DURATION,TYPE,INSTRUCTIONS,TOTAL,REFILLS) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 innerVal,
-                (tx, results) => {}
+                (tx, results) => {
+                  console.log("FRANC ADD PRESCRIPTION 5.3", results);
+                }
               );
             });
             cb != null && cb(results);
@@ -393,7 +432,37 @@ export class Store {
     }
   };
 
+  @action saveDrugList = (tx, request, id) => {
+    console.log("FRANC ADD PRESCRIPTION 6", request);
+    request.drugList.forEach((drug, i) => {
+      let innerId = uuid.v4();
+      let innerVal = [
+        innerId,
+        id,
+        drug.name,
+        drug.strength,
+        drug.dose,
+        drug.preparation,
+        drug.route,
+        drug.direction,
+        drug.frequency,
+        drug.duration,
+        drug.type,
+        drug.instructions,
+        drug.total,
+        drug.refills,
+      ];
+      console.log("FRANC ADD PRESCRIPTION 7", innerVal);
+      tx.executeSql(
+        "INSERT INTO ES_DRUG (ID,PRESCRIPTION_ID,NAME,STRENGTH,DOSE,PREPARATION,ROUTE,DIRECTION,FREQUENCY,DURATION,TYPE,INSTRUCTIONS,TOTAL,REFILLS) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        innerVal,
+        (tx, results) => {}
+      );
+    });
+  };
+
   @action deleteRecord = (table, id, whereField, cb) => {
+    console.log("FRANC DEL RECORD", table);
     db.transaction(function (tx) {
       let val = [id];
       let sql = "DELETE FROM " + table + " WHERE " + whereField + "";
@@ -471,5 +540,10 @@ export class Store {
         text: "No",
       },
     ]);
+  }
+
+  @action convertDateIntToString(dateInt) {
+    const value = dateInt != null ? new Date(dateInt) : null;
+    return value != null ? value.toLocaleDateString() : "";
   }
 }

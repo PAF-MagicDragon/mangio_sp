@@ -37,8 +37,11 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexBasis: 0,
   },
-  withMargin: {
+  withMarginRight: {
     marginRight: 10,
+  },
+  withMarginTop: {
+    marginTop: 10,
   },
   withPadding: {
     paddingTop: 10,
@@ -77,21 +80,19 @@ const styles = StyleSheet.create({
   label: {
     color: "#000000",
     fontSize: 14,
-    marginTop: 10,
     fontWeight: "bold",
   },
   value: {
     color: "#808080",
     fontSize: 14,
-    marginTop: 10,
   },
   datePickerValue: {
     color: "#000000",
     fontSize: 14,
-    marginTop: 25,
+    marginTop: 15,
   },
   datePickerIcon: {
-    marginTop: 50,
+    marginTop: 40,
     marginRight: 70,
   },
   valueNoMargin: {
@@ -111,7 +112,6 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
   },
   radio: {
-    marginTop: 10,
     marginLeft: -10,
     padding: 10,
     // borderColor: "#57A4FF",
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   dropdown: {
     backgroundColor: "white",
     marginTop: 10,
-    height: 50,
+    height: 40,
     borderColor: "#57A4FF",
     borderWidth: 0.5,
     borderRadius: 5,

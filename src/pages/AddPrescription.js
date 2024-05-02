@@ -14,23 +14,24 @@ import ESContext from "../ESContext";
 import * as constants from "../helpers/constants";
 import ESValueWithLabel from "../components/ESValueWithLabel";
 import ESListView from "../components/ESListView";
-import ESLabel from "../components/ESLabel";
+import ESDatePicker from "../components/ESDatePicker";
 import ESValue from "../components/ESValue";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
+import cloneDeep from "lodash/cloneDeep";
 
 const AddPrescription = ({ navigation, route }) => {
   let [request, setRequest] = useState(null);
   let [drugList, setDrugList] = useState([]);
   const store = useContext(ESContext);
   const isFocused = useIsFocused();
-  const patient = route.params;
+  const obj = route.params;
+  const patientId = obj.patientId;
+  const item = obj.item;
 
   useFocusEffect(
     React.useCallback(() => {
       // Do something when the screen is focused
-      console.log("DRUG LIST ON FOCUS", store.tempDrugList);
       setDrugList([...store.tempDrugList]);
-      console.log("DRUG LIST ON FOCUS 2", store.tempDrugList);
       return () => {
         // Do something when the screen is unfocused
         // Useful for cleanup functions
@@ -40,12 +41,21 @@ const AddPrescription = ({ navigation, route }) => {
 
   useEffect(() => {
     console.log("DRUG LIST ON USE EFFECT", store.tempDrugList);
-    setRequest({
-      doctorId: store.mainUser.id,
-      patientId: patient.id,
-    });
-    store.tempDrugList = [];
-    setDrugList([...store.tempDrugList]);
+    if (item != null) {
+      setRequest(cloneDeep(item));
+      store.getDrugs(item.id, (list) => {
+        store.tempDrugList = list;
+        setDrugList([...store.tempDrugList]);
+      });
+    } else {
+      setRequest({
+        doctorId: store.mainUser.id,
+        patientId: patientId,
+        createDate: new Date().getTime(),
+      });
+      store.tempDrugList = [];
+      setDrugList([...store.tempDrugList]);
+    }
   }, []);
 
   let addDrug = () => {
@@ -113,8 +123,17 @@ const AddPrescription = ({ navigation, route }) => {
               behavior="padding"
               style={styles.keyboardAvoid}
             > */}
-          <ESValueWithLabel label="Patient Name" value={patient.name} />
-          <ESValueWithLabel label="Date" value={currDate} />
+          <View style={styles.row}>
+            <ESDatePicker
+              label="Date"
+              value={request.createDate}
+              onChange={(val) => onChange(val, request, "createDate")}
+              isRowItem
+              withMarginRight
+            />
+            <View style={styles.rowitems}></View>
+          </View>
+
           <View style={styles.row}>
             <ESTextFieldWithLabel
               label="Height"
@@ -123,6 +142,7 @@ const AddPrescription = ({ navigation, route }) => {
               value={request.height}
               keyboardType="decimal-pad"
               isRowItem
+              withMarginRight
             />
             <ESTextFieldWithLabel
               label="Weight"

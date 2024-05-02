@@ -69,7 +69,7 @@ const Main = () => {
             name="Profile"
             component={Profile}
             options={{
-              title: "Profile",
+              title: "My Profile",
               ...navOptions,
             }}
           />
@@ -109,7 +109,7 @@ const Main = () => {
             name="AddPatient"
             component={AddPatient}
             options={{
-              title: "Add Patient",
+              title: "Manage Patient",
               ...navOptions,
             }}
           />
@@ -117,7 +117,7 @@ const Main = () => {
             name="ViewPatient"
             component={ViewPatient}
             options={{
-              title: "View Patient",
+              title: "Patient Details",
               ...navOptions,
             }}
           />
@@ -125,7 +125,7 @@ const Main = () => {
             name="AddPrescription"
             component={AddPrescription}
             options={{
-              title: "Add Prescription",
+              title: "Manage Prescription",
               ...navOptions,
             }}
           />

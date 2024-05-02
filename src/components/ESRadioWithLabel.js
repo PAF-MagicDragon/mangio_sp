@@ -9,7 +9,7 @@ const ESRadioWithLabel = (props) => {
     <View
       style={[
         props.isRowItem && styles.rowitems,
-        props.withMargin && styles.withMargin,
+        props.withMarginRight && styles.withMarginRight,
       ]}
     >
       <ESLabel text={props.label} />

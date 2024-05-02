@@ -20,19 +20,20 @@ const ESDatePicker = (props) => {
 
   const handleConfirm = (date) => {
     let onChange = props.onChange;
-    onChange & onChange(date);
+    onChange & onChange(date != null ? date.getTime() : null);
     hideDatePicker();
   };
 
+  const value = props.value != null ? new Date(props.value) : null;
   const placeholder =
-    props.value != null ? props.value.toLocaleDateString() : "Choose Date";
+    value != null ? value.toLocaleDateString() : "Choose Date";
 
   console.log("FRANC DATE PLACEHOLDER", placeholder);
   return (
     <View
       style={[
         props.isRowItem && styles.rowitems,
-        props.withMargin && styles.withMargin,
+        props.withMarginRight && styles.withMarginRight,
       ]}
     >
       <View style={styles.row}>
@@ -49,7 +50,7 @@ const ESDatePicker = (props) => {
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
         mode="date"
-        date={props.value}
+        date={value != null ? value : new Date()}
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
       />
