@@ -14,8 +14,9 @@ import ESContext from "../ESContext";
 import * as constants from "../helpers/constants";
 import ESValueWithLabel from "../components/ESValueWithLabel";
 import ESDropDownWithLabel from "../components/ESDropDownWithLabel";
+import cloneDeep from "lodash/cloneDeep";
 
-const AddDrug = ({ navigation }) => {
+const AddDrug = ({ navigation, route }) => {
   let [request, setRequest] = useState(null);
   let [templateData, setTemplateData] = useState([]);
   let [preparationData, setPreparationData] = useState([]);
@@ -24,9 +25,16 @@ const AddDrug = ({ navigation }) => {
   let [frequencyData, setFrequencyData] = useState([]);
   let [typeData, setTypeData] = useState([]);
   const store = useContext(ESContext);
+  const obj = route.params;
+  const index = obj.index;
+  const item = obj.item;
 
   useEffect(() => {
-    setRequest({});
+    if (item != null) {
+      setRequest(cloneDeep(item));
+    } else {
+      setRequest({});
+    }
     store.initializeTemplateData((list) => {
       setTemplateData(list);
     });
@@ -38,7 +46,11 @@ const AddDrug = ({ navigation }) => {
   }, []);
 
   let addEditDrug = () => {
-    store.tempDrugList.push(request);
+    if (item != null) {
+      store.tempDrugList.splice(index, 1, request);
+    } else {
+      store.tempDrugList.push(request);
+    }
     navigation.pop();
   };
 
@@ -143,7 +155,7 @@ const AddDrug = ({ navigation }) => {
                 multiline={true}
                 style={{ textAlignVertical: "top" }}
               />
-              <ESButton title="Add" customClick={addEditDrug} />
+              <ESButton title="Save" customClick={addEditDrug} />
             </KeyboardAvoidingView>
           </ScrollView>
         </View>

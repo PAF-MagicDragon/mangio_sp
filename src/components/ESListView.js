@@ -20,7 +20,7 @@ let listViewItem = (
   customActionIcon
 ) => {
   return (
-    <TouchableOpacity onPress={() => customViewClick(item)}>
+    <TouchableOpacity onPress={() => customViewClick && customViewClick(item)}>
       <View key={item.id} style={styles.listViewItem}>
         <View style={styles.listViewItem1}>{panel}</View>
         {(customEditClick || customDeleteClick) && (

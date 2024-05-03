@@ -20,6 +20,7 @@ import ESRadioWithLabel from "../components/ESRadioWithLabel";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import RNHTMLtoPDF from "react-native-html-to-pdf";
 import QRCode from "react-native-qrcode-svg";
+import ESSingleLabelValue from "../components/ESSingleLabelValue";
 
 const ViewPatient = ({ navigation, route }) => {
   let [prescriptions, setPrescriptions] = useState(null);
@@ -171,19 +172,22 @@ const ViewPatient = ({ navigation, route }) => {
                     text={store.convertDateIntToString(item.createDate)}
                     customStyle={styles.subHeader}
                   />
-                  <ESValue
-                    text={item.diagnosis}
+                  <ESSingleLabelValue
+                    label="Diagnosis"
+                    value={item.diagnosis}
                     customStyle={styles.valueNoMargin}
                   />
                   <View style={styles.row}>
-                    <ESValue
-                      text={item.height}
+                    <ESSingleLabelValue
+                      label="Height"
+                      value={item.height}
                       customStyle={styles.valueNoMargin}
                       isRowItem
                       withMarginRight
                     />
-                    <ESValue
-                      text={item.weight}
+                    <ESSingleLabelValue
+                      label="Weight"
+                      value={item.weight}
                       customStyle={styles.valueNoMargin}
                       isRowItem
                     />

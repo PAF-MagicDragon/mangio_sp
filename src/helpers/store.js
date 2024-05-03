@@ -236,7 +236,7 @@ export class Store {
   @action getDrugs = (prescriptionId, cb) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT * FROM ES_DRUG WHERE PRESCRIPTION_ID = ? ORDER BY ID",
+        "SELECT * FROM ES_DRUG WHERE PRESCRIPTION_ID = ? ORDER BY NAME",
         [prescriptionId],
         (tx, results) => {
           var temp = [];

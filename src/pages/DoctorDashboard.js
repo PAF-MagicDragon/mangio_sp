@@ -11,7 +11,7 @@ import ESButton from "../components/ESButton";
 import ESIcon from "../components/ESIcon";
 import ESLabel from "../components/ESLabel";
 import ESValue from "../components/ESValue";
-import ESValueWithLabel from "../components/ESValueWithLabel";
+import ESSingleLabelValue from "../components/ESSingleLabelValue";
 import ESListView from "../components/ESListView";
 import styles from "../helpers/styles";
 import ESContext from "../ESContext";
@@ -79,26 +79,25 @@ const DoctorDashboard = ({ navigation }) => {
               return (
                 <View>
                   <ESLabel text={item.name} customStyle={styles.subHeader} />
-                  <ESValue
-                    text={item.address}
+                  <ESSingleLabelValue
+                    label="Address"
+                    value={item.address}
+                    customStyle={styles.valueNoMargin}
+                  />
+                  <ESSingleLabelValue
+                    label="Contact No"
+                    value={item.contactNo}
+                    customStyle={styles.valueNoMargin}
+                  />
+                  <ESSingleLabelValue
+                    label="Email"
+                    value={item.email}
                     customStyle={styles.valueNoMargin}
                   />
                   <View style={styles.row}>
-                    <ESValue
-                      text={item.contactNo}
-                      customStyle={styles.valueNoMargin}
-                      isRowItem
-                      withMarginRight
-                    />
-                    <ESValue
-                      text={item.email}
-                      customStyle={styles.valueNoMargin}
-                      isRowItem
-                    />
-                  </View>
-                  <View style={styles.row}>
-                    <ESValue
-                      text={store.getLabelFromValue(
+                    <ESSingleLabelValue
+                      label="Gender"
+                      value={store.getLabelFromValue(
                         item.gender,
                         constants.LIST_GENDER
                       )}
@@ -106,8 +105,9 @@ const DoctorDashboard = ({ navigation }) => {
                       isRowItem
                       withMarginRight
                     />
-                    <ESValue
-                      text={store.convertDateIntToString(item.bday)}
+                    <ESSingleLabelValue
+                      label="Birthday"
+                      value={store.convertDateIntToString(item.bday)}
                       customStyle={styles.valueNoMargin}
                       isRowItem
                     />

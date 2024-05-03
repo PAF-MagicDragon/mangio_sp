@@ -5,12 +5,12 @@ import styles from "../helpers/styles";
 
 const ESIcon = (props) => {
   const name = props.name;
-  const color = props.color;
+  const color = props.color ? props.color : "#57A4FF";
   return (
     <Icon
       //name={Platform.OS === "ios" ? "ios-" + { name } : "md-" + { name }}
       name={name}
-      color={color ? color : "#57A4FF"}
+      color={color}
       size={25}
       onPress={props.customClick}
     />

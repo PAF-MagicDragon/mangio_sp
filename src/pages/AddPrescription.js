@@ -12,10 +12,10 @@ import ESButton from "../components/ESButton";
 import styles from "../helpers/styles";
 import ESContext from "../ESContext";
 import * as constants from "../helpers/constants";
-import ESValueWithLabel from "../components/ESValueWithLabel";
+import ESSingleLabelValue from "../components/ESSingleLabelValue";
 import ESListView from "../components/ESListView";
 import ESDatePicker from "../components/ESDatePicker";
-import ESValue from "../components/ESValue";
+import ESLabel from "../components/ESLabel";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import cloneDeep from "lodash/cloneDeep";
 
@@ -58,9 +58,11 @@ const AddPrescription = ({ navigation, route }) => {
     }
   }, []);
 
-  let addDrug = () => {
-    console.log("DRUG LIST ON NAV", store.tempDrugList);
-    navigation.navigate("AddDrug");
+  let addEditDrug = (item, index) => {
+    navigation.navigate("AddDrug", {
+      index: index,
+      item: item,
+    });
   };
 
   let deleteDrug = (item, index) => {
@@ -167,46 +169,102 @@ const AddPrescription = ({ navigation, route }) => {
             customPanel={(item) => {
               return (
                 <View>
-                  <Text>Name: {item.name}</Text>
-                  <Text>Strength: {item.strength}</Text>
-                  <Text>Dose: {item.dose}</Text>
-                  <Text>
-                    Preparation:
-                    {store.getLabelFromValue(
-                      item.preparation,
-                      constants.LIST_PREPARATION
-                    )}
-                  </Text>
-                  <Text>
-                    Frequency:
-                    {store.getLabelFromValue(
-                      item.frequency,
-                      constants.LIST_FREQUENCY
-                    )}
-                  </Text>
-                  <Text>
-                    Direction:
-                    {store.getLabelFromValue(
-                      item.direction,
-                      constants.LIST_DIRECTION
-                    )}
-                  </Text>
-                  <Text>
-                    Route:
-                    {store.getLabelFromValue(item.route, constants.LIST_ROUTE)}
-                  </Text>
-                  <Text>Instructions: {item.instructions}</Text>
+                  <ESLabel text={item.name} customStyle={styles.subHeader} />
+                  <View style={styles.row}>
+                    <ESSingleLabelValue
+                      label="Strength"
+                      value={item.strength}
+                      customStyle={styles.valueNoMargin}
+                      isRowItem
+                      withMarginRight
+                    />
+                    <ESSingleLabelValue
+                      label="Dose"
+                      value={item.dose}
+                      customStyle={styles.valueNoMargin}
+                      isRowItem
+                    />
+                  </View>
+                  <View style={styles.row}>
+                    <ESSingleLabelValue
+                      label="Preparation"
+                      value={store.getLabelFromValue(
+                        item.preparation,
+                        constants.LIST_PREPARATION
+                      )}
+                      customStyle={styles.valueNoMargin}
+                      isRowItem
+                      withMarginRight
+                    />
+                    <ESSingleLabelValue
+                      label="Frequency"
+                      value={store.getLabelFromValue(
+                        item.frequency,
+                        constants.LIST_FREQUENCY
+                      )}
+                      customStyle={styles.valueNoMargin}
+                      isRowItem
+                    />
+                  </View>
+                  <View style={styles.row}>
+                    <ESSingleLabelValue
+                      label="Direction"
+                      value={store.getLabelFromValue(
+                        item.direction,
+                        constants.LIST_DIRECTION
+                      )}
+                      customStyle={styles.valueNoMargin}
+                      isRowItem
+                      withMarginRight
+                    />
+                    <ESSingleLabelValue
+                      label="Route"
+                      value={store.getLabelFromValue(
+                        item.route,
+                        constants.LIST_ROUTE
+                      )}
+                      customStyle={styles.valueNoMargin}
+                      isRowItem
+                    />
+                  </View>
+                  <View style={styles.row}>
+                    <ESSingleLabelValue
+                      label="Duration"
+                      value={item.duration}
+                      customStyle={styles.valueNoMargin}
+                      isRowItem
+                      withMarginRight
+                    />
+                    <ESSingleLabelValue
+                      label="Type"
+                      value={store.getLabelFromValue(
+                        item.type,
+                        constants.LIST_TYPE
+                      )}
+                      customStyle={styles.valueNoMargin}
+                      isRowItem
+                    />
+                  </View>
+                  <ESSingleLabelValue
+                    label="Instructions"
+                    value={item.instructions}
+                    customStyle={styles.valueNoMargin}
+                  />
                 </View>
               );
             }}
-            customViewClick={(item) => alert("VIEW" + item.id)}
-            customAddClick={addDrug}
-            customEditClick={(item, index) =>
-              alert("EDIT: " + item.id + "INDEX: " + index)
+            // customViewClick={(item) => alert("VIEW" + item.id)}
+            customAddClick={addEditDrug}
+            customEditClick={(item, index) => addEditDrug(item, index)}
+            customDeleteClick={(item, index) =>
+              store.confirm(
+                () => deleteDrug(item, index),
+                "Confirm",
+                "Are you sure you want to delete this drug?"
+              )
             }
-            customDeleteClick={(item, index) => deleteDrug(item, index)}
           />
-          <ESButton title="Submit" customClick={addEditPrescription} />
+          <ESButton title="Save" customClick={addEditPrescription} />
           {/* </KeyboardAvoidingView>
           </ScrollView> */}
         </View>

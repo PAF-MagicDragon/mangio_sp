@@ -19,11 +19,11 @@ import cloneDeep from "lodash/cloneDeep";
 const AddPatient = ({ navigation, route }) => {
   let [request, setRequest] = useState(null);
   const store = useContext(ESContext);
-  const patient = route.params;
+  const item = route.params;
 
   useEffect(() => {
-    if (patient != null) {
-      setRequest(cloneDeep(patient));
+    if (item != null) {
+      setRequest(cloneDeep(item));
     } else {
       setRequest({
         type: constants.TYPE_SUB_PATIENT,

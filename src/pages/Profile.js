@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import ESTextFieldWithLabel from "../components/ESTextFieldWithLabel";
 import ESButton from "../components/ESButton";
+import ESIcon from "../components/ESIcon";
 import styles from "../helpers/styles";
 import ESContext from "../ESContext";
 import * as constants from "../helpers/constants";
@@ -22,8 +23,26 @@ const Profile = ({ navigation }) => {
   const store = useContext(ESContext);
 
   useEffect(() => {
-    setRequest(cloneDeep(store.mainUser));
-  }, []);
+    if (request == null) {
+      setRequest(cloneDeep(store.mainUser));
+    } else {
+      navigation.setOptions({
+        headerRight: () => (
+          <View>
+            <ESIcon
+              name={
+                request.type == constants.TYPE_MAIN_DOCTOR
+                  ? "glasses-outline"
+                  : "body-outline"
+              }
+              customClick={() => onChange(request.type, request, "type")}
+              color="#ffffff"
+            />
+          </View>
+        ),
+      });
+    }
+  }, [request]);
 
   let updateProfile = () => {
     if (request.name == null || request.name.length == 0) {
@@ -54,6 +73,15 @@ const Profile = ({ navigation }) => {
   };
 
   let onChange = (val, obj, field) => {
+    if (field == "type") {
+      if (val != null) {
+        if (val == constants.TYPE_MAIN_DOCTOR) {
+          val = constants.TYPE_MAIN_PATIENT;
+        } else {
+          val = constants.TYPE_MAIN_DOCTOR;
+        }
+      }
+    }
     obj[field] = val;
     setRequest((request) => ({
       ...request,
@@ -70,7 +98,7 @@ const Profile = ({ navigation }) => {
               behavior="padding"
               style={styles.keyboardAvoid}
             >
-              <View style={styles.rowReverse}>
+              {/* <View style={styles.rowReverse}>
                 <View style={styles.rowitems}>
                   <ESRadio
                     value={request.type}
@@ -87,7 +115,7 @@ const Profile = ({ navigation }) => {
                   />
                 </View>
                 <View style={styles.rowitems}></View>
-              </View>
+              </View> */}
               <ESTextFieldWithLabel
                 label="Name"
                 onChangeText={(val) => onChange(val, request, "name")}
