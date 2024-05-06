@@ -179,10 +179,10 @@ const Profile = ({ navigation }) => {
                       withMarginRight
                     />
                     <ESTextFieldWithLabel
-                      label="PRT No"
-                      onChangeText={(val) => onChange(val, request, "prtNo")}
+                      label="PTR No"
+                      onChangeText={(val) => onChange(val, request, "ptrNo")}
                       maxLength={50}
-                      value={request.prtNo}
+                      value={request.ptrNo}
                       isRowItem
                     />
                   </View>

@@ -88,7 +88,7 @@ const ViewPatient = ({ navigation, route }) => {
     try {
       let PDFOptions = {
         html: myHtml,
-        fileName: "Expresscript" + id,
+        fileName: "Expresscript_" + new Date().getTime(),
         directory: Platform.OS === "android" ? "Downloads" : "Documents",
       };
       let file = await RNHTMLtoPDF.convert(PDFOptions);
@@ -100,14 +100,67 @@ const ViewPatient = ({ navigation, route }) => {
   };
 
   const printPDF = (item) => {
+    let pdfString = constants.HTML_TEMPLATE;
+    let drugString = constants.DRUG_TEMPLATE;
+    let doctorData = store.mainUser;
+    let prescriptionData = item;
+    let patientData = patient;
+
     refMap[item.id].toDataURL((val) => {
-      console.log("FRANC BASE64", val);
       let qrImage = val;
-      let pdfString =
-        "<style>body{font-family:Helvetica;font-size:12px}footer,header{height:50px;background-color:#fff;color:#000;display:flex;justify-content:center;padding:0 20px}table{width:100%;border-collapse:collapse}td,th{border:1px solid #000;padding:5px}th{background-color:#ccc}</style><header><h1>Invoice for Order #12341234</h1></header><img alt='Red dot'src='data:image/png;base64," +
-        qrImage +
-        "'><h1>Order Details</h1><table><tr><th>Order ID<td>12341234}<tr><th>Order Date<td>29-Jul-2022<tr><th>Order Status<td>Completed<tr><th>Order Total<td>$13232</table><h1>Order Lines</h1><table><tr><th>Product ID<th>Product Name<th>Product Qty<th>Product Price<tr><td>1a<td>2a<td>3a<td>4a<tr><td>1b<td>2b<td>3b<td>4b<tr><td>1c<td>2c<td>3c<td>4c</table><footer><p>Thank you for your business!</footer>";
-      createPDF(pdfString, item.id);
+      console.log("FRANC BASE64", val);
+      store.getDrugs(prescriptionData.id, (drugList) => {
+        pdfString = pdfString.replace(
+          "[clinicHospital]",
+          doctorData.clinicHospital
+        );
+        pdfString = pdfString.replace("[doctorAddress]", doctorData.address);
+        pdfString = pdfString.replace(
+          "[doctorContactNo]",
+          doctorData.contactNo
+        );
+        pdfString = pdfString.replace("[doctorEmail]", doctorData.email);
+        pdfString = pdfString.replace("[doctorName]", doctorData.name);
+        pdfString = pdfString.replace(
+          "[doctorLicenseNo]",
+          doctorData.licenseNo
+        );
+        pdfString = pdfString.replace("[doctorPtrNo]", doctorData.ptrNo);
+        pdfString = pdfString.replace("[patientName]", patientData.name);
+        pdfString = pdfString.replace("[patientAddress]", patientData.address);
+        pdfString = pdfString.replace(
+          "[patientHeight]",
+          prescriptionData.height
+        );
+        pdfString = pdfString.replace(
+          "[patientWeight]",
+          prescriptionData.weight
+        );
+        let age = Math.floor(
+          (new Date() - new Date(patientData.bday)) / 31557600000
+        );
+        pdfString = pdfString.replace("[patientAge]", age);
+        pdfString = pdfString.replace(
+          "[prescriptionDate]",
+          store.convertDateIntToString(prescriptionData.createDate)
+        );
+
+        let drugContent = "";
+        drugList.forEach((drug, i) => {
+          let innerString = drugString;
+          let drugDetails = drug.name + " " + drug.strength + " " + drug.dose;
+          innerString = innerString.replace("[drugDetails]", drugDetails);
+          innerString = innerString.replace(
+            "[drugInstructions]",
+            drug.instructions
+          );
+          drugContent = drugContent.concat(innerString);
+        });
+
+        pdfString = pdfString.replace("[drugContent]", drugContent);
+
+        createPDF(pdfString, item.id);
+      });
     });
   };
 

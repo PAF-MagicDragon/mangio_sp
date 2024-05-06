@@ -18,7 +18,7 @@ export class Store {
     specialization: null,
     signature: null,
     licenseNo: null,
-    prtNo: null,
+    ptrNo: null,
     bday: null,
     gender: constants.GENDER_MALE,
   };
@@ -46,7 +46,7 @@ export class Store {
   @action initializeAllTables = (cb) => {
     this.initializeTable(
       "ES_USER",
-      "ID VARCHAR(50) PRIMARY KEY, TYPE INT(1), NAME VARCHAR(100), ADDRESS VARCHAR(250), CONTACT_NUMBER VARCHAR(50), EMAIL VARCHAR(250), CLINIC_HOSPITAL VARCHAR(250), SPECIALIZATION VARCHAR(100), SIGNATURE BLOB, LICENSE_NO VARCHAR(50), PRT_NO VARCHAR(50), BDAY INT(15), GENDER INT(1)",
+      "ID VARCHAR(50) PRIMARY KEY, TYPE INT(1), NAME VARCHAR(100), ADDRESS VARCHAR(250), CONTACT_NUMBER VARCHAR(50), EMAIL VARCHAR(250), CLINIC_HOSPITAL VARCHAR(250), SPECIALIZATION VARCHAR(100), SIGNATURE BLOB, LICENSE_NO VARCHAR(50), PTR_NO VARCHAR(50), BDAY INT(15), GENDER INT(1)",
       cb
     );
     this.initializeTable(
@@ -122,7 +122,7 @@ export class Store {
     main.specialization = item["SPECIALIZATION"];
     main.signature = item["SIGNATURE"];
     main.licenseNo = item["LICENSE_NO"];
-    main.prtNo = item["PRT_NO"];
+    main.ptrNo = item["PTR_NO"];
     main.bday = item["BDAY"];
     main.gender = item["GENDER"];
     console.log("FRANC MAIN USER", main, item);
@@ -140,7 +140,7 @@ export class Store {
     // patient.specialization = item["SPECIALIZATION"];
     // patient.signature = item["SIGNATURE"];
     // patient.licenseNo = item["LICENSE_NO"];
-    // patient.prtNo = item["PRT_NO"];
+    // patient.ptrNo = item["PTR_NO"];
     patient.bday = item["BDAY"];
     patient.gender = item["GENDER"];
     return patient;
@@ -280,13 +280,13 @@ export class Store {
           request.specialization,
           request.signature,
           request.licenseNo,
-          request.prtNo,
+          request.ptrNo,
           request.bday,
           request.gender,
           request.id,
         ];
         tx.executeSql(
-          "UPDATE ES_USER SET (TYPE,NAME,ADDRESS,CONTACT_NUMBER,EMAIL,CLINIC_HOSPITAL,SPECIALIZATION,SIGNATURE,LICENSE_NO,PRT_NO,BDAY,GENDER) = (?,?,?,?,?,?,?,?,?,?,?,?) WHERE ID = ? ",
+          "UPDATE ES_USER SET (TYPE,NAME,ADDRESS,CONTACT_NUMBER,EMAIL,CLINIC_HOSPITAL,SPECIALIZATION,SIGNATURE,LICENSE_NO,PTR_NO,BDAY,GENDER) = (?,?,?,?,?,?,?,?,?,?,?,?) WHERE ID = ? ",
           val,
           (tx, results) => {
             cb != null && cb(results);
@@ -307,12 +307,12 @@ export class Store {
           request.specialization,
           request.signature,
           request.licenseNo,
-          request.prtNo,
+          request.ptrNo,
           request.bday,
           request.gender,
         ];
         tx.executeSql(
-          "INSERT INTO ES_USER (ID,TYPE,NAME,ADDRESS,CONTACT_NUMBER,EMAIL,CLINIC_HOSPITAL,SPECIALIZATION,SIGNATURE,LICENSE_NO,PRT_NO,BDAY,GENDER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
+          "INSERT INTO ES_USER (ID,TYPE,NAME,ADDRESS,CONTACT_NUMBER,EMAIL,CLINIC_HOSPITAL,SPECIALIZATION,SIGNATURE,LICENSE_NO,PTR_NO,BDAY,GENDER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
           val,
           (tx, results) => {
             cb != null && cb(results);

@@ -59,6 +59,7 @@ const AddPrescription = ({ navigation, route }) => {
   }, []);
 
   let addEditDrug = (item, index) => {
+    console.log("ADD DRUG OBJ", item, index);
     navigation.navigate("AddDrug", {
       index: index,
       item: item,
@@ -254,7 +255,7 @@ const AddPrescription = ({ navigation, route }) => {
               );
             }}
             // customViewClick={(item) => alert("VIEW" + item.id)}
-            customAddClick={addEditDrug}
+            customAddClick={() => addEditDrug()}
             customEditClick={(item, index) => addEditDrug(item, index)}
             customDeleteClick={(item, index) =>
               store.confirm(

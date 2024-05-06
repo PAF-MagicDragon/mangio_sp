@@ -77,3 +77,12 @@ export const LIST_GENDER = [
   { value: GENDER_MALE, label: "Male" },
   { value: GENDER_FEMALE, label: "Female" },
 ];
+
+export const HTML_TEMPLATE =
+  "<style>html{height:100%}body{height:842px;width:595px;font-family:Helvetica;font-size:16px;margin:0 50px 0 50px}td,th{padding:2px}table{border-collapse:collapse}td{min-width:50px}th{min-width:50px;text-align:left}hr{height:2px;border-width:0;color:gray;background-color:gray}.centerText{text-align:center}.centerMargin{margin-right:auto;margin-left:auto}.centerMargin{margin-right:auto;margin-left:auto}.container{height:100%;width:100%;border-collapse:collapse}.drugs{margin-right:auto;margin-left:auto;font-family:Helvetica;font-size:30px}.header{height:200px}.footer{height:100px}.header1{font-size:30px;text-align:center}.line1{padding-top:20px;font-size:30px}.line2{font-size:25px;font-style:italic}</style><table class=container><tr class=header><td valign=top><table class=centerMargin><tr><th class=header1>[clinicHospital]<tr><th class=centerText>[doctorName]<tr><td class=centerText>[doctorAddress]<tr><td class=centerText>[doctorContactNo] | [doctorEmail]</table><hr><table class=centerMargin><tr><td>Name:<th colspan=3>[patientName]<td>Date:<th>[prescriptionDate]<tr><td>Address<th colspan=5>[patientAddress]<tr><td>Height:<th>[patientHeight]<td>Weight:<th>[patientWeight]<td>Age:<th>[patientAge]</table><h1>Rx</h1><tr><td valign=top><table class=drugs>[drugContent]</table><tr class=footer><td valign=bottom><hr><table class=centerMargin><tr><td>Doctor's Signature:<th><tr><td>License No:<th>[doctorLicenseNo]<tr><td>PTR No.:<th>[doctorPtrNo]</table></table>";
+
+export const DRUG_TEMPLATE =
+  "<tr><td class=line1 colspan=2>[drugDetails]<tr><th>Sig.<td class=line2>[drugInstructions]";
+
+export const IMG_TEMPLATE =
+  "<img alt='Red dot'src='data:image/png;base64,encryptedstring'>";
