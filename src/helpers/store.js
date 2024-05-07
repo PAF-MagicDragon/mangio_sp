@@ -1,8 +1,9 @@
 import { observable, action, computed } from "mobx";
 import { openDatabase } from "react-native-sqlite-storage";
 import * as constants from "./constants";
-import { Alert } from "react-native";
+import { Alert, Platform } from "react-native";
 import uuid from "react-native-uuid";
+import RNHTMLtoPDF from "react-native-html-to-pdf";
 
 var db = openDatabase({ name: "ESDatabase.db" });
 
@@ -543,7 +544,112 @@ export class Store {
   }
 
   @action convertDateIntToString(dateInt) {
+    console.log("CONVERT DATE 1", dateInt);
     const value = dateInt != null ? new Date(dateInt) : null;
+    console.log("CONVERT DATE 2", value);
     return value != null ? value.toLocaleDateString() : "";
   }
+
+  @action createQrString(doctorData, prescriptionData, patientData, drugList) {
+    console.log(
+      "FRANC CREATE QR",
+      doctorData,
+      prescriptionData,
+      patientData,
+      drugList
+    );
+    return doctorData.id + "|" + prescriptionData.id + "|" + patientData.id;
+  }
+
+  @action createHtmlString(
+    doctorData,
+    prescriptionData,
+    patientData,
+    drugList,
+    qrImage
+  ) {
+    let pdfString = constants.HTML_TEMPLATE;
+    let drugString = constants.DRUG_TEMPLATE;
+    let imgString = constants.IMG_TEMPLATE;
+    pdfString = pdfString.replace(
+      "[clinicHospital]",
+      doctorData.clinicHospital
+    );
+    pdfString = pdfString.replace("[doctorAddress]", doctorData.address);
+    pdfString = pdfString.replace("[doctorContactNo]", doctorData.contactNo);
+    pdfString = pdfString.replace("[doctorEmail]", doctorData.email);
+    pdfString = pdfString.replace("[doctorName]", doctorData.name);
+    pdfString = pdfString.replace("[doctorLicenseNo]", doctorData.licenseNo);
+    pdfString = pdfString.replace("[doctorPtrNo]", doctorData.ptrNo);
+    pdfString = pdfString.replace("[patientName]", patientData.name);
+    pdfString = pdfString.replace("[patientAddress]", patientData.address);
+    pdfString = pdfString.replace("[patientHeight]", prescriptionData.height);
+    pdfString = pdfString.replace("[patientWeight]", prescriptionData.weight);
+    console.log("FRANC PDFSTRING 3");
+    let age = Math.floor(
+      (new Date() - new Date(patientData.bday)) / 31557600000
+    );
+    pdfString = pdfString.replace("[patientAge]", age);
+    pdfString = pdfString.replace(
+      "[prescriptionDate]",
+      this.convertDateIntToString(prescriptionData.createDate)
+    );
+    let drugContent = "";
+    drugList.forEach((drug, i) => {
+      let innerString = drugString;
+      let drugDetails = "";
+      drugDetails = drugDetails.concat(drug.name);
+      drugDetails = drugDetails.concat(" ").concat(drug.strength);
+      drugDetails = drugDetails.concat(" ").concat(drug.dose);
+      drugDetails = drugDetails
+        .concat(" ")
+        .concat(
+          this.getLabelFromValue(drug.preparation, constants.LIST_PREPARATION)
+        );
+      drugDetails = drugDetails
+        .concat(" ")
+        .concat(
+          this.getLabelFromValue(drug.frequency, constants.LIST_FREQUENCY)
+        );
+      drugDetails = drugDetails
+        .concat(" ")
+        .concat(
+          this.getLabelFromValue(drug.direction, constants.LIST_DIRECTION)
+        );
+      drugDetails = drugDetails
+        .concat(" ")
+        .concat(this.getLabelFromValue(drug.route, constants.LIST_ROUTE));
+      drugDetails = drugDetails.concat(" ").concat(drug.duration);
+      drugDetails = drugDetails
+        .concat(" ")
+        .concat(this.getLabelFromValue(drug.type, constants.LIST_TYPE));
+      innerString = innerString.replace("[drugDetails]", drugDetails);
+      innerString = innerString.replace(
+        "[drugInstructions]",
+        drug.instructions
+      );
+      drugContent = drugContent.concat(innerString);
+    });
+    pdfString = pdfString.replace("[drugContent]", drugContent);
+    imgString = imgString.replace("[encryptedString]", qrImage);
+    pdfString = pdfString.replace("[qrContent]", imgString);
+    return pdfString;
+  }
+
+  @action createPDF = async (string) => {
+    let myHtml = string;
+    console.log("FRANC HTML", myHtml);
+    try {
+      let PDFOptions = {
+        html: myHtml,
+        fileName: "Expresscript_" + new Date().getTime(),
+        directory: Platform.OS === "android" ? "Downloads" : "Documents",
+      };
+      let file = await RNHTMLtoPDF.convert(PDFOptions);
+      if (!file.filePath) return;
+      alert(file.filePath);
+    } catch (error) {
+      console.log("Failed to generate pdf", error.message);
+    }
+  };
 }

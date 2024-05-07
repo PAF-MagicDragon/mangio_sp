@@ -9,11 +9,6 @@ export const GENDER_FEMALE = 0;
 export const TEMPLATES = [
   ["1", "Biogesic", "B1", "tablet", 1],
   ["2", "Bonamine", "B2", "syrup", 1],
-  ["3", "A3", "B3", "C3", 1],
-  ["4", "A4", "B4", "C4", 1],
-  ["5", "A5", "B5", "C5", 1],
-  ["6", "A6", "B6", "C6", 1],
-  ["7", "A7", "B7", "C7", 1],
 ];
 
 export const LIST_PREPARATION = [
@@ -79,10 +74,10 @@ export const LIST_GENDER = [
 ];
 
 export const HTML_TEMPLATE =
-  "<style>html{height:100%}body{height:842px;width:595px;font-family:Helvetica;font-size:16px;margin:0 50px 0 50px}td,th{padding:2px}table{border-collapse:collapse}td{min-width:50px}th{min-width:50px;text-align:left}hr{height:2px;border-width:0;color:gray;background-color:gray}.centerText{text-align:center}.centerMargin{margin-right:auto;margin-left:auto}.centerMargin{margin-right:auto;margin-left:auto}.container{height:100%;width:100%;border-collapse:collapse}.drugs{margin-right:auto;margin-left:auto;font-family:Helvetica;font-size:30px}.header{height:200px}.footer{height:100px}.header1{font-size:30px;text-align:center}.line1{padding-top:20px;font-size:30px}.line2{font-size:25px;font-style:italic}</style><table class=container><tr class=header><td valign=top><table class=centerMargin><tr><th class=header1>[clinicHospital]<tr><th class=centerText>[doctorName]<tr><td class=centerText>[doctorAddress]<tr><td class=centerText>[doctorContactNo] | [doctorEmail]</table><hr><table class=centerMargin><tr><td>Name:<th colspan=3>[patientName]<td>Date:<th>[prescriptionDate]<tr><td>Address<th colspan=5>[patientAddress]<tr><td>Height:<th>[patientHeight]<td>Weight:<th>[patientWeight]<td>Age:<th>[patientAge]</table><h1>Rx</h1><tr><td valign=top><table class=drugs>[drugContent]</table><tr class=footer><td valign=bottom><hr><table class=centerMargin><tr><td>Doctor's Signature:<th><tr><td>License No:<th>[doctorLicenseNo]<tr><td>PTR No.:<th>[doctorPtrNo]</table></table>";
+  "<style>html{height:100%}body{height:842px;width:595px;font-family:Helvetica;font-size:16px;margin:0 50px 0 50px}td,th{padding:2px}table{border-collapse:collapse}td{min-width:50px}th{min-width:50px;text-align:left}hr{height:2px;border-width:0;color:gray;background-color:gray}img{float:right;min-height:100px;min-width:100px;max-height:100px;max-width:100px}.centerText{text-align:center}.centerMargin{margin-right:auto;margin-left:auto}.container{height:100%;width:100%;border-collapse:collapse}.drugs{margin-right:auto;margin-left:auto;font-family:Helvetica;font-size:25px}.header{height:200px}.footer1{height:10px}.footer2{height:100px}.header1{font-size:20px;text-align:center}.line1{padding-top:20px;font-size:20px}.line2{font-size:20px;font-style:italic}</style><table class=container><tr class=header><td colspan=2 valign=top><table class=centerMargin><tr><th class=header1>[clinicHospital]<tr><th class=centerText>[doctorName]<tr><td class=centerText>[doctorAddress]<tr><td class=centerText>[doctorContactNo] | [doctorEmail]</table><hr><table class=centerMargin><tr><td>Name:<th colspan=3>[patientName]<td>Date:<th>[prescriptionDate]<tr><td>Address<th colspan=5>[patientAddress]<tr><td>Height:<th>[patientHeight]<td>Weight:<th>[patientWeight]<td>Age:<th>[patientAge]</table><h1>Rx</h1><tr><td colspan=2 valign=top><table class=drugs>[drugContent]</table><tr class=footer1><td colspan=2 valign=bottom><hr><tr class=footer2><td><table class=centerMargin><tr><td>Doctor's Signature:<td><tr><td>License No:<th>[doctorLicenseNo]<tr><td>PTR No.:<th>[doctorPtrNo]</table><td>[qrContent]</table>";
 
 export const DRUG_TEMPLATE =
   "<tr><td class=line1 colspan=2>[drugDetails]<tr><th>Sig.<td class=line2>[drugInstructions]";
 
 export const IMG_TEMPLATE =
-  "<img alt='Red dot'src='data:image/png;base64,encryptedstring'>";
+  "<img alt='QR'src='data:image/png;base64,[encryptedString]'>";

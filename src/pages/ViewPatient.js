@@ -18,7 +18,6 @@ import ESListView from "../components/ESListView";
 import * as constants from "../helpers/constants";
 import ESRadioWithLabel from "../components/ESRadioWithLabel";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
-import RNHTMLtoPDF from "react-native-html-to-pdf";
 import QRCode from "react-native-qrcode-svg";
 import ESSingleLabelValue from "../components/ESSingleLabelValue";
 
@@ -82,84 +81,21 @@ const ViewPatient = ({ navigation, route }) => {
     });
   };
 
-  const createPDF = async (string, id) => {
-    let myHtml = string;
-    console.log("FRANC HTML", myHtml);
-    try {
-      let PDFOptions = {
-        html: myHtml,
-        fileName: "Expresscript_" + new Date().getTime(),
-        directory: Platform.OS === "android" ? "Downloads" : "Documents",
-      };
-      let file = await RNHTMLtoPDF.convert(PDFOptions);
-      if (!file.filePath) return;
-      alert(file.filePath);
-    } catch (error) {
-      console.log("Failed to generate pdf", error.message);
-    }
-  };
-
   const printPDF = (item) => {
-    let pdfString = constants.HTML_TEMPLATE;
-    let drugString = constants.DRUG_TEMPLATE;
     let doctorData = store.mainUser;
     let prescriptionData = item;
     let patientData = patient;
-
     refMap[item.id].toDataURL((val) => {
       let qrImage = val;
-      console.log("FRANC BASE64", val);
       store.getDrugs(prescriptionData.id, (drugList) => {
-        pdfString = pdfString.replace(
-          "[clinicHospital]",
-          doctorData.clinicHospital
+        let pdfString = store.createHtmlString(
+          doctorData,
+          prescriptionData,
+          patientData,
+          drugList,
+          qrImage
         );
-        pdfString = pdfString.replace("[doctorAddress]", doctorData.address);
-        pdfString = pdfString.replace(
-          "[doctorContactNo]",
-          doctorData.contactNo
-        );
-        pdfString = pdfString.replace("[doctorEmail]", doctorData.email);
-        pdfString = pdfString.replace("[doctorName]", doctorData.name);
-        pdfString = pdfString.replace(
-          "[doctorLicenseNo]",
-          doctorData.licenseNo
-        );
-        pdfString = pdfString.replace("[doctorPtrNo]", doctorData.ptrNo);
-        pdfString = pdfString.replace("[patientName]", patientData.name);
-        pdfString = pdfString.replace("[patientAddress]", patientData.address);
-        pdfString = pdfString.replace(
-          "[patientHeight]",
-          prescriptionData.height
-        );
-        pdfString = pdfString.replace(
-          "[patientWeight]",
-          prescriptionData.weight
-        );
-        let age = Math.floor(
-          (new Date() - new Date(patientData.bday)) / 31557600000
-        );
-        pdfString = pdfString.replace("[patientAge]", age);
-        pdfString = pdfString.replace(
-          "[prescriptionDate]",
-          store.convertDateIntToString(prescriptionData.createDate)
-        );
-
-        let drugContent = "";
-        drugList.forEach((drug, i) => {
-          let innerString = drugString;
-          let drugDetails = drug.name + " " + drug.strength + " " + drug.dose;
-          innerString = innerString.replace("[drugDetails]", drugDetails);
-          innerString = innerString.replace(
-            "[drugInstructions]",
-            drug.instructions
-          );
-          drugContent = drugContent.concat(innerString);
-        });
-
-        pdfString = pdfString.replace("[drugContent]", drugContent);
-
-        createPDF(pdfString, item.id);
+        store.createPDF(pdfString);
       });
     });
   };
@@ -247,7 +183,12 @@ const ViewPatient = ({ navigation, route }) => {
                   </View>
                   <View style={{ opacity: 0, height: 0 }}>
                     <QRCode
-                      value={item.id}
+                      value={store.createQrString(
+                        store.mainUser,
+                        item,
+                        patient,
+                        item.drugList
+                      )}
                       getRef={(c) => (refMap[item.id] = c)}
                     />
                   </View>
