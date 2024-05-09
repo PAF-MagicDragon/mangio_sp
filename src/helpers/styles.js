@@ -182,6 +182,12 @@ const styles = StyleSheet.create({
     color: "#57A4FF",
   },
 
+  qrView: {
+    alignItems: "center",
+    paddingTop: 25,
+    paddingBottom: 25,
+  },
+
   ///
   // container: {
   //   flexDirection: "column",

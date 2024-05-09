@@ -523,9 +523,7 @@ export class Store {
   };
 
   @action getLabelFromValue(value, list) {
-    console.log("GET LABEL 1", value, list);
     let found = list.find((i) => i.value == value);
-    console.log("GET LABEL 2", found);
     return found != null ? found.label : "";
   }
 
@@ -544,10 +542,19 @@ export class Store {
   }
 
   @action convertDateIntToString(dateInt) {
-    console.log("CONVERT DATE 1", dateInt);
     const value = dateInt != null ? new Date(dateInt) : null;
-    console.log("CONVERT DATE 2", value);
     return value != null ? value.toLocaleDateString() : "";
+  }
+
+  @action addValToQrString(s, val) {
+    console.log("FRANC ADD VAL", s, val);
+    let string = s;
+    string = string.concat("|");
+    if (val != null) {
+      string = string.concat(val);
+    }
+    console.log("FRANC ADD STRING", string);
+    return string;
   }
 
   @action createQrString(doctorData, prescriptionData, patientData, drugList) {
@@ -558,7 +565,51 @@ export class Store {
       patientData,
       drugList
     );
-    return doctorData.id + "|" + prescriptionData.id + "|" + patientData.id;
+
+    let string1 = "";
+    string1 = this.addValToQrString(string1, doctorData.id);
+    string1 = this.addValToQrString(string1, doctorData.name);
+
+    console.log("FRANC STRING 1", string1);
+
+    let string2 = "";
+    string2 = this.addValToQrString(string2, prescriptionData.createDate);
+    string2 = this.addValToQrString(string2, prescriptionData.diagnosis);
+
+    console.log("FRANC STRING 2", string2);
+    let string3 = "";
+    string3 = this.addValToQrString(string3, patientData.name);
+
+    console.log("FRANC STRING 3", string3);
+    let string4 = [];
+    drugList.forEach((drug, i) => {
+      let inner = "";
+      inner = this.addValToQrString(inner, drug.name);
+      inner = this.addValToQrString(inner, drug.strength);
+      inner = this.addValToQrString(inner, drug.dose);
+      inner = this.addValToQrString(inner, drug.preparation);
+      inner = this.addValToQrString(inner, drug.route);
+      inner = this.addValToQrString(inner, drug.direction);
+      inner = this.addValToQrString(inner, drug.frequency);
+      inner = this.addValToQrString(inner, drug.duration);
+      inner = this.addValToQrString(inner, drug.type);
+      inner = this.addValToQrString(inner, drug.instructions);
+      console.log("FRANC STRING INNER", inner);
+      string4.push(inner);
+    });
+
+    console.log("FRANC STRING 4", string4);
+
+    let obj = {
+      a: string1,
+      b: string2,
+      c: string3,
+      d: string4,
+    };
+
+    let s = JSON.stringify(obj);
+    console.log("FRANC CREATE QR S", s);
+    return s;
   }
 
   @action createHtmlString(
@@ -585,7 +636,6 @@ export class Store {
     pdfString = pdfString.replace("[patientAddress]", patientData.address);
     pdfString = pdfString.replace("[patientHeight]", prescriptionData.height);
     pdfString = pdfString.replace("[patientWeight]", prescriptionData.weight);
-    console.log("FRANC PDFSTRING 3");
     let age = Math.floor(
       (new Date() - new Date(patientData.bday)) / 31557600000
     );
@@ -638,16 +688,15 @@ export class Store {
 
   @action createPDF = async (string) => {
     let myHtml = string;
-    console.log("FRANC HTML", myHtml);
     try {
       let PDFOptions = {
         html: myHtml,
-        fileName: "Expresscript_" + new Date().getTime(),
+        fileName: "Expresscript_PDF_" + new Date().getTime(),
         directory: Platform.OS === "android" ? "Downloads" : "Documents",
       };
       let file = await RNHTMLtoPDF.convert(PDFOptions);
       if (!file.filePath) return;
-      alert(file.filePath);
+      alert("File saved to: " + file.filePath);
     } catch (error) {
       console.log("Failed to generate pdf", error.message);
     }

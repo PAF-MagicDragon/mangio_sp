@@ -1,13 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import {
-  View,
-  ScrollView,
-  KeyboardAvoidingView,
-  Alert,
-  SafeAreaView,
-  Text,
-  Platform,
-} from "react-native";
+import { View, Alert, SafeAreaView, Text, Platform } from "react-native";
 import ESValueWithLabel from "../components/ESValueWithLabel";
 import ESButton from "../components/ESButton";
 import styles from "../helpers/styles";
@@ -18,16 +10,14 @@ import ESListView from "../components/ESListView";
 import * as constants from "../helpers/constants";
 import ESRadioWithLabel from "../components/ESRadioWithLabel";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
-import QRCode from "react-native-qrcode-svg";
 import ESSingleLabelValue from "../components/ESSingleLabelValue";
 
 const ViewPatient = ({ navigation, route }) => {
   let [prescriptions, setPrescriptions] = useState(null);
+
   const store = useContext(ESContext);
   const patient = route.params;
   const isFocused = useIsFocused();
-
-  let refMap = [];
 
   let refreshList = () => {
     store.getPrescriptions(store.mainUser.id, patient.id, (list) =>
@@ -44,10 +34,6 @@ const ViewPatient = ({ navigation, route }) => {
       };
     }, [])
   );
-
-  // useEffect(() => {
-  //   refreshList();
-  // }, []);
 
   let addEditPrescription = (item) => {
     navigation.navigate("AddPrescription", {
@@ -81,21 +67,13 @@ const ViewPatient = ({ navigation, route }) => {
     });
   };
 
-  const printPDF = (item) => {
-    let doctorData = store.mainUser;
-    let prescriptionData = item;
-    let patientData = patient;
-    refMap[item.id].toDataURL((val) => {
-      let qrImage = val;
-      store.getDrugs(prescriptionData.id, (drugList) => {
-        let pdfString = store.createHtmlString(
-          doctorData,
-          prescriptionData,
-          patientData,
-          drugList,
-          qrImage
-        );
-        store.createPDF(pdfString);
+  const viewPDF = (item) => {
+    store.getDrugs(item.id, (drugList) => {
+      navigation.navigate("ViewPdf", {
+        doctor: store.mainUser,
+        prescription: item,
+        patient: patient,
+        list: drugList,
       });
     });
   };
@@ -181,17 +159,6 @@ const ViewPatient = ({ navigation, route }) => {
                       isRowItem
                     />
                   </View>
-                  <View style={{ opacity: 0, height: 0 }}>
-                    <QRCode
-                      value={store.createQrString(
-                        store.mainUser,
-                        item,
-                        patient,
-                        item.drugList
-                      )}
-                      getRef={(c) => (refMap[item.id] = c)}
-                    />
-                  </View>
                 </View>
               );
             }}
@@ -205,11 +172,10 @@ const ViewPatient = ({ navigation, route }) => {
                 "Are you sure you want to delete this prescription?"
               )
             }
-            customActionClick={(item) => printPDF(item)}
+            customActionClick={(item) => viewPDF(item)}
             customActionIcon="print-outline"
           />
         </View>
-
         {/* </KeyboardAvoidingView>
         </ScrollView> */}
       </View>

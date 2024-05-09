@@ -27,6 +27,7 @@ import ViewPatient from "./pages/ViewPatient";
 import AddPrescription from "./pages/AddPrescription";
 import AddDrug from "./pages/AddDrug";
 import ViewPrescription from "./pages/ViewPrescription";
+import ViewPdf from "./pages/ViewPdf";
 import ESButton from "./components/ESButton";
 
 import { Text } from "react-native";
@@ -143,6 +144,14 @@ const Main = () => {
             component={ViewPrescription}
             options={{
               title: "Prescription Details",
+              ...navOptions,
+            }}
+          />
+          <Stack.Screen
+            name="ViewPdf"
+            component={ViewPdf}
+            options={{
+              title: "View QR Code",
               ...navOptions,
             }}
           />
