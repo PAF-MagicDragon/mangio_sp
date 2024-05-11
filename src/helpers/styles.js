@@ -1,4 +1,6 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+const deviceWidth = Dimensions.get("screen").width;
+const deviceHeight = Dimensions.get("screen").height;
 
 export const navOptions = {
   headerStyle: {
@@ -186,6 +188,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingTop: 25,
     paddingBottom: 25,
+  },
+
+  bottomContainer: {
+    flex: 1,
+    justifyContent: "flex-end",
+    marginBottom: 20,
+    alignItems: "center",
   },
 
   ///

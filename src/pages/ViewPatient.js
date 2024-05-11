@@ -67,7 +67,7 @@ const ViewPatient = ({ navigation, route }) => {
     });
   };
 
-  const viewPDF = (item) => {
+  let viewPDF = (item) => {
     store.getDrugs(item.id, (drugList) => {
       navigation.navigate("ViewPdf", {
         doctor: store.mainUser,
@@ -121,8 +121,8 @@ const ViewPatient = ({ navigation, route }) => {
               withMarginRight
             />
             <ESValueWithLabel
-              label="Birthday"
-              value={store.convertDateIntToString(patient.bday)}
+              label="Age"
+              value={store.getAgeFromBday(patient.bday)}
               noMarginTopValue
               isRowItem
             />
@@ -138,6 +138,11 @@ const ViewPatient = ({ navigation, route }) => {
                   <ESLabel
                     text={store.convertDateIntToString(item.createDate)}
                     customStyle={styles.subHeader}
+                  />
+                  <ESSingleLabelValue
+                    label="Doctor"
+                    value={item.doctorName}
+                    customStyle={styles.valueNoMargin}
                   />
                   <ESSingleLabelValue
                     label="Diagnosis"

@@ -26,6 +26,8 @@ export class Store {
 
   @observable tempDrugList = [];
 
+  @observable qrString = null;
+
   @action initializeTable = (name, cols, cb) => {
     db.transaction(function (tx) {
       let sql1 =
@@ -148,6 +150,7 @@ export class Store {
   };
 
   @action mapPrescriptionFromDb = (item) => {
+    console.log("FRANC ITEM", item);
     let prescription = {};
     prescription.id = item["ID"];
     prescription.createDate = item["CREATE_DATE"];
@@ -156,6 +159,7 @@ export class Store {
     prescription.patientId = item["PATIENT_ID"];
     prescription.height = item["HEIGHT"];
     prescription.weight = item["WEIGHT"];
+    prescription.doctorName = item["NAME"];
     return prescription;
   };
 
@@ -221,7 +225,7 @@ export class Store {
   @action getPrescriptions = (doctorId, patientId, cb) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT * FROM ES_PRESCRIPTION WHERE DOCTOR_ID = ? AND PATIENT_ID = ? ORDER BY CREATE_DATE DESC",
+        "SELECT p.*, u.name FROM ES_PRESCRIPTION p, ES_USER u WHERE p.DOCTOR_ID = u.id AND p.DOCTOR_ID = ? AND p.PATIENT_ID = ? ORDER BY p.CREATE_DATE DESC",
         [doctorId, patientId],
         (tx, results) => {
           var temp = [];
@@ -575,13 +579,15 @@ export class Store {
     let string2 = "";
     string2 = this.addValToQrString(string2, prescriptionData.createDate);
     string2 = this.addValToQrString(string2, prescriptionData.diagnosis);
+    string2 = this.addValToQrString(string2, prescriptionData.height);
+    string2 = this.addValToQrString(string2, prescriptionData.weight);
 
     console.log("FRANC STRING 2", string2);
     let string3 = "";
     string3 = this.addValToQrString(string3, patientData.name);
 
     console.log("FRANC STRING 3", string3);
-    let string4 = [];
+    let list1 = [];
     drugList.forEach((drug, i) => {
       let inner = "";
       inner = this.addValToQrString(inner, drug.name);
@@ -595,21 +601,25 @@ export class Store {
       inner = this.addValToQrString(inner, drug.type);
       inner = this.addValToQrString(inner, drug.instructions);
       console.log("FRANC STRING INNER", inner);
-      string4.push(inner);
+      list1.push(inner);
     });
 
-    console.log("FRANC STRING 4", string4);
+    console.log("FRANC STRING 4", list1);
 
     let obj = {
       a: string1,
       b: string2,
       c: string3,
-      d: string4,
+      d: list1,
     };
 
     let s = JSON.stringify(obj);
     console.log("FRANC CREATE QR S", s);
     return s;
+  }
+
+  @action getAgeFromBday(bday) {
+    return Math.floor((new Date() - new Date(bday)) / 31557600000);
   }
 
   @action createHtmlString(
@@ -636,9 +646,7 @@ export class Store {
     pdfString = pdfString.replace("[patientAddress]", patientData.address);
     pdfString = pdfString.replace("[patientHeight]", prescriptionData.height);
     pdfString = pdfString.replace("[patientWeight]", prescriptionData.weight);
-    let age = Math.floor(
-      (new Date() - new Date(patientData.bday)) / 31557600000
-    );
+    let age = this.getAgeFromBday(patientData.bday);
     pdfString = pdfString.replace("[patientAge]", age);
     pdfString = pdfString.replace(
       "[prescriptionDate]",
@@ -701,4 +709,52 @@ export class Store {
       console.log("Failed to generate pdf", error.message);
     }
   };
+
+  @action saveValuesFromQr(qrString, patientId) {
+    let qrObj = JSON.parse(qrString);
+
+    let string1 = qrObj.a;
+    let string2 = qrObj.b;
+    let string3 = qrObj.c;
+    let list1 = qrObj.d;
+
+    let arr1 = string1.split("|");
+    let doctorData = {};
+    doctorData.id = "SUB-" + arr1[1];
+    doctorData.name = arr1[2];
+
+    let arr2 = string2.split("|");
+    let prescriptionData = {};
+    prescriptionData.createDate = arr2[1];
+    prescriptionData.diagnosis = arr2[2];
+    prescriptionData.height = arr2[3];
+    prescriptionData.weight = arr2[4];
+    prescriptionData.doctorId = doctorData.id;
+    prescriptionData.patientId = patientId;
+
+    let drugListData = [];
+    list1.forEach((inner) => {
+      let innerArr = inner.split("|");
+      console.log("FRANC INNER", inner, innerArr);
+      let drugData = {};
+      drugData.name = innerArr[1];
+      drugData.strength = innerArr[2];
+      drugData.dose = innerArr[3];
+      drugData.preparation = innerArr[4];
+      drugData.route = innerArr[5];
+      drugData.direction = innerArr[6];
+      drugData.frequency = innerArr[7];
+      drugData.duration = innerArr[8];
+      drugData.type = innerArr[9];
+      drugData.instructions = innerArr[10];
+      drugListData.push(drugData);
+    });
+
+    console.log(
+      "FRANC PARSED DATA",
+      doctorData,
+      prescriptionData,
+      drugListData
+    );
+  }
 }

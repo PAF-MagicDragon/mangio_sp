@@ -8,7 +8,6 @@ import {
   Text,
   useWindowDimensions,
 } from "react-native";
-import { CameraRoll } from "@react-native-camera-roll/camera-roll";
 import ESSingleLabelValue from "../components/ESSingleLabelValue";
 import ESButton from "../components/ESButton";
 import styles from "../helpers/styles";

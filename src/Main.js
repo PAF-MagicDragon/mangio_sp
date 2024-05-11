@@ -28,6 +28,8 @@ import AddPrescription from "./pages/AddPrescription";
 import AddDrug from "./pages/AddDrug";
 import ViewPrescription from "./pages/ViewPrescription";
 import ViewPdf from "./pages/ViewPdf";
+import ScanQr from "./pages/ScanQr";
+
 import ESButton from "./components/ESButton";
 
 import { Text } from "react-native";
@@ -152,6 +154,14 @@ const Main = () => {
             component={ViewPdf}
             options={{
               title: "View QR Code",
+              ...navOptions,
+            }}
+          />
+          <Stack.Screen
+            name="ScanQr"
+            component={ScanQr}
+            options={{
+              title: "Scan QR Code",
               ...navOptions,
             }}
           />
