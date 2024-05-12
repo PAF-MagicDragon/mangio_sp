@@ -23,7 +23,7 @@ let listViewItem = (
     <TouchableOpacity onPress={() => customViewClick && customViewClick(item)}>
       <View key={item.id} style={styles.listViewItem}>
         <View style={styles.listViewItem1}>{panel}</View>
-        {(customEditClick || customDeleteClick) && (
+        {(customEditClick || customDeleteClick || customActionClick) && (
           <View style={styles.listViewItem2}>
             {customEditClick && (
               <ESIcon

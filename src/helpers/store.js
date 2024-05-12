@@ -40,6 +40,7 @@ export class Store {
           tx.executeSql(sql2, []);
           let sql3 = "CREATE TABLE IF NOT EXISTS " + name + "(" + cols + ")";
           tx.executeSql(sql3, []);
+          console.log("FRANC CREATE/DROP", sql2, sql3);
         }
         cb && cb();
       });
@@ -63,6 +64,10 @@ export class Store {
     this.initializeTable(
       "ES_DRUG",
       "ID VARCHAR(50) PRIMARY KEY, PRESCRIPTION_ID VARCHAR(50), NAME VARCHAR(250), STRENGTH VARCHAR(50), DOSE VARCHAR(50), PREPARATION INT(2), ROUTE INT(2), DIRECTION INT(2), FREQUENCY INT(2), DURATION VARCHAR(50), TYPE INT(2), INSTRUCTIONS VARCHAR(200), TOTAL INT(3), REFILLS INT(3)"
+    );
+    this.initializeTable(
+      "ES_SCHEDULE",
+      "ID VARCHAR(50) PRIMARY KEY, INTAKE_DATE INT(15), PRESCRIPTION_ID VARCHAR(50), DRUG_ID VARCHAR(50), PATIENT_ID VARCHAR(50), STATUS INT(1)"
     );
     this.initializeDefaultData(
       "ES_TEMPLATE",
@@ -182,6 +187,18 @@ export class Store {
     return drug;
   };
 
+  @action mapScheduleFromDb = (item) => {
+    let schedule = {};
+    schedule.id = item["ID"];
+    schedule.intakeDate = item["INTAKE_DATE"];
+    schedule.prescriptionId = item["PRESCRIPTION_ID"];
+    schedule.drugId = item["DRUG_ID"];
+    schedule.patientId = item["PATIENT_ID"];
+    schedule.status = item["STATUS"];
+    schedule.drugName = item["DRUG_NAME"];
+    return schedule;
+  };
+
   @action mapTemplateFromDb = (item) => {
     let template = {};
     template.id = item["ID"];
@@ -224,17 +241,21 @@ export class Store {
 
   @action getPrescriptions = (doctorId, patientId, cb) => {
     db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT p.*, u.name FROM ES_PRESCRIPTION p, ES_USER u WHERE p.DOCTOR_ID = u.id AND p.DOCTOR_ID = ? AND p.PATIENT_ID = ? ORDER BY p.CREATE_DATE DESC",
-        [doctorId, patientId],
-        (tx, results) => {
-          var temp = [];
-          for (let i = 0; i < results.rows.length; ++i) {
-            temp.push(this.mapPrescriptionFromDb(results.rows.item(i)));
-          }
-          cb && cb(temp);
+      let sql =
+        "SELECT p.*, u.name FROM ES_PRESCRIPTION p, ES_USER u WHERE p.DOCTOR_ID = u.id AND p.PATIENT_ID = ? ORDER BY p.CREATE_DATE DESC";
+      let val = [patientId];
+      if (doctorId != null) {
+        sql =
+          "SELECT p.*, u.name FROM ES_PRESCRIPTION p, ES_USER u WHERE p.DOCTOR_ID = u.id AND p.DOCTOR_ID = ? AND p.PATIENT_ID = ? ORDER BY p.CREATE_DATE DESC";
+        val = [doctorId, patientId];
+      }
+      tx.executeSql(sql, val, (tx, results) => {
+        var temp = [];
+        for (let i = 0; i < results.rows.length; ++i) {
+          temp.push(this.mapPrescriptionFromDb(results.rows.item(i)));
         }
-      );
+        cb && cb(temp);
+      });
     });
   };
 
@@ -264,6 +285,22 @@ export class Store {
           var temp = [];
           for (let i = 0; i < results.rows.length; ++i) {
             temp.push(this.mapTemplateFromDb(results.rows.item(i)));
+          }
+          cb && cb(temp);
+        }
+      );
+    });
+  };
+
+  @action getSchedules = (patientId, status, cb) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT s.*, d.name AS DRUG_NAME FROM ES_SCHEDULE s, ES_DRUG d WHERE s.DRUG_ID = d.id AND s.PATIENT_ID = ? AND s.STATUS = ? ORDER BY s.INTAKE_DATE",
+        [patientId, status],
+        (tx, results) => {
+          var temp = [];
+          for (let i = 0; i < results.rows.length; ++i) {
+            temp.push(this.mapScheduleFromDb(results.rows.item(i)));
           }
           cb && cb(temp);
         }
@@ -327,10 +364,8 @@ export class Store {
     }
   };
 
-  @action addEditEsPrescription = (request, cb) => {
-    console.log("FRANC ADD PRESCRIPTION 1", request);
+  @action addEditEsPrescription = (request, cb, cb2) => {
     if (request.id != null) {
-      console.log("FRANC ADD PRESCRIPTION 2", request);
       db.transaction(function (tx) {
         let val = [
           request.createDate,
@@ -339,17 +374,14 @@ export class Store {
           request.weight,
           request.id,
         ];
-        console.log("FRANC ADD PRESCRIPTION 2.1", val);
         tx.executeSql(
           "UPDATE ES_PRESCRIPTION SET (CREATE_DATE,DIAGNOSIS,HEIGHT,WEIGHT) = (?,?,?,?) WHERE ID = ? ",
           val,
           (tx, results) => {
-            console.log("FRANC ADD PRESCRIPTION 2.2", results);
             tx.executeSql(
               "DELETE FROM ES_DRUG WHERE PRESCRIPTION_ID = ?",
               [request.id],
               (tx, results) => {
-                console.log("FRANC ADD PRESCRIPTION 2.3", results);
                 request.drugList.forEach((drug, i) => {
                   let innerId = uuid.v4();
                   let innerVal = [
@@ -371,9 +403,7 @@ export class Store {
                   tx.executeSql(
                     "INSERT INTO ES_DRUG (ID,PRESCRIPTION_ID,NAME,STRENGTH,DOSE,PREPARATION,ROUTE,DIRECTION,FREQUENCY,DURATION,TYPE,INSTRUCTIONS,TOTAL,REFILLS) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     innerVal,
-                    (tx, results) => {
-                      console.log("FRANC ADD PRESCRIPTION 2.4", results);
-                    }
+                    (tx, results) => {}
                   );
                 });
               }
@@ -383,7 +413,6 @@ export class Store {
         );
       });
     } else {
-      console.log("FRANC ADD PRESCRIPTION 3", request);
       db.transaction(function (tx) {
         let id = uuid.v4();
         let val = [
@@ -395,15 +424,11 @@ export class Store {
           request.height,
           request.weight,
         ];
-        console.log("FRANC ADD PRESCRIPTION 4", val);
         tx.executeSql(
           "INSERT INTO ES_PRESCRIPTION (ID,CREATE_DATE,DIAGNOSIS,DOCTOR_ID,PATIENT_ID,HEIGHT,WEIGHT) VALUES (?,?,?,?,?,?,?)",
           val,
           (tx, results) => {
-            console.log("FRANC ADD PRESCRIPTION 5", results);
-            console.log("FRANC ADD PRESCRIPTION 5.1", tx, request, id);
             // this.saveDrugList(tx, request, id);
-            console.log("FRANC ADD PRESCRIPTION 5.2", tx, request, id);
             request.drugList.forEach((drug, i) => {
               let innerId = uuid.v4();
               let innerVal = [
@@ -426,7 +451,7 @@ export class Store {
                 "INSERT INTO ES_DRUG (ID,PRESCRIPTION_ID,NAME,STRENGTH,DOSE,PREPARATION,ROUTE,DIRECTION,FREQUENCY,DURATION,TYPE,INSTRUCTIONS,TOTAL,REFILLS) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 innerVal,
                 (tx, results) => {
-                  console.log("FRANC ADD PRESCRIPTION 5.3", results);
+                  cb2 && cb2(innerId, id, drug);
                 }
               );
             });
@@ -438,7 +463,6 @@ export class Store {
   };
 
   @action saveDrugList = (tx, request, id) => {
-    console.log("FRANC ADD PRESCRIPTION 6", request);
     request.drugList.forEach((drug, i) => {
       let innerId = uuid.v4();
       let innerVal = [
@@ -457,7 +481,6 @@ export class Store {
         drug.total,
         drug.refills,
       ];
-      console.log("FRANC ADD PRESCRIPTION 7", innerVal);
       tx.executeSql(
         "INSERT INTO ES_DRUG (ID,PRESCRIPTION_ID,NAME,STRENGTH,DOSE,PREPARATION,ROUTE,DIRECTION,FREQUENCY,DURATION,TYPE,INSTRUCTIONS,TOTAL,REFILLS) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
         innerVal,
@@ -490,6 +513,7 @@ export class Store {
   };
 
   @action deletePrescription = (id, cb) => {
+    this.deleteRecord("ES_SCHEDULE", id, "PRESCRIPTION_ID = ?", null);
     this.deleteRecord("ES_DRUG", id, "PRESCRIPTION_ID = ?", null);
     this.deleteRecord("ES_PRESCRIPTION", id, "ID = ?", cb);
   };
@@ -550,14 +574,17 @@ export class Store {
     return value != null ? value.toLocaleDateString() : "";
   }
 
+  @action convertDateIntToString2(dateInt) {
+    const value = dateInt != null ? new Date(dateInt) : null;
+    return value != null ? value.toLocaleTimeString() : "";
+  }
+
   @action addValToQrString(s, val) {
-    console.log("FRANC ADD VAL", s, val);
     let string = s;
     string = string.concat("|");
     if (val != null) {
       string = string.concat(val);
     }
-    console.log("FRANC ADD STRING", string);
     return string;
   }
 
@@ -710,51 +737,177 @@ export class Store {
     }
   };
 
-  @action saveValuesFromQr(qrString, patientId) {
-    let qrObj = JSON.parse(qrString);
+  @action saveValuesFromQr(qrString, patientId, cb) {
+    try {
+      let qrObj = JSON.parse(qrString);
 
-    let string1 = qrObj.a;
-    let string2 = qrObj.b;
-    let string3 = qrObj.c;
-    let list1 = qrObj.d;
+      let string1 = qrObj.a; //doctor
+      let string2 = qrObj.b; //prescription
+      let string3 = qrObj.c; //patient
+      let list1 = qrObj.d; //drug list
 
-    let arr1 = string1.split("|");
-    let doctorData = {};
-    doctorData.id = "SUB-" + arr1[1];
-    doctorData.name = arr1[2];
+      let arr1 = string1.split("|");
+      let doctorData = {};
+      doctorData.id = "SUB-" + arr1[1];
+      doctorData.name = arr1[2];
 
-    let arr2 = string2.split("|");
-    let prescriptionData = {};
-    prescriptionData.createDate = arr2[1];
-    prescriptionData.diagnosis = arr2[2];
-    prescriptionData.height = arr2[3];
-    prescriptionData.weight = arr2[4];
-    prescriptionData.doctorId = doctorData.id;
-    prescriptionData.patientId = patientId;
+      let arr2 = string2.split("|");
+      let prescriptionData = {};
+      prescriptionData.createDate = arr2[1];
+      prescriptionData.diagnosis = arr2[2];
+      prescriptionData.height = arr2[3];
+      prescriptionData.weight = arr2[4];
+      prescriptionData.doctorId = doctorData.id;
+      prescriptionData.patientId = patientId;
 
-    let drugListData = [];
-    list1.forEach((inner) => {
-      let innerArr = inner.split("|");
-      console.log("FRANC INNER", inner, innerArr);
-      let drugData = {};
-      drugData.name = innerArr[1];
-      drugData.strength = innerArr[2];
-      drugData.dose = innerArr[3];
-      drugData.preparation = innerArr[4];
-      drugData.route = innerArr[5];
-      drugData.direction = innerArr[6];
-      drugData.frequency = innerArr[7];
-      drugData.duration = innerArr[8];
-      drugData.type = innerArr[9];
-      drugData.instructions = innerArr[10];
-      drugListData.push(drugData);
-    });
+      let drugListData = [];
+      let scheduleListData = [];
 
-    console.log(
-      "FRANC PARSED DATA",
-      doctorData,
-      prescriptionData,
-      drugListData
-    );
+      list1.forEach((inner) => {
+        let innerArr = inner.split("|");
+        let drugData = {};
+        drugData.name = innerArr[1];
+        drugData.strength = innerArr[2];
+        drugData.dose = innerArr[3];
+        drugData.preparation = innerArr[4];
+        drugData.route = innerArr[5];
+        drugData.direction = innerArr[6];
+        drugData.frequency = innerArr[7];
+        drugData.duration = innerArr[8];
+        drugData.type = innerArr[9];
+        drugData.instructions = innerArr[10];
+        drugListData.push(drugData);
+      });
+
+      prescriptionData.drugList = drugListData;
+
+      console.log(
+        "FRANC PARSED DATA",
+        doctorData,
+        prescriptionData,
+        drugListData,
+        scheduleListData
+      );
+
+      this.checkAndInsertSubDoctor(doctorData, () =>
+        this.addEditEsPrescription(
+          prescriptionData,
+          cb,
+          (drugId, prescriptionId, drugObj) =>
+            this.createScheduleFromDrug(
+              drugId,
+              prescriptionId,
+              drugObj,
+              patientId
+            )
+        )
+      );
+    } catch (error) {
+      alert("Error reading QR Code");
+      cb && cb();
+    }
   }
+
+  @action checkAndInsertSubDoctor = (doctorData, cb) => {
+    db.transaction(function (tx) {
+      let sql1 = "SELECT * FROM ES_USER WHERE ID = ?";
+      let val1 = [doctorData.id];
+      tx.executeSql(sql1, val1, function (tx, res) {
+        if (res.rows.length == 0) {
+          let sql2 = "INSERT INTO ES_USER (ID,TYPE,NAME) VALUES (?,?,?)";
+          let val2 = [
+            doctorData.id,
+            constants.TYPE_SUB_DOCTOR,
+            doctorData.name,
+          ];
+          tx.executeSql(sql2, val2);
+        }
+        cb && cb();
+      });
+    });
+  };
+
+  @action insertSchedules = (list, cb) => {
+    db.transaction(function (tx) {
+      list.forEach((schedule, i) => {
+        let id = uuid.v4();
+        let val = [
+          id,
+          schedule.intakeDate,
+          schedule.prescriptionId,
+          schedule.drugId,
+          schedule.patientId,
+          constants.STATUS_PENDING,
+        ];
+        tx.executeSql(
+          "INSERT INTO ES_SCHEDULE (ID, INTAKE_DATE, PRESCRIPTION_ID, DRUG_ID, PATIENT_ID, STATUS) VALUES (?,?,?,?,?,?)",
+          val,
+          (tx, results) => {}
+        );
+      });
+      cb != null && cb(results);
+    });
+  };
+
+  @action createScheduleFromDrug(drugId, prescriptionId, drugObj, patientId) {
+    //create schedule from drug
+    let scheduleList = [];
+    let dateList = this.createDateList(drugObj);
+    dateList.forEach((date, i) => {
+      let schedule = {};
+      schedule.intakeDate = date;
+      schedule.prescriptionId = prescriptionId;
+      schedule.drugId = drugId;
+      schedule.patientId = patientId;
+      scheduleList.push(schedule);
+    });
+    this.insertSchedules(scheduleList);
+  }
+
+  @action createDateList(drugObj) {
+    let dateList = [];
+    let duration = drugObj.duration;
+    let type = drugObj.type;
+    let frequency = drugObj.frequency;
+    let startDate = new Date();
+    if (duration != null) {
+      for (let i = 0; i < duration; i++) {
+        if (type != null) {
+          let typeCount = null;
+          if (type == 1) {
+            //days
+            typeCount = 1;
+          } else if (type == 2) {
+            //weeks
+            typeCount = 7;
+          } else if (type == 3) {
+            //months
+            typeCount = 30;
+          }
+          for (let j = 0; j < typeCount; j++) {
+            startDate = this.addHours(startDate, 24);
+            dateList.push(startDate.getTime());
+          }
+        }
+      }
+    }
+    console.log("FRANC DATE LIST 2", dateList);
+    return dateList;
+  }
+
+  @action addHours(date, h) {
+    var copiedDate = date;
+    copiedDate.setTime(date.getTime() + h * 60 * 60 * 1000);
+    return copiedDate;
+  }
+
+  @action updateSchedule = (id, status, cb) => {
+    db.transaction(function (tx) {
+      let val = [status, id];
+      let sql = "UPDATE ES_SCHEDULE SET STATUS = ? WHERE ID = ?";
+      tx.executeSql(sql, val, (tx, results) => {
+        cb != null && cb(results);
+      });
+    });
+  };
 }

@@ -16,6 +16,7 @@ import * as constants from "../helpers/constants";
 import ESListView from "../components/ESListView";
 import ESButton from "../components/ESButton";
 import ESIcon from "../components/ESIcon";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 
 const PatientDashboard2 = ({ navigation }) => {
   let [prescriptions, setPrescriptions] = useState(null);
@@ -23,18 +24,43 @@ const PatientDashboard2 = ({ navigation }) => {
   let user = store.mainUser;
 
   let refreshList = () => {
-    // store.getPatients((list) => setPatients(list));
-    setPrescriptions([]);
+    console.log("REFRESH LIST 2");
+    store.getPrescriptions(null, user.id, (list) => setPrescriptions(list));
   };
 
-  useEffect(() => {
-    refreshList();
-  }, [store.qrString]);
+  useFocusEffect(
+    React.useCallback(() => {
+      refreshList();
+      return () => {
+        // Do something when the screen is unfocused
+        // Useful for cleanup functions
+      };
+    }, [])
+  );
 
-  let onScanQr = () => {
-    store.qrString =
-      '{"a":"|d040968e-5891-4526-ab83-affda0903aa3|franc mangio","b":"|1715014495572|urinary tract infection|1|2","c":"|fatima gopez mangio","d":["|Biogesic (B1)  - tablet|200|300|1|1|1|1|1|2|drink before meals","|Bonamine (B2)  - syrup|20|30|1|2|1|2|10|1|the quick brown fox jumps over the lazy dog"]}';
-    navigation.navigate("ScanQr");
+  let viewPrescription = (item) => {
+    navigation.navigate("ViewPrescription", item);
+  };
+
+  let deletePrescription = (item) => {
+    store.deletePrescription(item.id, (results) => {
+      console.log("Results delete prescription", results);
+      if (results != null && results.rowsAffected > 0) {
+        Alert.alert(
+          "Success",
+          "Prescription Deleted",
+          [
+            {
+              text: "Ok",
+              onPress: () => {
+                refreshList();
+              },
+            },
+          ],
+          { cancelable: false }
+        );
+      } else alert("Prescription Delete Failed");
+    });
   };
 
   return (
@@ -47,31 +73,45 @@ const PatientDashboard2 = ({ navigation }) => {
             return (
               <View>
                 <ESLabel
-                  text={"SAMPLE SCHEDULE"}
+                  text={store.convertDateIntToString(item.createDate)}
                   customStyle={styles.subHeader}
                 />
+                <ESSingleLabelValue
+                  label="Doctor"
+                  value={item.doctorName}
+                  customStyle={styles.valueNoMargin}
+                />
+                <ESSingleLabelValue
+                  label="Diagnosis"
+                  value={item.diagnosis}
+                  customStyle={styles.valueNoMargin}
+                />
+                <View style={styles.row}>
+                  <ESSingleLabelValue
+                    label="Height"
+                    value={item.height}
+                    customStyle={styles.valueNoMargin}
+                    isRowItem
+                    withMarginRight
+                  />
+                  <ESSingleLabelValue
+                    label="Weight"
+                    value={item.weight}
+                    customStyle={styles.valueNoMargin}
+                    isRowItem
+                  />
+                </View>
               </View>
             );
           }}
-          // customViewClick={(item) => viewPatient(item)}
-          // customAddClick={() => addEditPatient()}
-          // customEditClick={(item) => addEditPatient(item)}
-          // customDeleteClick={(item) =>
-          //   store.confirm(
-          //     () => deletePatient(item),
-          //     "Confirm",
-          //     "Are you sure you want to delete this patient?"
-          //   )
-          // }
-        />
-      </View>
-      <View style={styles.bottomContainer}>
-        {/* <ESButton title="SCAN QR CODE" customClick={() => onScanQr()} /> */}
-        <ESIcon
-          name="qr-code-outline"
-          size={50}
-          color="#000000"
-          customClick={() => onScanQr()}
+          customViewClick={(item) => viewPrescription(item)}
+          customDeleteClick={(item) =>
+            store.confirm(
+              () => deletePrescription(item),
+              "Confirm",
+              "Are you sure you want to delete this prescription?"
+            )
+          }
         />
       </View>
     </View>

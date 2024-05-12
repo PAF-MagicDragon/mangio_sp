@@ -18,14 +18,14 @@ import ESButton from "../components/ESButton";
 import ESIcon from "../components/ESIcon";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 
-const PatientDashboard1 = ({ navigation }) => {
+const PatientDashboard3 = ({ navigation }) => {
   let [schedules, setSchedules] = useState(null);
   const store = useContext(ESContext);
   let user = store.mainUser;
 
   let refreshList = () => {
-    console.log("REFRESH LIST 1");
-    store.getSchedules(user.id, constants.STATUS_PENDING, (list) =>
+    console.log("REFRESH LIST 3");
+    store.getSchedules(user.id, constants.STATUS_COMPLETED, (list) =>
       setSchedules(list)
     );
   };
@@ -40,17 +40,11 @@ const PatientDashboard1 = ({ navigation }) => {
     }, [])
   );
 
-  let updateStatus = (item) => {
-    store.updateSchedule(item.id, constants.STATUS_COMPLETED, () => {
-      refreshList();
-    });
-  };
-
   return (
     <View style={styles.viewMain}>
       <View style={styles.withPadding}>
         <ESListView
-          header="Pending Schedules"
+          header="Completed Schedules"
           list={schedules}
           customPanel={(item) => {
             return (
@@ -70,18 +64,10 @@ const PatientDashboard1 = ({ navigation }) => {
               </View>
             );
           }}
-          customActionClick={(item) =>
-            store.confirm(
-              () => updateStatus(item),
-              "Confirm",
-              "Are you sure you want to tag this schedule as completed?"
-            )
-          }
-          customActionIcon="cafe-outline"
         />
       </View>
     </View>
   );
 };
 
-export default PatientDashboard1;
+export default PatientDashboard3;

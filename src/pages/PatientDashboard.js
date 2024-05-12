@@ -19,22 +19,19 @@ import ESButton from "../components/ESButton";
 import ESIcon from "../components/ESIcon";
 import PatientDashboard1 from "./PatientDashboard1";
 import PatientDashboard2 from "./PatientDashboard2";
-import { orderBy } from "lodash";
+import PatientDashboard3 from "./PatientDashboard3";
 
 const PatientDashboard = ({ navigation }) => {
   const Tab = createBottomTabNavigator();
   const store = useContext(ESContext);
   let user = store.mainUser;
 
-  useEffect(() => {
-    if (store.qrString != null) {
-      store.saveValuesFromQr(store.qrString, user.id);
-      let qrObj = JSON.parse(store.qrString);
-      console.log("FRANC QR OBJ", qrObj);
-      store.qrString = null;
-    }
-    console.log();
-  }, [store.qrString]);
+  let onScanQr = () => {
+    let PLSDELETESTRING =
+      '{"a":"|d040968e-5891-4526-ab83-affda0903aa3|franc mangio","b":"|1715014495572|urinary tract infection|1|2","c":"|fatima gopez mangio","d":["|Biogesic (B1)  - tablet|200|300|1|1|1|1|1|2|drink before meals","|Bonamine (B2)  - syrup|20|30|1|2|1|2|10|1|the quick brown fox jumps over the lazy dog"]}';
+    store.saveValuesFromQr(PLSDELETESTRING, user.id);
+    navigation.navigate("ScanQr");
+  };
 
   return (
     <SafeAreaView style={styles.viewMain}>
@@ -61,6 +58,13 @@ const PatientDashboard = ({ navigation }) => {
             value={store.getAgeFromBday(user.bday)}
             noMarginTopValue
             isRowItem
+            withMarginRight
+          />
+          <ESIcon
+            name="qr-code-outline"
+            size={50}
+            color="#000000"
+            customClick={() => onScanQr()}
           />
         </View>
         <Tab.Navigator
@@ -75,7 +79,7 @@ const PatientDashboard = ({ navigation }) => {
                 <ESIcon name="alarm-outline" color={color} size={size} />
               ),
             }}
-            name="Schedules"
+            name="Pending"
             component={PatientDashboard1}
           />
           <Tab.Screen
@@ -86,6 +90,15 @@ const PatientDashboard = ({ navigation }) => {
             }}
             name="Prescriptions"
             component={PatientDashboard2}
+          />
+          <Tab.Screen
+            options={{
+              tabBarIcon: ({ color, size }) => (
+                <ESIcon name="time-outline" color={color} size={size} />
+              ),
+            }}
+            name="Completed"
+            component={PatientDashboard3}
           />
         </Tab.Navigator>
         {/* </KeyboardAvoidingView>

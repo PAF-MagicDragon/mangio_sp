@@ -46,6 +46,48 @@ const AddDrug = ({ navigation, route }) => {
   }, []);
 
   let addEditDrug = () => {
+    if (request.name == null) {
+      alert("Drug is required");
+      return;
+    }
+    if (request.strength == null || request.strength.length == 0) {
+      alert("Strength is required");
+      return;
+    }
+    if (request.dose == null || request.dose.length == 0) {
+      alert("Dose is required");
+      return;
+    }
+    if (request.preparation == null) {
+      alert("Preparation is required");
+      return;
+    }
+    if (request.route == null) {
+      alert("Route is required");
+      return;
+    }
+    if (request.direction == null) {
+      alert("Direction is required");
+      return;
+    }
+    if (request.frequency == null) {
+      alert("Frequency is required");
+      return;
+    }
+    if (request.duration == null || request.duration.length == 0) {
+      alert("Frequency is required");
+      return;
+    } else {
+      if (request.duration.isInteger() && request.duration > 0) {
+      } else {
+        alert("Please enter a valid duration");
+        return;
+      }
+    }
+    if (request.type == null) {
+      alert("Type is required");
+      return;
+    }
     if (item != null) {
       store.tempDrugList.splice(index, 1, request);
     } else {

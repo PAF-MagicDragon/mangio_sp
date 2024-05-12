@@ -6,6 +6,9 @@ export const TYPE_SUB_PATIENT = 3;
 export const GENDER_MALE = 1;
 export const GENDER_FEMALE = 0;
 
+export const STATUS_COMPLETED = 1;
+export const STATUS_PENDING = 0;
+
 export const TEMPLATES = [
   ["1", "Biogesic", "B1", "tablet", 1],
   ["2", "Bonamine", "B2", "syrup", 1],
@@ -71,6 +74,11 @@ export const LIST_TYPE = [
 export const LIST_GENDER = [
   { value: GENDER_MALE, label: "Male" },
   { value: GENDER_FEMALE, label: "Female" },
+];
+
+export const LIST_STATUS = [
+  { value: STATUS_COMPLETED, label: "Completeed" },
+  { value: STATUS_PENDING, label: "Pending" },
 ];
 
 export const HTML_TEMPLATE =

@@ -17,7 +17,6 @@ const ViewPatient = ({ navigation, route }) => {
 
   const store = useContext(ESContext);
   const patient = route.params;
-  const isFocused = useIsFocused();
 
   let refreshList = () => {
     store.getPrescriptions(store.mainUser.id, patient.id, (list) =>

@@ -57,7 +57,7 @@ const ViewPrescription = ({ navigation, route }) => {
           <View style={styles.withPadding}>
             <ESValueWithLabel
               label="Date"
-              value={prescription.createDate}
+              value={store.convertDateIntToString(prescription.createDate)}
               noMarginTopValue
             />
             <ESValueWithLabel

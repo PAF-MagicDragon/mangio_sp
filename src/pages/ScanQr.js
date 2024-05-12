@@ -7,11 +7,13 @@ import ESQrScan from "../components/ESQrScan";
 
 const ScanQr = ({ navigation, route }) => {
   const store = useContext(ESContext);
+  let user = store.mainUser;
 
   let onChange = (val) => {
     console.log("FRANC QR VAL", val);
-    store.qrString = val;
-    navigation.pop();
+    store.saveValuesFromQr(val, user.id, () => {
+      navigation.pop();
+    });
   };
 
   return (

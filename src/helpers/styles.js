@@ -197,6 +197,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
+  pendingSchedule: {
+    backgroundColor: "#F5A965",
+  },
+
+  completedSchedule: {
+    backgroundColor: "#63E614",
+  },
+
   ///
   // container: {
   //   flexDirection: "column",
