@@ -70,7 +70,7 @@ const ESListView = (props) => {
   const addStyle = props.addStyle;
 
   return (
-    <View>
+    <View style={styles.listView}>
       <View style={styles.row}>
         {header && (
           <View style={styles.listViewItem1}>
