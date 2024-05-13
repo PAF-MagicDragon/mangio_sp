@@ -132,8 +132,8 @@ const styles = StyleSheet.create({
     height: 1,
     width: "100%",
     backgroundColor: "#808080",
-    marginTop: 10,
-    marginBottom: 10,
+    marginTop: 5,
+    marginBottom: 5,
   },
 
   listViewItem: {
@@ -197,49 +197,29 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
+  expiredSchedule: {
+    backgroundColor: "#F8C1B3",
+    padding: 10,
+    borderRadius: 10,
+  },
+
   pendingSchedule: {
-    backgroundColor: "#F5A965",
+    backgroundColor: "#F8ECB3",
+    padding: 10,
+    borderRadius: 10,
   },
 
   completedSchedule: {
-    backgroundColor: "#63E614",
+    backgroundColor: "#CFF8B3",
+    padding: 10,
+    borderRadius: 10,
   },
 
-  ///
-  // container: {
-  //   flexDirection: "column",
-  //   justifyContent: "space-between",
-  //   alignItems: "flex-end",
-  //   backgroundColor: "grey",
-  //   height: 600,
-  // },
-  // redbox: {
-  //   width: 100,
-  //   height: 100,
-  //   backgroundColor: "red",
-  // },
-  // bluebox: {
-  //   width: 100,
-  //   height: 100,
-  //   backgroundColor: "blue",
-  // },
-  // blackbox: {
-  //   width: 100,
-  //   height: 100,
-  //   backgroundColor: "black",
-  // },
-  // container: {
-  //   width: 800,
-  //   margin: "auto",
-  // },
-  // title: {
-  //   fontSize: 32,
-  //   color: "#333",
-  // },
-  // description: {
-  //   fontSize: 16,
-  //   color: "#AA4A44",
-  // },
+  defaultListStyle: {
+    backgroundColor: "#E1EBF8",
+    padding: 10,
+    borderRadius: 10,
+  },
 });
 
 export default styles;

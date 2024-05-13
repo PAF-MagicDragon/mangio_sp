@@ -46,6 +46,9 @@ const PatientDashboard3 = ({ navigation }) => {
         <ESListView
           header="Completed Schedules"
           list={schedules}
+          addStyle={(item) => {
+            return styles.completedSchedule;
+          }}
           customPanel={(item) => {
             return (
               <View>
@@ -55,12 +58,30 @@ const PatientDashboard3 = ({ navigation }) => {
                     " " +
                     store.convertDateIntToString2(item.intakeDate)
                   }
+                  customStyle={styles.subHeader}
                 />
-                <ESSingleLabelValue
-                  label="Drug"
-                  value={item.drugName}
-                  customStyle={styles.valueNoMargin}
+                <ESLabel text={item.drugName} />
+                <ESValue
+                  text={
+                    store.getLabelFromValue(
+                      item.drugPreparation,
+                      constants.LIST_PREPARATION
+                    ) +
+                    ", " +
+                    store.getLabelFromValue(
+                      item.drugRoute,
+                      constants.LIST_ROUTE
+                    ) +
+                    ", " +
+                    store.getLabelFromValue(
+                      item.drugDirection,
+                      constants.LIST_DIRECTION
+                    )
+                  }
                 />
+                {item.drugInstructions && (
+                  <ESValue text={item.drugInstructions} />
+                )}
               </View>
             );
           }}

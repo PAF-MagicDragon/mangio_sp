@@ -19,7 +19,7 @@ const ViewPatient = ({ navigation, route }) => {
   const patient = route.params;
 
   let refreshList = () => {
-    store.getPrescriptions(store.mainUser.id, patient.id, (list) =>
+    store.getPrescriptions(store.mainUser.id, patient.id, false, (list) =>
       setPrescriptions(list)
     );
   };
@@ -46,7 +46,7 @@ const ViewPatient = ({ navigation, route }) => {
   };
 
   let deletePrescription = (item) => {
-    store.deletePrescription(item.id, (results) => {
+    store.deletePrescription(item.id, false, (results) => {
       console.log("Results delete prescription", results);
       if (results != null && results.rowsAffected > 0) {
         Alert.alert(
@@ -137,11 +137,6 @@ const ViewPatient = ({ navigation, route }) => {
                   <ESLabel
                     text={store.convertDateIntToString(item.createDate)}
                     customStyle={styles.subHeader}
-                  />
-                  <ESSingleLabelValue
-                    label="Doctor"
-                    value={item.doctorName}
-                    customStyle={styles.valueNoMargin}
                   />
                   <ESSingleLabelValue
                     label="Diagnosis"

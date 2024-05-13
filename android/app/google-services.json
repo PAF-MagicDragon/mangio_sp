@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "222564755896",
+    "project_id": "expresscript-1702d",
+    "storage_bucket": "expresscript-1702d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:222564755896:android:02fad8d8798627de18474d",
+        "android_client_info": {
+          "package_name": "com.sample"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAcHlqHH2TrGZSfN1idbSdLiwFN0xx31Z0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

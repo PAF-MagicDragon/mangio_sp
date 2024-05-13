@@ -17,11 +17,18 @@ let listViewItem = (
   customEditClick,
   customDeleteClick,
   customActionClick,
-  customActionIcon
+  customActionIcon,
+  addStyle
 ) => {
   return (
     <TouchableOpacity onPress={() => customViewClick && customViewClick(item)}>
-      <View key={item.id} style={styles.listViewItem}>
+      <View
+        key={item.id}
+        style={[
+          styles.listViewItem,
+          addStyle != null ? addStyle(item) : styles.defaultListStyle,
+        ]}
+      >
         <View style={styles.listViewItem1}>{panel}</View>
         {(customEditClick || customDeleteClick || customActionClick) && (
           <View style={styles.listViewItem2}>
@@ -60,6 +67,7 @@ const ESListView = (props) => {
   const customDeleteClick = props.customDeleteClick;
   const customActionClick = props.customActionClick;
   const customActionIcon = props.customActionIcon;
+  const addStyle = props.addStyle;
 
   return (
     <View>
@@ -90,7 +98,8 @@ const ESListView = (props) => {
               customEditClick,
               customDeleteClick,
               customActionClick,
-              customActionIcon
+              customActionIcon,
+              addStyle
             )
           }
         />

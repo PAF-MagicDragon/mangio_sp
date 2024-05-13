@@ -55,11 +55,24 @@ const ViewPrescription = ({ navigation, route }) => {
               style={styles.keyboardAvoid}
             > */}
           <View style={styles.withPadding}>
-            <ESValueWithLabel
-              label="Date"
-              value={store.convertDateIntToString(prescription.createDate)}
-              noMarginTopValue
-            />
+            <View style={styles.row}>
+              <ESValueWithLabel
+                label="Date"
+                value={store.convertDateIntToString(prescription.createDate)}
+                noMarginTopValue
+                isRowItem
+                withMarginRight
+              />
+              {prescription.doctorName && (
+                <ESValueWithLabel
+                  label="Doctor"
+                  value={prescription.doctorName}
+                  noMarginTopValue
+                  isRowItem
+                />
+              )}
+            </View>
+
             <ESValueWithLabel
               label="Diagnosis"
               value={prescription.diagnosis}

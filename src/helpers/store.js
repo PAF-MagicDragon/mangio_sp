@@ -4,6 +4,7 @@ import * as constants from "./constants";
 import { Alert, Platform } from "react-native";
 import uuid from "react-native-uuid";
 import RNHTMLtoPDF from "react-native-html-to-pdf";
+import PushNotification from "react-native-push-notification";
 
 var db = openDatabase({ name: "ESDatabase.db" });
 
@@ -154,7 +155,7 @@ export class Store {
     return patient;
   };
 
-  @action mapPrescriptionFromDb = (item) => {
+  @action mapPrescriptionFromDb = (item, showDoctor) => {
     console.log("FRANC ITEM", item);
     let prescription = {};
     prescription.id = item["ID"];
@@ -164,7 +165,9 @@ export class Store {
     prescription.patientId = item["PATIENT_ID"];
     prescription.height = item["HEIGHT"];
     prescription.weight = item["WEIGHT"];
-    prescription.doctorName = item["NAME"];
+    if (showDoctor) {
+      prescription.doctorName = item["NAME"];
+    }
     return prescription;
   };
 
@@ -196,6 +199,10 @@ export class Store {
     schedule.patientId = item["PATIENT_ID"];
     schedule.status = item["STATUS"];
     schedule.drugName = item["DRUG_NAME"];
+    schedule.drugPreparation = item["DRUG_PREPARATION"];
+    schedule.drugRoute = item["DRUG_ROUTE"];
+    schedule.drugDirection = item["DRUG_DIRECTION"];
+    schedule.drugInstructions = item["DRUG_INSTRUCTIONS"];
     return schedule;
   };
 
@@ -239,7 +246,7 @@ export class Store {
     });
   };
 
-  @action getPrescriptions = (doctorId, patientId, cb) => {
+  @action getPrescriptions = (doctorId, patientId, showDoctor, cb) => {
     db.transaction((tx) => {
       let sql =
         "SELECT p.*, u.name FROM ES_PRESCRIPTION p, ES_USER u WHERE p.DOCTOR_ID = u.id AND p.PATIENT_ID = ? ORDER BY p.CREATE_DATE DESC";
@@ -252,7 +259,9 @@ export class Store {
       tx.executeSql(sql, val, (tx, results) => {
         var temp = [];
         for (let i = 0; i < results.rows.length; ++i) {
-          temp.push(this.mapPrescriptionFromDb(results.rows.item(i)));
+          temp.push(
+            this.mapPrescriptionFromDb(results.rows.item(i), showDoctor)
+          );
         }
         cb && cb(temp);
       });
@@ -295,7 +304,7 @@ export class Store {
   @action getSchedules = (patientId, status, cb) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT s.*, d.name AS DRUG_NAME FROM ES_SCHEDULE s, ES_DRUG d WHERE s.DRUG_ID = d.id AND s.PATIENT_ID = ? AND s.STATUS = ? ORDER BY s.INTAKE_DATE",
+        "SELECT s.*, d.name AS DRUG_NAME, d.preparation AS DRUG_PREPARATION, d.route AS DRUG_ROUTE, d.direction AS DRUG_DIRECTION, d.instructions as DRUG_INSTRUCTIONS FROM ES_SCHEDULE s, ES_DRUG d WHERE s.DRUG_ID = d.id AND s.PATIENT_ID = ? AND s.STATUS = ? ORDER BY s.INTAKE_DATE",
         [patientId, status],
         (tx, results) => {
           var temp = [];
@@ -307,6 +316,33 @@ export class Store {
       );
     });
   };
+
+  @action deleteScheduledPushNotif = (prescriptionId, cb) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "SELECT ID FROM ES_SCHEDULE WHERE PRESCRIPTION_ID = ?",
+        [prescriptionId],
+        (tx, results) => {
+          for (let i = 0; i < results.rows.length; ++i) {
+            let id = results.rows.item(i)["ID"];
+            let notifId = this.convertToNotifId(id);
+            PushNotification.cancelLocalNotification(notifId);
+          }
+          cb && cb(temp);
+        }
+      );
+    });
+  };
+
+  @action convertToNotifId(str) {
+    let hash = 0;
+    let i = 0;
+    const len = str.length;
+    while (i < len) {
+      hash = ((hash << 5) - hash + str.charCodeAt(i++)) << 0;
+    }
+    return hash;
+  }
 
   @action addEditEsUser = (request, cb) => {
     console.log("ES USER", request);
@@ -331,7 +367,7 @@ export class Store {
           "UPDATE ES_USER SET (TYPE,NAME,ADDRESS,CONTACT_NUMBER,EMAIL,CLINIC_HOSPITAL,SPECIALIZATION,SIGNATURE,LICENSE_NO,PTR_NO,BDAY,GENDER) = (?,?,?,?,?,?,?,?,?,?,?,?) WHERE ID = ? ",
           val,
           (tx, results) => {
-            cb != null && cb(results);
+            cb && cb(results);
           }
         );
       });
@@ -357,7 +393,7 @@ export class Store {
           "INSERT INTO ES_USER (ID,TYPE,NAME,ADDRESS,CONTACT_NUMBER,EMAIL,CLINIC_HOSPITAL,SPECIALIZATION,SIGNATURE,LICENSE_NO,PTR_NO,BDAY,GENDER) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
           val,
           (tx, results) => {
-            cb != null && cb(results);
+            cb && cb(results);
           }
         );
       });
@@ -408,7 +444,7 @@ export class Store {
                 });
               }
             );
-            cb != null && cb(results);
+            cb && cb(results);
           }
         );
       });
@@ -455,7 +491,7 @@ export class Store {
                 }
               );
             });
-            cb != null && cb(results);
+            cb && cb(results);
           }
         );
       });
@@ -496,7 +532,7 @@ export class Store {
       let sql = "DELETE FROM " + table + " WHERE " + whereField + "";
       console.log("DELETE RECORD SQL:", sql);
       tx.executeSql(sql, val, (tx, results) => {
-        cb != null && cb(results);
+        cb && cb(results);
       });
     });
   };
@@ -512,8 +548,12 @@ export class Store {
     this.deleteRecord("ES_USER", id, "ID = ?", cb);
   };
 
-  @action deletePrescription = (id, cb) => {
-    this.deleteRecord("ES_SCHEDULE", id, "PRESCRIPTION_ID = ?", null);
+  @action deletePrescription = (id, withScheduleDelete, cb) => {
+    if (withScheduleDelete) {
+      this.deleteScheduledPushNotif(id, () => {
+        this.deleteRecord("ES_SCHEDULE", id, "PRESCRIPTION_ID = ?", null);
+      });
+    }
     this.deleteRecord("ES_DRUG", id, "PRESCRIPTION_ID = ?", null);
     this.deleteRecord("ES_PRESCRIPTION", id, "ID = ?", cb);
   };
@@ -839,13 +879,15 @@ export class Store {
           schedule.patientId,
           constants.STATUS_PENDING,
         ];
+
         tx.executeSql(
           "INSERT INTO ES_SCHEDULE (ID, INTAKE_DATE, PRESCRIPTION_ID, DRUG_ID, PATIENT_ID, STATUS) VALUES (?,?,?,?,?,?)",
           val,
-          (tx, results) => {}
+          (tx, results) => {
+            cb && cb(id, schedule, i);
+          }
         );
       });
-      cb != null && cb(results);
     });
   };
 
@@ -859,9 +901,20 @@ export class Store {
       schedule.prescriptionId = prescriptionId;
       schedule.drugId = drugId;
       schedule.patientId = patientId;
+      schedule.drugName = drugObj.name;
       scheduleList.push(schedule);
     });
-    this.insertSchedules(scheduleList);
+    this.insertSchedules(scheduleList, (id, schedule, i) => {
+      let notifId = this.convertToNotifId(id);
+      PushNotification.localNotificationSchedule({
+        id: notifId,
+        title: "Expresscript",
+        date: new Date(schedule.intakeDate),
+        message: "Please drink medicine: " + schedule.drugName,
+        allowWhileIdle: true,
+        channelId: constants.CHANNEL_ID,
+      });
+    });
   }
 
   @action createDateList(drugObj) {
@@ -873,7 +926,7 @@ export class Store {
     if (duration != null) {
       for (let i = 0; i < duration; i++) {
         if (type != null) {
-          let typeCount = null;
+          let typeCount = 0;
           if (type == 1) {
             //days
             typeCount = 1;
@@ -885,8 +938,30 @@ export class Store {
             typeCount = 30;
           }
           for (let j = 0; j < typeCount; j++) {
-            startDate = this.addHours(startDate, 24);
-            dateList.push(startDate.getTime());
+            if (frequency != null) {
+              let freqCount = 0;
+              if (frequency == 3) {
+                //once a day
+                freqCount = 1;
+              } else if (frequency == 4) {
+                //twice daily
+                freqCount = 2;
+              } else if (frequency == 5) {
+                //thrice daily
+                freqCount = 3;
+              } else if (frequency == 6) {
+                //four times a day
+                freqCount = 4;
+              } else if (frequency == 7) {
+                //every hour
+                freqCount = 24;
+              }
+              let skipHours = 24 / freqCount;
+              for (let k = 0; k < freqCount; k++) {
+                startDate = this.addHours(startDate, skipHours);
+                dateList.push(startDate.getTime());
+              }
+            }
           }
         }
       }
@@ -901,12 +976,16 @@ export class Store {
     return copiedDate;
   }
 
+  @action checkIfDigitsOnly(str) {
+    return str.match(/^[0-9]+$/) != null;
+  }
+
   @action updateSchedule = (id, status, cb) => {
     db.transaction(function (tx) {
       let val = [status, id];
       let sql = "UPDATE ES_SCHEDULE SET STATUS = ? WHERE ID = ?";
       tx.executeSql(sql, val, (tx, results) => {
-        cb != null && cb(results);
+        cb && cb(results);
       });
     });
   };

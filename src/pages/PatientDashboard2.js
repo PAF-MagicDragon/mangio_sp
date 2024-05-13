@@ -25,7 +25,9 @@ const PatientDashboard2 = ({ navigation }) => {
 
   let refreshList = () => {
     console.log("REFRESH LIST 2");
-    store.getPrescriptions(null, user.id, (list) => setPrescriptions(list));
+    store.getPrescriptions(null, user.id, true, (list) =>
+      setPrescriptions(list)
+    );
   };
 
   useFocusEffect(
@@ -43,7 +45,7 @@ const PatientDashboard2 = ({ navigation }) => {
   };
 
   let deletePrescription = (item) => {
-    store.deletePrescription(item.id, (results) => {
+    store.deletePrescription(item.id, true, (results) => {
       console.log("Results delete prescription", results);
       if (results != null && results.rowsAffected > 0) {
         Alert.alert(
@@ -72,15 +74,20 @@ const PatientDashboard2 = ({ navigation }) => {
           customPanel={(item) => {
             return (
               <View>
-                <ESLabel
-                  text={store.convertDateIntToString(item.createDate)}
-                  customStyle={styles.subHeader}
-                />
-                <ESSingleLabelValue
-                  label="Doctor"
-                  value={item.doctorName}
-                  customStyle={styles.valueNoMargin}
-                />
+                <View style={styles.row}>
+                  <ESLabel
+                    text={store.convertDateIntToString(item.createDate)}
+                    customStyle={styles.subHeader}
+                    isRowItem
+                    withMarginRight
+                  />
+                  <ESLabel
+                    text={"Dr. " + item.doctorName}
+                    customStyle={styles.valueNoMargin}
+                    isRowItem
+                  />
+                </View>
+
                 <ESSingleLabelValue
                   label="Diagnosis"
                   value={item.diagnosis}

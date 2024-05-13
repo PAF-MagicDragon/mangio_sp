@@ -21,15 +21,24 @@ import PatientDashboard1 from "./PatientDashboard1";
 import PatientDashboard2 from "./PatientDashboard2";
 import PatientDashboard3 from "./PatientDashboard3";
 
+import PushNotification from "react-native-push-notification";
+
 const PatientDashboard = ({ navigation }) => {
   const Tab = createBottomTabNavigator();
   const store = useContext(ESContext);
   let user = store.mainUser;
 
+  // let cancelQr = () => {
+  //   // PushNotification.cancelAllLocalNotifications();
+  //   PushNotification.getScheduledLocalNotifications((list) => {
+  //     console.log("FRANC NOTIF LIST", list);
+  //   });
+  // };
+
   let onScanQr = () => {
-    let PLSDELETESTRING =
-      '{"a":"|d040968e-5891-4526-ab83-affda0903aa3|franc mangio","b":"|1715014495572|urinary tract infection|1|2","c":"|fatima gopez mangio","d":["|Biogesic (B1)  - tablet|200|300|1|1|1|1|1|2|drink before meals","|Bonamine (B2)  - syrup|20|30|1|2|1|2|10|1|the quick brown fox jumps over the lazy dog"]}';
-    store.saveValuesFromQr(PLSDELETESTRING, user.id);
+    // let PLSDELETESTRING =
+    //   '{"a":"|d040968e-5891-4526-ab83-affda0903aa3|franc mangio","b":"|1715014495572|urinary tract infection|1|2","c":"|fatima gopez mangio","d":["|Biogesic (B1)  - tablet|200|300|1|1|1|1|1|2|drink before meals","|Bonamine (B2)  - syrup|20|30|1|2|1|2|10|1|the quick brown fox jumps over the lazy dog"]}';
+    // store.saveValuesFromQr(PLSDELETESTRING, user.id);
     navigation.navigate("ScanQr");
   };
 
@@ -66,6 +75,12 @@ const PatientDashboard = ({ navigation }) => {
             color="#000000"
             customClick={() => onScanQr()}
           />
+          {/* <ESIcon
+            name="trash-outline"
+            size={50}
+            color="#000000"
+            customClick={() => cancelQr()}
+          /> */}
         </View>
         <Tab.Navigator
           initialRouteName="Schedules"

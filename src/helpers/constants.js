@@ -9,6 +9,9 @@ export const GENDER_FEMALE = 0;
 export const STATUS_COMPLETED = 1;
 export const STATUS_PENDING = 0;
 
+export const CHANNEL_ID = "expresscript-id";
+export const CHANNEL_NAME = "Expresscript Channel";
+
 export const TEMPLATES = [
   ["1", "Biogesic", "B1", "tablet", 1],
   ["2", "Bonamine", "B2", "syrup", 1],
@@ -50,19 +53,19 @@ export const LIST_DIRECTION = [
 ];
 
 export const LIST_FREQUENCY = [
-  { value: 1, label: "If required" },
-  { value: 2, label: "Immediately" },
+  // { value: 1, label: "If required" },
+  // { value: 2, label: "Immediately" },
   { value: 3, label: "Once a day" },
   { value: 4, label: "Twice Daily" },
   { value: 5, label: "Thrice Daily" },
   { value: 6, label: "Four Times a day" },
   { value: 7, label: "Every hour" },
-  { value: 8, label: "Every night at bedtime" },
-  { value: 9, label: "Every day" },
-  { value: 10, label: "Every other day" },
-  { value: 11, label: "Every four hours" },
-  { value: 12, label: "Once a week" },
-  { value: 13, label: "Three times a week" },
+  // { value: 8, label: "Every night at bedtime" },
+  // { value: 9, label: "Every day" },
+  // { value: 10, label: "Every other day" },
+  // { value: 11, label: "Every four hours" },
+  // { value: 12, label: "Once a week" },
+  // { value: 13, label: "Three times a week" },
 ];
 
 export const LIST_TYPE = [

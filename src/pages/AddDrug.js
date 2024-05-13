@@ -78,7 +78,7 @@ const AddDrug = ({ navigation, route }) => {
       alert("Frequency is required");
       return;
     } else {
-      if (request.duration.isInteger() && request.duration > 0) {
+      if (store.checkIfDigitsOnly(request.duration) && request.duration > 0) {
       } else {
         alert("Please enter a valid duration");
         return;

@@ -178,7 +178,12 @@ dependencies {
     } else {
         implementation jscFlavor
     }
+
+    implementation 'com.google.firebase:firebase-analytics:17.3.0'
+    implementation project(':react-native-push-notification')
+  
 }
 
 apply from: new File(["node", "--print", "require.resolve('@react-native-community/cli-platform-android/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim(), "../native_modules.gradle");
 applyNativeModulesAppBuildGradle(project)
+apply plugin: 'com.google.gms.google-services'

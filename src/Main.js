@@ -34,6 +34,7 @@ import ESButton from "./components/ESButton";
 
 import { Text } from "react-native";
 import ESIcon from "./components/ESIcon";
+import PushNotification, { Importance } from "react-native-push-notification";
 
 const Stack = createNativeStackNavigator();
 
@@ -51,10 +52,26 @@ const Main = () => {
     setInitialPage(tempPage);
   };
 
+  createChannel = () => {
+    PushNotification.createChannel(
+      {
+        channelId: constants.CHANNEL_ID, // (required)
+        channelName: constants.CHANNEL_NAME, // (required)
+        channelDescription: constants.CHANNEL_NAME, // (optional) default: undefined.
+        playSound: true, // (optional) default: true
+        soundName: "default", // (optional) See `soundName` parameter of `localNotification` function
+        importance: Importance.HIGH, // (optional) default: Importance.HIGH. Int value of the Android notification importance
+        vibrate: true, // (optional) default: true. Creates the default vibration pattern if true.
+      },
+      (created) => console.log("CHANNEL CREATED", created) // (optional) callback returns whether the channel was created, false means it already existed.
+    );
+  };
+
   useEffect(() => {
     store.initializeAllTables(() =>
       store.initializeMainUser(() => initializeScreen())
     );
+    this.createChannel();
   }, []);
 
   return (
