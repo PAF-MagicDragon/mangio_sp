@@ -19,7 +19,7 @@ const ESQrScan = (props) => {
   const onChange = props.onChange;
 
   onSuccess = (e) => {
-    onChange && onchange(e.data);
+    onChange && onChange(e.data);
   };
 
   let topText = props.topText;
