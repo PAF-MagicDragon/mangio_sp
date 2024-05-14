@@ -14,7 +14,7 @@ const Home = ({ navigation }) => {
     //   navigation.replace("Dashboard");
     // } else {
     store.mainUser.type = type;
-    navigation.replace("Profile");
+    navigation.replace("Profile", true);
     // }
   };
 

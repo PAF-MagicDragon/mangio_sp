@@ -18,9 +18,10 @@ import ESRadio from "../components/ESRadio";
 import ESDatePicker from "../components/ESDatePicker";
 import cloneDeep from "lodash/cloneDeep";
 
-const Profile = ({ navigation }) => {
+const Profile = ({ navigation, route }) => {
   let [request, setRequest] = useState(null);
   const store = useContext(ESContext);
+  const isFromHome = route.params;
 
   useEffect(() => {
     if (request == null) {
@@ -62,8 +63,11 @@ const Profile = ({ navigation }) => {
             {
               text: "Ok",
               onPress: () => {
-                // store.initializeMainUser(() => navigation.replace("Dashboard"));
-                store.initializeMainUser(() => navigation.pop());
+                store.initializeMainUser(() =>
+                  isFromHome
+                    ? navigation.replace("Dashboard")
+                    : navigation.pop()
+                );
               },
             },
           ],
