@@ -28,6 +28,15 @@ const DoctorDashboard = ({ navigation }) => {
 
   useEffect(() => {
     refreshList();
+    navigation.setOptions({
+      headerRight: () => (
+        <ESIcon
+          name="settings-outline"
+          color="#ffffff"
+          customClick={() => navigation.navigate("Profile")}
+        />
+      ),
+    });
   }, []);
 
   let addEditPatient = (item) => {

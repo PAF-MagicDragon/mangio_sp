@@ -62,7 +62,8 @@ const Profile = ({ navigation }) => {
             {
               text: "Ok",
               onPress: () => {
-                store.initializeMainUser(() => navigation.replace("Dashboard"));
+                // store.initializeMainUser(() => navigation.replace("Dashboard"));
+                store.initializeMainUser(() => navigation.pop());
               },
             },
           ],

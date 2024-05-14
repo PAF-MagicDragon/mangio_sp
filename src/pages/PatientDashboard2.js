@@ -66,7 +66,7 @@ const PatientDashboard2 = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.viewMain}>
+    <View style={[styles.viewMain, styles.tabContainer]}>
       <View style={styles.withPadding}>
         <ESListView
           header="Prescriptions"

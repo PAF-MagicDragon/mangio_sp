@@ -9,11 +9,13 @@ const ScanQr = ({ navigation, route }) => {
   const store = useContext(ESContext);
   let user = store.mainUser;
 
+  let goBack = () => {
+    navigation.pop();
+  };
+
   let onChange = (val) => {
     console.log("FRANC QR VAL", val);
-    store.saveValuesFromQr(val, user.id, () => {
-      navigation.pop();
-    });
+    store.saveValuesFromQr(val, user.id, setTimeout(goBack, 1000)); //add delay since saving of schedule is async. needs to save before going back
   };
 
   return (

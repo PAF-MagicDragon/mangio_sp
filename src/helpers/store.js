@@ -212,6 +212,7 @@ export class Store {
     template.brand = item["BRAND"];
     template.generic = item["GENERIC"];
     template.formulation = item["FORMULATION"];
+    template.isDefault = item["IS_DEFAULT"];
     return template;
   };
 
@@ -233,7 +234,7 @@ export class Store {
   @action getPatients = (cb) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT * FROM ES_USER WHERE TYPE = ? ORDER BY NAME",
+        "SELECT * FROM ES_USER WHERE TYPE = ? ORDER BY NAME COLLATE NOCASE",
         [constants.TYPE_SUB_PATIENT],
         (tx, results) => {
           var temp = [];
@@ -271,7 +272,7 @@ export class Store {
   @action getDrugs = (prescriptionId, cb) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT * FROM ES_DRUG WHERE PRESCRIPTION_ID = ? ORDER BY NAME",
+        "SELECT * FROM ES_DRUG WHERE PRESCRIPTION_ID = ? ORDER BY NAME COLLATE NOCASE",
         [prescriptionId],
         (tx, results) => {
           var temp = [];
@@ -284,20 +285,24 @@ export class Store {
     });
   };
 
-  @action getTemplates = (cb) => {
+  @action getTemplates = (isDefault, cb) => {
     db.transaction((tx) => {
-      tx.executeSql(
-        "SELECT * FROM ES_TEMPLATE ORDER BY BRAND, GENERIC",
-        [],
-        (tx, results) => {
-          console.log("TEMPLATE RESULTS");
-          var temp = [];
-          for (let i = 0; i < results.rows.length; ++i) {
-            temp.push(this.mapTemplateFromDb(results.rows.item(i)));
-          }
-          cb && cb(temp);
+      let sql =
+        "SELECT * FROM ES_TEMPLATE ORDER BY BRAND COLLATE NOCASE, GENERIC COLLATE NOCASE";
+      let val = [];
+      if (isDefault != null) {
+        sql =
+          "SELECT * FROM ES_TEMPLATE WHERE IS_DEFAULT = ? ORDER BY BRAND COLLATE NOCASE, GENERIC COLLATE NOCASE";
+        val = [isDefault];
+      }
+      tx.executeSql(sql, val, (tx, results) => {
+        console.log("TEMPLATE RESULTS");
+        var temp = [];
+        for (let i = 0; i < results.rows.length; ++i) {
+          temp.push(this.mapTemplateFromDb(results.rows.item(i)));
         }
-      );
+        cb && cb(temp);
+      });
     });
   };
 
@@ -439,7 +444,9 @@ export class Store {
                   tx.executeSql(
                     "INSERT INTO ES_DRUG (ID,PRESCRIPTION_ID,NAME,STRENGTH,DOSE,PREPARATION,ROUTE,DIRECTION,FREQUENCY,DURATION,TYPE,INSTRUCTIONS,TOTAL,REFILLS) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     innerVal,
-                    (tx, results) => {}
+                    (tx, results) => {
+                      cb2 && cb2(innerId, id, drug);
+                    }
                   );
                 });
               }
@@ -464,7 +471,7 @@ export class Store {
           "INSERT INTO ES_PRESCRIPTION (ID,CREATE_DATE,DIAGNOSIS,DOCTOR_ID,PATIENT_ID,HEIGHT,WEIGHT) VALUES (?,?,?,?,?,?,?)",
           val,
           (tx, results) => {
-            // this.saveDrugList(tx, request, id);
+            let size = request.drugList.length;
             request.drugList.forEach((drug, i) => {
               let innerId = uuid.v4();
               let innerVal = [
@@ -498,31 +505,44 @@ export class Store {
     }
   };
 
-  @action saveDrugList = (tx, request, id) => {
-    request.drugList.forEach((drug, i) => {
-      let innerId = uuid.v4();
-      let innerVal = [
-        innerId,
-        id,
-        drug.name,
-        drug.strength,
-        drug.dose,
-        drug.preparation,
-        drug.route,
-        drug.direction,
-        drug.frequency,
-        drug.duration,
-        drug.type,
-        drug.instructions,
-        drug.total,
-        drug.refills,
-      ];
-      tx.executeSql(
-        "INSERT INTO ES_DRUG (ID,PRESCRIPTION_ID,NAME,STRENGTH,DOSE,PREPARATION,ROUTE,DIRECTION,FREQUENCY,DURATION,TYPE,INSTRUCTIONS,TOTAL,REFILLS) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-        innerVal,
-        (tx, results) => {}
-      );
-    });
+  @action addEditEsTemplate = (request, cb) => {
+    console.log("ES TEMPLATE", request);
+    if (request.id != null) {
+      db.transaction(function (tx) {
+        let val = [
+          request.brand,
+          request.generic,
+          request.formulation,
+          request.isDefault,
+          request.id,
+        ];
+        tx.executeSql(
+          "UPDATE ES_TEMPLATE SET (BRAND,GENERIC,FORMULATION,IS_DEFAULT) = (?,?,?,?) WHERE ID = ? ",
+          val,
+          (tx, results) => {
+            cb && cb(results);
+          }
+        );
+      });
+    } else {
+      db.transaction(function (tx) {
+        let id = uuid.v4();
+        let val = [
+          id,
+          request.brand,
+          request.generic,
+          request.formulation,
+          request.isDefault,
+        ];
+        tx.executeSql(
+          "INSERT INTO ES_TEMPLATE (ID,BRAND,GENERIC,FORMULATION,IS_DEFAULT) VALUES (?,?,?,?,?)",
+          val,
+          (tx, results) => {
+            cb && cb(results);
+          }
+        );
+      });
+    }
   };
 
   @action deleteRecord = (table, id, whereField, cb) => {
@@ -558,6 +578,10 @@ export class Store {
     this.deleteRecord("ES_PRESCRIPTION", id, "ID = ?", cb);
   };
 
+  @action deleteTemplate = (id, cb) => {
+    this.deleteRecord("ES_TEMPLATE", id, "ID = ?", cb);
+  };
+
   //   @computed get filteredLists() {
   //     const matchCase = new RegExp(this.filter, "i");
   //     return this.lists.filter(
@@ -566,7 +590,7 @@ export class Store {
   //   }
 
   @action initializeTemplateData = (cb) => {
-    this.getTemplates((list) => {
+    this.getTemplates(null, (list) => {
       let temp = [];
       list.forEach((x, i) => {
         let s = x.brand;
@@ -582,11 +606,24 @@ export class Store {
     });
   };
 
-  @action formDropDownData = (list) => {
+  @action formDropDownData = (list, withSort) => {
     let temp = [];
     list.forEach((data) => {
       temp.push({ label: data.label, value: data.value });
     });
+    if (withSort) {
+      temp.sort((a, b) => {
+        let fa = a.label.toLowerCase();
+        let fb = b.label.toLowerCase();
+        if (fa < fb) {
+          return -1;
+        }
+        if (fa > fb) {
+          return 1;
+        }
+        return 0;
+      });
+    }
     return temp;
   };
 
@@ -910,7 +947,7 @@ export class Store {
         id: notifId,
         title: "Expresscript",
         date: new Date(schedule.intakeDate),
-        message: "Please drink medicine: " + schedule.drugName,
+        message: "Please take your medicine: " + schedule.drugName,
         allowWhileIdle: true,
         channelId: constants.CHANNEL_ID,
       });

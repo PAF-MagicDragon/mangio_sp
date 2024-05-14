@@ -41,7 +41,7 @@ const PatientDashboard3 = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.viewMain}>
+    <View style={[styles.viewMain, styles.tabContainer]}>
       <View style={styles.withPadding}>
         <ESListView
           header="Completed Schedules"

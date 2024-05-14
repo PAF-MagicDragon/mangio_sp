@@ -1,20 +1,13 @@
 import React, { useState, useEffect, useContext } from "react";
-import { styles, navOptions } from "./helpers/styles";
+import styles, { navOptions } from "./helpers/styles";
 import * as strings from "./helpers/strings";
 import * as constants from "./helpers/constants";
-
+import { View, Alert } from "react-native";
 import {
   NavigationContainer,
   useNavigationContainerRef,
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
-import HomeScreen from "./pages/HomeScreen";
-import RegisterUser from "./pages/RegisterUser";
-import UpdateUser from "./pages/UpdateUser";
-import ViewUser from "./pages/ViewUser";
-import ViewAllUser from "./pages/ViewAllUser";
-import DeleteUser from "./pages/DeleteUser";
 
 import ESContext from "./ESContext";
 import Home from "./pages/Home";
@@ -29,9 +22,9 @@ import AddDrug from "./pages/AddDrug";
 import ViewPrescription from "./pages/ViewPrescription";
 import ViewPdf from "./pages/ViewPdf";
 import ScanQr from "./pages/ScanQr";
-
+import ViewTemplate from "./pages/ViewTemplate";
+import AddTemplate from "./pages/AddTemplate";
 import ESButton from "./components/ESButton";
-
 import { Text } from "react-native";
 import ESIcon from "./components/ESIcon";
 import PushNotification, { Importance } from "react-native-push-notification";
@@ -42,7 +35,6 @@ const Main = () => {
   let [initialPage, setInitialPage] = useState(null);
   const store = useContext(ESContext);
   const navigationRef = useNavigationContainerRef();
-
   initializeScreen = () => {
     let tempPage = "Home";
     let type = store.mainUser.type;
@@ -99,14 +91,6 @@ const Main = () => {
             component={Dashboard}
             options={{
               title: "Dashboard",
-              // headerTitle: () => <Text>HELLO</Text>,
-              headerRight: () => (
-                <ESIcon
-                  name="settings-outline"
-                  color="#ffffff"
-                  customClick={() => navigationRef.navigate("Profile")}
-                />
-              ),
               ...navOptions,
             }}
           />
@@ -182,54 +166,22 @@ const Main = () => {
               ...navOptions,
             }}
           />
-          {/* <Stack.Screen
-            name="HomeScreen"
-            component={HomeScreen}
+          <Stack.Screen
+            name="ViewTemplate"
+            component={ViewTemplate}
             options={{
-              title: "Home",
+              title: "Custom Templates",
               ...navOptions,
             }}
           />
           <Stack.Screen
-            name="View"
-            component={ViewUser}
+            name="AddTemplate"
+            component={AddTemplate}
             options={{
-              title: "View User",
+              title: "Manage Template",
               ...navOptions,
             }}
           />
-          <Stack.Screen
-            name="ViewAll"
-            component={ViewAllUser}
-            options={{
-              title: "View Users",
-              ...navOptions,
-            }}
-          />
-          <Stack.Screen
-            name="Update"
-            component={UpdateUser}
-            options={{
-              title: "Update User",
-              ...navOptions,
-            }}
-          />
-          <Stack.Screen
-            name="Register"
-            component={RegisterUser}
-            options={{
-              title: "Register User",
-              ...navOptions,
-            }}
-          />
-          <Stack.Screen
-            name="Delete"
-            component={DeleteUser}
-            options={{
-              title: "Delete User",
-              ...navOptions,
-            }}
-          /> */}
         </Stack.Navigator>
       </NavigationContainer>
     )

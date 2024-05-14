@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
   },
   viewMain: {
     flex: 1,
+    backgroundColor: "#ffffff",
   },
   viewSub: {
     flex: 1,
@@ -26,7 +27,7 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     marginRight: 10,
   },
-  listView: {
+  defaultBackground: {
     backgroundColor: "#ffffff",
   },
   row: {
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
   },
   datePickerIcon: {
     marginTop: 40,
-    marginRight: 70,
+    marginRight: 50,
   },
   valueNoMargin: {
     color: "#808080",
@@ -222,6 +223,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#E1EBF8",
     padding: 10,
     borderRadius: 10,
+  },
+
+  tabContainer: {
+    paddingBottom: 100,
   },
 });
 

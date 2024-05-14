@@ -15,6 +15,8 @@ import * as constants from "../helpers/constants";
 import ESValueWithLabel from "../components/ESValueWithLabel";
 import ESDropDownWithLabel from "../components/ESDropDownWithLabel";
 import cloneDeep from "lodash/cloneDeep";
+import { useFocusEffect, useIsFocused } from "@react-navigation/native";
+import ESIcon from "../components/ESIcon";
 
 const AddDrug = ({ navigation, route }) => {
   let [request, setRequest] = useState(null);
@@ -29,21 +31,38 @@ const AddDrug = ({ navigation, route }) => {
   const index = obj.index;
   const item = obj.item;
 
-  useEffect(() => {
-    if (item != null) {
-      setRequest(cloneDeep(item));
-    } else {
-      setRequest({});
-    }
-    store.initializeTemplateData((list) => {
-      setTemplateData(list);
-    });
-    setPreparationData(store.formDropDownData(constants.LIST_PREPARATION));
-    setRouteData(store.formDropDownData(constants.LIST_ROUTE));
-    setDirectionData(store.formDropDownData(constants.LIST_DIRECTION));
-    setFrequencyData(store.formDropDownData(constants.LIST_FREQUENCY));
-    setTypeData(store.formDropDownData(constants.LIST_TYPE));
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      if (item != null) {
+        setRequest(cloneDeep(item));
+      } else {
+        setRequest({});
+      }
+      store.initializeTemplateData((list) => {
+        setTemplateData(list);
+      });
+      setPreparationData(
+        store.formDropDownData(constants.LIST_PREPARATION, true)
+      );
+      setRouteData(store.formDropDownData(constants.LIST_ROUTE, true));
+      setDirectionData(store.formDropDownData(constants.LIST_DIRECTION, true));
+      setFrequencyData(store.formDropDownData(constants.LIST_FREQUENCY));
+      setTypeData(store.formDropDownData(constants.LIST_TYPE));
+      navigation.setOptions({
+        headerRight: () => (
+          <ESIcon
+            name="duplicate-outline"
+            color="#ffffff"
+            customClick={() => navigation.navigate("ViewTemplate")}
+          />
+        ),
+      });
+      return () => {
+        // Do something when the screen is unfocused
+        // Useful for cleanup functions
+      };
+    }, [])
+  );
 
   let addEditDrug = () => {
     if (request.name == null) {

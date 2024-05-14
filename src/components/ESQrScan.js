@@ -27,7 +27,7 @@ const ESQrScan = (props) => {
   return (
     <QRCodeScanner
       onRead={this.onSuccess}
-      flashMode={RNCamera.Constants.FlashMode.torch}
+      // flashMode={RNCamera.Constants.FlashMode.torch}
       topContent={topText && <ESLabel text={topText} />}
       bottomContent={bottomText && <ESValue text={bottomText} />}
     />

@@ -13,8 +13,15 @@ export const CHANNEL_ID = "expresscript-id";
 export const CHANNEL_NAME = "Expresscript Channel";
 
 export const TEMPLATES = [
-  ["1", "Biogesic", "B1", "tablet", 1],
-  ["2", "Bonamine", "B2", "syrup", 1],
+  ["1", "Panadol", "Acetaminophen", "tablet", 1],
+  ["2", "Excedrine", "Acetaminophen", "syrup", 1],
+  ["3", "Sinutab", "Acetaminophen", "tablet", 1],
+  ["4", "Tylenol PM", "Acetaminophen", "tablet", 1],
+  ["5", "Benadryl", "Diphenhydramine", "syrup", 1],
+  ["6", "Aleve", "Naproxen", "tablet", 1],
+  ["7", "Sudafed", "Pseudoephedrine", "syrup", 1],
+  ["8", "Bufferin", "Aspirin", "tablet", 1],
+  ["9", "Advil", "Ibuprofen", "capsule", 1],
 ];
 
 export const LIST_PREPARATION = [

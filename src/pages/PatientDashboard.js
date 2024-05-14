@@ -20,7 +20,6 @@ import ESIcon from "../components/ESIcon";
 import PatientDashboard1 from "./PatientDashboard1";
 import PatientDashboard2 from "./PatientDashboard2";
 import PatientDashboard3 from "./PatientDashboard3";
-
 import PushNotification from "react-native-push-notification";
 
 const PatientDashboard = ({ navigation }) => {
@@ -28,19 +27,53 @@ const PatientDashboard = ({ navigation }) => {
   const store = useContext(ESContext);
   let user = store.mainUser;
 
-  // let cancelQr = () => {
-  //   // PushNotification.cancelAllLocalNotifications();
-  //   PushNotification.getScheduledLocalNotifications((list) => {
-  //     console.log("FRANC NOTIF LIST", list);
-  //   });
-  // };
-
   let onScanQr = () => {
     // let PLSDELETESTRING =
-    //   '{"a":"|d040968e-5891-4526-ab83-affda0903aa3|franc mangio","b":"|1715014495572|urinary tract infection|1|2","c":"|fatima gopez mangio","d":["|Biogesic (B1)  - tablet|200|300|1|1|1|1|1|2|drink before meals","|Bonamine (B2)  - syrup|20|30|1|2|1|2|10|1|the quick brown fox jumps over the lazy dog"]}';
+    //   '{"a":"|d040968e-5891-4526-ab83-affda0903aa3|franc mangio","b":"|1715898604763|221|2|1","c":"|nash mangio","d":["|Benadryl (Diphenhydramine)  - syrup|2|1|2|15|2|4|1|1|hello","|Panadol (Acetaminophen)  - tablet|1|2|2|14|1|5|2|1|2"]}';
     // store.saveValuesFromQr(PLSDELETESTRING, user.id);
     navigation.navigate("ScanQr");
   };
+
+  let cancelAlarms = () => {
+    PushNotification.cancelAllLocalNotifications();
+    Alert.alert(
+      "Success",
+      "Alarms Cancelled",
+      [
+        {
+          text: "Ok",
+          onPress: () => {},
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <View style={styles.row}>
+          <ESIcon
+            name="volume-mute-outline"
+            color="#ffffff"
+            customClick={() =>
+              store.confirm(
+                () => cancelAlarms(),
+                "Confirm",
+                "Are you sure you want to cancel all alarms?"
+              )
+            }
+            style={styles.withMarginRight}
+          />
+          <ESIcon
+            name="settings-outline"
+            color="#ffffff"
+            customClick={() => navigation.navigate("Profile")}
+          />
+        </View>
+      ),
+    });
+  }, []);
 
   return (
     <SafeAreaView style={styles.viewMain}>
@@ -75,18 +108,13 @@ const PatientDashboard = ({ navigation }) => {
             color="#000000"
             customClick={() => onScanQr()}
           />
-          {/* <ESIcon
-            name="trash-outline"
-            size={50}
-            color="#000000"
-            customClick={() => cancelQr()}
-          /> */}
         </View>
         <Tab.Navigator
           initialRouteName="Schedules"
           screenOptions={{
             headerShown: false,
           }}
+          sceneContainerStyle={styles.defaultBackground}
         >
           <Tab.Screen
             options={{
