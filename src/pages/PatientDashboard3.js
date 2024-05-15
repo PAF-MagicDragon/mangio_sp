@@ -53,11 +53,7 @@ const PatientDashboard3 = ({ navigation }) => {
             return (
               <View>
                 <ESLabel
-                  text={
-                    store.convertDateIntToString(item.intakeDate) +
-                    " " +
-                    store.convertDateIntToString2(item.intakeDate)
-                  }
+                  text={store.convertDateIntToStringWithTime(item.intakeDate)}
                   customStyle={styles.subHeader}
                 />
                 <ESLabel text={item.drugName} />

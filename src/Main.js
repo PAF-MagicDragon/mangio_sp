@@ -24,6 +24,7 @@ import ViewPdf from "./pages/ViewPdf";
 import ScanQr from "./pages/ScanQr";
 import ViewTemplate from "./pages/ViewTemplate";
 import AddTemplate from "./pages/AddTemplate";
+import EditTotal from "./pages/EditTotal";
 import ESButton from "./components/ESButton";
 import { Text } from "react-native";
 import ESIcon from "./components/ESIcon";
@@ -179,6 +180,14 @@ const Main = () => {
             component={AddTemplate}
             options={{
               title: "Manage Template",
+              ...navOptions,
+            }}
+          />
+          <Stack.Screen
+            name="EditTotal"
+            component={EditTotal}
+            options={{
+              title: "Replenish Total",
               ...navOptions,
             }}
           />

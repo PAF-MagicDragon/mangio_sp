@@ -29,7 +29,7 @@ const PatientDashboard = ({ navigation }) => {
 
   let onScanQr = () => {
     // let PLSDELETESTRING =
-    //   '{"a":"|d040968e-5891-4526-ab83-affda0903aa3|franc mangio","b":"|1715898604763|221|2|1","c":"|nash mangio","d":["|Benadryl (Diphenhydramine)  - syrup|2|1|2|15|2|4|1|1|hello","|Panadol (Acetaminophen)  - tablet|1|2|2|14|1|5|2|1|2"]}';
+    //   '{"a":"|36bc0283-4da1-48b8-a72e-7f7786853f51|Franc Mangio","b":"|1715906867931|3123|22|33","c":"|nash mangio","d":["|Advil (Ibuprofen)  - capsule|100mg|2|8|1|5|2|1|take your medicine on time|3"]}';
     // store.saveValuesFromQr(PLSDELETESTRING, user.id);
     navigation.navigate("ScanQr");
   };

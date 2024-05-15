@@ -41,7 +41,7 @@ const PatientDashboard1 = ({ navigation }) => {
   );
 
   let updateStatus = (item) => {
-    store.updateSchedule(item.id, constants.STATUS_COMPLETED, () => {
+    store.updateSchedule(item, constants.STATUS_COMPLETED, () => {
       refreshList();
     });
   };
@@ -53,18 +53,23 @@ const PatientDashboard1 = ({ navigation }) => {
           header="Pending Schedules"
           list={schedules}
           addStyle={(item) => {
-            let isExpired = Date.now() > item.intakeDate;
-            return isExpired ? styles.expiredSchedule : styles.pendingSchedule;
+            let colorStyle = styles.pendingSchedule;
+            let isLowCount = item.total != null && item.total < 1;
+            if (isLowCount) {
+              colorStyle = styles.lowCountSchedule;
+            } else {
+              let isExpired = Date.now() > item.intakeDate;
+              if (isExpired) {
+                colorStyle = styles.expiredSchedule;
+              }
+            }
+            return colorStyle;
           }}
           customPanel={(item) => {
             return (
               <View>
                 <ESLabel
-                  text={
-                    store.convertDateIntToString(item.intakeDate) +
-                    " " +
-                    store.convertDateIntToString2(item.intakeDate)
-                  }
+                  text={store.convertDateIntToStringWithTime(item.intakeDate)}
                   customStyle={styles.subHeader}
                 />
                 <ESLabel text={item.drugName} />

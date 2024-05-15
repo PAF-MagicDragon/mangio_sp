@@ -64,7 +64,7 @@ export class Store {
     );
     this.initializeTable(
       "ES_DRUG",
-      "ID VARCHAR(50) PRIMARY KEY, PRESCRIPTION_ID VARCHAR(50), NAME VARCHAR(250), STRENGTH VARCHAR(50), DOSE VARCHAR(50), PREPARATION INT(2), ROUTE INT(2), DIRECTION INT(2), FREQUENCY INT(2), DURATION VARCHAR(50), TYPE INT(2), INSTRUCTIONS VARCHAR(200), TOTAL INT(3), REFILLS INT(3)"
+      "ID VARCHAR(50) PRIMARY KEY, PRESCRIPTION_ID VARCHAR(50), NAME VARCHAR(250), STRENGTH VARCHAR(50), PREPARATION INT(2), ROUTE INT(2), DIRECTION INT(2), FREQUENCY INT(2), DURATION VARCHAR(50), TYPE INT(2), INSTRUCTIONS VARCHAR(200), TOTAL INT(3), REFILLS INT(3)"
     );
     this.initializeTable(
       "ES_SCHEDULE",
@@ -177,7 +177,6 @@ export class Store {
     drug.prescriptionId = item["PRESCRIPTION_ID"];
     drug.name = item["NAME"];
     drug.strength = item["STRENGTH"];
-    drug.dose = item["DOSE"];
     drug.preparation = item["PREPARATION"];
     drug.route = item["ROUTE"];
     drug.direction = item["DIRECTION"];
@@ -185,7 +184,8 @@ export class Store {
     drug.duration = item["DURATION"];
     drug.type = item["TYPE"];
     drug.instructions = item["INSTRUCTIONS"];
-    drug.total = item["TOTAL"];
+    let tempTotal = item["TOTAL"];
+    drug.total = tempTotal != null ? tempTotal.toString() : null;
     drug.refills = item["REFILLS"];
     return drug;
   };
@@ -203,6 +203,8 @@ export class Store {
     schedule.drugRoute = item["DRUG_ROUTE"];
     schedule.drugDirection = item["DRUG_DIRECTION"];
     schedule.drugInstructions = item["DRUG_INSTRUCTIONS"];
+    let tempTotal = item["DRUG_TOTAL"];
+    schedule.total = tempTotal != null ? tempTotal.toString() : null;
     return schedule;
   };
 
@@ -309,7 +311,7 @@ export class Store {
   @action getSchedules = (patientId, status, cb) => {
     db.transaction((tx) => {
       tx.executeSql(
-        "SELECT s.*, d.name AS DRUG_NAME, d.preparation AS DRUG_PREPARATION, d.route AS DRUG_ROUTE, d.direction AS DRUG_DIRECTION, d.instructions as DRUG_INSTRUCTIONS FROM ES_SCHEDULE s, ES_DRUG d WHERE s.DRUG_ID = d.id AND s.PATIENT_ID = ? AND s.STATUS = ? ORDER BY s.INTAKE_DATE",
+        "SELECT s.*, d.name AS DRUG_NAME, d.preparation AS DRUG_PREPARATION, d.route AS DRUG_ROUTE, d.direction AS DRUG_DIRECTION, d.instructions as DRUG_INSTRUCTIONS, d.total as DRUG_TOTAL FROM ES_SCHEDULE s, ES_DRUG d WHERE s.DRUG_ID = d.id AND s.PATIENT_ID = ? AND s.STATUS = ? ORDER BY s.INTAKE_DATE",
         [patientId, status],
         (tx, results) => {
           var temp = [];
@@ -430,7 +432,6 @@ export class Store {
                     request.id,
                     drug.name,
                     drug.strength,
-                    drug.dose,
                     drug.preparation,
                     drug.route,
                     drug.direction,
@@ -442,7 +443,7 @@ export class Store {
                     drug.refills,
                   ];
                   tx.executeSql(
-                    "INSERT INTO ES_DRUG (ID,PRESCRIPTION_ID,NAME,STRENGTH,DOSE,PREPARATION,ROUTE,DIRECTION,FREQUENCY,DURATION,TYPE,INSTRUCTIONS,TOTAL,REFILLS) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                    "INSERT INTO ES_DRUG (ID,PRESCRIPTION_ID,NAME,STRENGTH,PREPARATION,ROUTE,DIRECTION,FREQUENCY,DURATION,TYPE,INSTRUCTIONS,TOTAL,REFILLS) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
                     innerVal,
                     (tx, results) => {
                       cb2 && cb2(innerId, id, drug);
@@ -479,7 +480,6 @@ export class Store {
                 id,
                 drug.name,
                 drug.strength,
-                drug.dose,
                 drug.preparation,
                 drug.route,
                 drug.direction,
@@ -491,7 +491,7 @@ export class Store {
                 drug.refills,
               ];
               tx.executeSql(
-                "INSERT INTO ES_DRUG (ID,PRESCRIPTION_ID,NAME,STRENGTH,DOSE,PREPARATION,ROUTE,DIRECTION,FREQUENCY,DURATION,TYPE,INSTRUCTIONS,TOTAL,REFILLS) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                "INSERT INTO ES_DRUG (ID,PRESCRIPTION_ID,NAME,STRENGTH,PREPARATION,ROUTE,DIRECTION,FREQUENCY,DURATION,TYPE,INSTRUCTIONS,TOTAL,REFILLS) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)",
                 innerVal,
                 (tx, results) => {
                   cb2 && cb2(innerId, id, drug);
@@ -651,9 +651,11 @@ export class Store {
     return value != null ? value.toLocaleDateString() : "";
   }
 
-  @action convertDateIntToString2(dateInt) {
+  @action convertDateIntToStringWithTime(dateInt) {
     const value = dateInt != null ? new Date(dateInt) : null;
-    return value != null ? value.toLocaleTimeString() : "";
+    return value != null
+      ? value.toLocaleDateString() + " " + value.toLocaleTimeString()
+      : "";
   }
 
   @action addValToQrString(s, val) {
@@ -696,7 +698,6 @@ export class Store {
       let inner = "";
       inner = this.addValToQrString(inner, drug.name);
       inner = this.addValToQrString(inner, drug.strength);
-      inner = this.addValToQrString(inner, drug.dose);
       inner = this.addValToQrString(inner, drug.preparation);
       inner = this.addValToQrString(inner, drug.route);
       inner = this.addValToQrString(inner, drug.direction);
@@ -704,6 +705,7 @@ export class Store {
       inner = this.addValToQrString(inner, drug.duration);
       inner = this.addValToQrString(inner, drug.type);
       inner = this.addValToQrString(inner, drug.instructions);
+      inner = this.addValToQrString(inner, drug.total);
       console.log("FRANC STRING INNER", inner);
       list1.push(inner);
     });
@@ -754,7 +756,7 @@ export class Store {
     pdfString = pdfString.replace("[patientAge]", age);
     pdfString = pdfString.replace(
       "[prescriptionDate]",
-      this.convertDateIntToString(prescriptionData.createDate)
+      this.convertDateIntToStringWithTime(prescriptionData.createDate)
     );
     let drugContent = "";
     drugList.forEach((drug, i) => {
@@ -762,30 +764,34 @@ export class Store {
       let drugDetails = "";
       drugDetails = drugDetails.concat(drug.name);
       drugDetails = drugDetails.concat(" ").concat(drug.strength);
-      drugDetails = drugDetails.concat(" ").concat(drug.dose);
       drugDetails = drugDetails
         .concat(" ")
         .concat(
           this.getLabelFromValue(drug.preparation, constants.LIST_PREPARATION)
         );
-      drugDetails = drugDetails
+      innerString = innerString.replace("[drugDetails]", drugDetails);
+      let drugDetails2 = "";
+      drugDetails2 = drugDetails2
         .concat(" ")
-        .concat(
-          this.getLabelFromValue(drug.frequency, constants.LIST_FREQUENCY)
-        );
-      drugDetails = drugDetails
+        .concat(this.getLabelFromValue(drug.route, constants.LIST_ROUTE));
+      drugDetails2 = drugDetails2
         .concat(" ")
         .concat(
           this.getLabelFromValue(drug.direction, constants.LIST_DIRECTION)
         );
-      drugDetails = drugDetails
-        .concat(" ")
-        .concat(this.getLabelFromValue(drug.route, constants.LIST_ROUTE));
-      drugDetails = drugDetails.concat(" ").concat(drug.duration);
-      drugDetails = drugDetails
+      drugDetails2 = drugDetails2.concat(" ").concat(drug.duration);
+      drugDetails2 = drugDetails2
         .concat(" ")
         .concat(this.getLabelFromValue(drug.type, constants.LIST_TYPE));
-      innerString = innerString.replace("[drugDetails]", drugDetails);
+      drugDetails2 = drugDetails2
+        .concat(" ")
+        .concat(
+          this.getLabelFromValue(drug.frequency, constants.LIST_FREQUENCY)
+        );
+      if (drug.total != null) {
+        drugDetails2 = drugDetails2.concat(" Total: ").concat(drug.total);
+      }
+      innerString = innerString.replace("[drugDetails2]", drugDetails2);
       innerString = innerString.replace(
         "[drugInstructions]",
         drug.instructions
@@ -845,14 +851,14 @@ export class Store {
         let drugData = {};
         drugData.name = innerArr[1];
         drugData.strength = innerArr[2];
-        drugData.dose = innerArr[3];
-        drugData.preparation = innerArr[4];
-        drugData.route = innerArr[5];
-        drugData.direction = innerArr[6];
-        drugData.frequency = innerArr[7];
-        drugData.duration = innerArr[8];
-        drugData.type = innerArr[9];
-        drugData.instructions = innerArr[10];
+        drugData.preparation = innerArr[3];
+        drugData.route = innerArr[4];
+        drugData.direction = innerArr[5];
+        drugData.frequency = innerArr[6];
+        drugData.duration = innerArr[7];
+        drugData.type = innerArr[8];
+        drugData.instructions = innerArr[9];
+        drugData.total = innerArr[10];
         drugListData.push(drugData);
       });
 
@@ -1017,10 +1023,25 @@ export class Store {
     return str.match(/^[0-9]+$/) != null;
   }
 
-  @action updateSchedule = (id, status, cb) => {
+  @action updateSchedule = (item, status, cb) => {
     db.transaction(function (tx) {
-      let val = [status, id];
+      let val = [status, item.id];
       let sql = "UPDATE ES_SCHEDULE SET STATUS = ? WHERE ID = ?";
+      tx.executeSql(sql, val, (tx, results) => {
+        let val2 = [item.drugId];
+        let sql2 =
+          "UPDATE ES_DRUG SET TOTAL = (TOTAL-1) WHERE ID = ? AND TOTAL > 0";
+        tx.executeSql(sql2, val2, (tx, results) => {
+          cb && cb();
+        });
+      });
+    });
+  };
+
+  @action editTotal = (request, cb) => {
+    db.transaction(function (tx) {
+      let val = [request.total, request.id];
+      let sql = "UPDATE ES_DRUG SET TOTAL = ? WHERE ID = ?";
       tx.executeSql(sql, val, (tx, results) => {
         cb && cb(results);
       });

@@ -33,8 +33,8 @@ const Profile = ({ navigation, route }) => {
             <ESIcon
               name={
                 request.type == constants.TYPE_MAIN_DOCTOR
-                  ? "glasses-outline"
-                  : "body-outline"
+                  ? "id-card-outline"
+                  : "bandage-outline"
               }
               customClick={() => onChange(request.type, request, "type")}
               color="#ffffff"

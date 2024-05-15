@@ -126,17 +126,16 @@ const AddPrescription = ({ navigation, route }) => {
               behavior="padding"
               style={styles.keyboardAvoid}
             > */}
-          <View style={styles.row}>
+          <View style={[styles.row, { width: "65%" }]}>
             <ESDatePicker
               label="Date"
               value={request.createDate}
               onChange={(val) => onChange(val, request, "createDate")}
+              withTime
               isRowItem
               withMarginRight
             />
-            <View style={styles.rowitems}></View>
           </View>
-
           <View style={styles.row}>
             <ESTextFieldWithLabel
               label="Height"
@@ -171,20 +170,12 @@ const AddPrescription = ({ navigation, route }) => {
                   <ESLabel text={item.name} customStyle={styles.subHeader} />
                   <View style={styles.row}>
                     <ESSingleLabelValue
-                      label="Strength"
+                      label="Strength/Dose"
                       value={item.strength}
                       customStyle={styles.valueNoMargin}
                       isRowItem
                       withMarginRight
                     />
-                    <ESSingleLabelValue
-                      label="Dose"
-                      value={item.dose}
-                      customStyle={styles.valueNoMargin}
-                      isRowItem
-                    />
-                  </View>
-                  <View style={styles.row}>
                     <ESSingleLabelValue
                       label="Preparation"
                       value={store.getLabelFromValue(
@@ -193,34 +184,24 @@ const AddPrescription = ({ navigation, route }) => {
                       )}
                       customStyle={styles.valueNoMargin}
                       isRowItem
-                      withMarginRight
-                    />
-                    <ESSingleLabelValue
-                      label="Frequency"
-                      value={store.getLabelFromValue(
-                        item.frequency,
-                        constants.LIST_FREQUENCY
-                      )}
-                      customStyle={styles.valueNoMargin}
-                      isRowItem
                     />
                   </View>
                   <View style={styles.row}>
-                    <ESSingleLabelValue
-                      label="Direction"
-                      value={store.getLabelFromValue(
-                        item.direction,
-                        constants.LIST_DIRECTION
-                      )}
-                      customStyle={styles.valueNoMargin}
-                      isRowItem
-                      withMarginRight
-                    />
                     <ESSingleLabelValue
                       label="Route"
                       value={store.getLabelFromValue(
                         item.route,
                         constants.LIST_ROUTE
+                      )}
+                      customStyle={styles.valueNoMargin}
+                      isRowItem
+                      withMarginRight
+                    />
+                    <ESSingleLabelValue
+                      label="Direction"
+                      value={store.getLabelFromValue(
+                        item.direction,
+                        constants.LIST_DIRECTION
                       )}
                       customStyle={styles.valueNoMargin}
                       isRowItem
@@ -240,6 +221,24 @@ const AddPrescription = ({ navigation, route }) => {
                         item.type,
                         constants.LIST_TYPE
                       )}
+                      customStyle={styles.valueNoMargin}
+                      isRowItem
+                    />
+                  </View>
+                  <View style={styles.row}>
+                    <ESSingleLabelValue
+                      label="Frequency"
+                      value={store.getLabelFromValue(
+                        item.frequency,
+                        constants.LIST_FREQUENCY
+                      )}
+                      customStyle={styles.valueNoMargin}
+                      isRowItem
+                      withMarginRight
+                    />
+                    <ESSingleLabelValue
+                      label="Total"
+                      value={item.total}
                       customStyle={styles.valueNoMargin}
                       isRowItem
                     />

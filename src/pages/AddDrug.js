@@ -70,11 +70,7 @@ const AddDrug = ({ navigation, route }) => {
       return;
     }
     if (request.strength == null || request.strength.length == 0) {
-      alert("Strength is required");
-      return;
-    }
-    if (request.dose == null || request.dose.length == 0) {
-      alert("Dose is required");
+      alert("Strength/Dose is required");
       return;
     }
     if (request.preparation == null) {
@@ -106,6 +102,16 @@ const AddDrug = ({ navigation, route }) => {
     if (request.type == null) {
       alert("Type is required");
       return;
+    }
+    if (request.total == null || request.total.length == 0) {
+      alert("Total is required");
+      return;
+    } else {
+      if (store.checkIfDigitsOnly(request.total) && request.total > 0) {
+      } else {
+        alert("Please enter a valid total");
+        return;
+      }
     }
     if (item != null) {
       store.tempDrugList.splice(index, 1, request);
@@ -140,52 +146,35 @@ const AddDrug = ({ navigation, route }) => {
               />
               <View style={styles.row}>
                 <ESTextFieldWithLabel
-                  label="Strength"
+                  label="Strength/Dose"
                   onChangeText={(val) => onChange(val, request, "strength")}
                   maxLength={50}
                   value={request.strength}
                   isRowItem
                   withMarginRight
                 />
-                <ESTextFieldWithLabel
-                  label="Dose"
-                  onChangeText={(val) => onChange(val, request, "dose")}
-                  maxLength={50}
-                  value={request.dose}
-                  isRowItem
-                />
-              </View>
-              <View style={styles.row}>
                 <ESDropDownWithLabel
                   label="Preparation"
                   data={preparationData}
                   onChange={(val) => onChange(val, request, "preparation")}
                   value={request.preparation}
                   isRowItem
-                  withMarginRight
                 />
+              </View>
+              <View style={styles.row}>
                 <ESDropDownWithLabel
                   label="Route"
                   data={routeData}
                   onChange={(val) => onChange(val, request, "route")}
                   value={request.route}
                   isRowItem
+                  withMarginRight
                 />
-              </View>
-              <View style={styles.row}>
                 <ESDropDownWithLabel
                   label="Direction"
                   data={directionData}
                   onChange={(val) => onChange(val, request, "direction")}
                   value={request.direction}
-                  isRowItem
-                  withMarginRight
-                />
-                <ESDropDownWithLabel
-                  label="Frequency"
-                  data={frequencyData}
-                  onChange={(val) => onChange(val, request, "frequency")}
-                  value={request.frequency}
                   isRowItem
                 />
               </View>
@@ -204,6 +193,24 @@ const AddDrug = ({ navigation, route }) => {
                   data={typeData}
                   onChange={(val) => onChange(val, request, "type")}
                   value={request.type}
+                  isRowItem
+                />
+              </View>
+              <View style={styles.row}>
+                <ESDropDownWithLabel
+                  label="Frequency"
+                  data={frequencyData}
+                  onChange={(val) => onChange(val, request, "frequency")}
+                  value={request.frequency}
+                  isRowItem
+                  withMarginRight
+                />
+                <ESTextFieldWithLabel
+                  label="Total"
+                  onChangeText={(val) => onChange(val, request, "total")}
+                  maxLength={8}
+                  value={request.total}
+                  keyboardType="decimal-pad"
                   isRowItem
                 />
               </View>

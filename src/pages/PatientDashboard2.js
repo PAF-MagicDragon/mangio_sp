@@ -41,7 +41,7 @@ const PatientDashboard2 = ({ navigation }) => {
   );
 
   let viewPrescription = (item) => {
-    navigation.navigate("ViewPrescription", item);
+    navigation.navigate("ViewPrescription", { item: item, withEdit: true });
   };
 
   let deletePrescription = (item) => {
@@ -74,20 +74,17 @@ const PatientDashboard2 = ({ navigation }) => {
           customPanel={(item) => {
             return (
               <View>
-                <View style={styles.row}>
-                  <ESLabel
-                    text={store.convertDateIntToString(item.createDate)}
-                    customStyle={styles.subHeader}
-                    isRowItem
-                    withMarginRight
-                  />
-                  <ESLabel
-                    text={"Dr. " + item.doctorName}
-                    customStyle={styles.valueNoMargin}
-                    isRowItem
-                  />
-                </View>
-
+                <ESLabel
+                  text={store.convertDateIntToStringWithTime(item.createDate)}
+                  customStyle={styles.subHeader}
+                  isRowItem
+                  withMarginRight
+                />
+                <ESSingleLabelValue
+                  label="Doctor"
+                  value={item.doctorName}
+                  customStyle={styles.valueNoMargin}
+                />
                 <ESSingleLabelValue
                   label="Diagnosis"
                   value={item.diagnosis}

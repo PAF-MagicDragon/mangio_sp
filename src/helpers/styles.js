@@ -201,8 +201,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  expiredSchedule: {
+  lowCountSchedule: {
     backgroundColor: "#F8C1B3",
+    padding: 10,
+    borderRadius: 10,
+  },
+
+  expiredSchedule: {
+    backgroundColor: "#4D5663",
     padding: 10,
     borderRadius: 10,
   },

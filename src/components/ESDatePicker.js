@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import { View } from "react-native";
 import styles from "../helpers/styles";
+import ESContext from "../ESContext";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import ESIcon from "./ESIcon";
 import ESValueWithLabel from "./ESValueWithLabel";
 
 const ESDatePicker = (props) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
-
+  const store = useContext(ESContext);
+  const withTime = props.withTime;
   console.log("FRANC DATE PICKER", props);
 
   const showDatePicker = () => {
@@ -24,9 +26,13 @@ const ESDatePicker = (props) => {
     hideDatePicker();
   };
 
-  const value = props.value != null ? new Date(props.value) : null;
+  const value = props.value;
   const placeholder =
-    value != null ? value.toLocaleDateString() : "Choose Date";
+    value != null
+      ? withTime
+        ? store.convertDateIntToStringWithTime(value)
+        : store.convertDateIntToString(value)
+      : "Choose Date";
 
   console.log("FRANC DATE PLACEHOLDER", placeholder);
   return (
@@ -49,8 +55,8 @@ const ESDatePicker = (props) => {
       </View>
       <DateTimePickerModal
         isVisible={isDatePickerVisible}
-        mode="date"
-        date={value != null ? value : new Date()}
+        mode={withTime ? "datetime" : "date"}
+        date={value != null ? new Date(value) : new Date()}
         onConfirm={handleConfirm}
         onCancel={hideDatePicker}
       />

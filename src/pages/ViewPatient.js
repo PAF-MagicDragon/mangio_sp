@@ -42,7 +42,7 @@ const ViewPatient = ({ navigation, route }) => {
   };
 
   let viewPrescription = (item) => {
-    navigation.navigate("ViewPrescription", item);
+    navigation.navigate("ViewPrescription", { item: item, withEdit: false });
   };
 
   let deletePrescription = (item) => {
@@ -135,7 +135,7 @@ const ViewPatient = ({ navigation, route }) => {
               return (
                 <View>
                   <ESLabel
-                    text={store.convertDateIntToString(item.createDate)}
+                    text={store.convertDateIntToStringWithTime(item.createDate)}
                     customStyle={styles.subHeader}
                   />
                   <ESSingleLabelValue
