@@ -5,6 +5,7 @@ import { Alert, Platform } from "react-native";
 import uuid from "react-native-uuid";
 import RNHTMLtoPDF from "react-native-html-to-pdf";
 import PushNotification from "react-native-push-notification";
+import RNFetchBlob from "rn-fetch-blob";
 
 var db = openDatabase({ name: "ESDatabase.db" });
 
@@ -806,15 +807,27 @@ export class Store {
 
   @action createPDF = async (string) => {
     let myHtml = string;
+    let fileName = "Expresscript_PDF_" + new Date().getTime();
     try {
       let PDFOptions = {
         html: myHtml,
-        fileName: "Expresscript_PDF_" + new Date().getTime(),
+        fileName: fileName,
         directory: Platform.OS === "android" ? "Downloads" : "Documents",
+        base64: true,
       };
       let file = await RNHTMLtoPDF.convert(PDFOptions);
-      if (!file.filePath) return;
-      alert("File saved to: " + file.filePath);
+      // if (!file.filePath) return;
+      // alert("File saved to: " + file.filePath);
+      let filePath = RNFetchBlob.fs.dirs.DownloadDir + "/" + fileName + ".pdf";
+      RNFetchBlob.fs
+        .writeFile(filePath, file.base64, "base64")
+        .then((response) => {
+          console.log("Success Log:", response);
+          alert("File saved to: " + filePath);
+        })
+        .catch((errors) => {
+          console.log("Error Log:", errors);
+        });
     } catch (error) {
       console.log("Failed to generate pdf", error.message);
     }
