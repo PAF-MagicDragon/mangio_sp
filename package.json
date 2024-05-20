@@ -25,6 +25,7 @@
     "react-native-element-dropdown": "^2.10.4",
     "react-native-fs": "^2.20.0",
     "react-native-html-to-pdf": "^0.12.0",
+    "react-native-image-picker": "^7.1.2",
     "react-native-modal-datetime-picker": "^17.1.0",
     "react-native-permissions": "^4.1.5",
     "react-native-push-notification": "^8.1.1",

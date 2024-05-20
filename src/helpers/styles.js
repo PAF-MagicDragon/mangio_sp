@@ -234,6 +234,20 @@ const styles = StyleSheet.create({
   tabContainer: {
     paddingBottom: 100,
   },
+
+  imageContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  imagedelete: {
+    alignItems: "flex-end",
+  },
+  imageStretch: {
+    width: 300,
+    height: 100,
+    resizeMode: "stretch",
+  },
 });
 
 export default styles;

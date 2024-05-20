@@ -747,6 +747,12 @@ export class Store {
     pdfString = pdfString.replace("[doctorContactNo]", doctorData.contactNo);
     pdfString = pdfString.replace("[doctorEmail]", doctorData.email);
     pdfString = pdfString.replace("[doctorName]", doctorData.name);
+    let signatureString =
+      doctorData.signature != null
+        ? imgString.replace("[encryptedString]", doctorData.signature)
+        : "";
+    pdfString = pdfString.replace("[doctorSignature]", signatureString);
+
     pdfString = pdfString.replace("[doctorLicenseNo]", doctorData.licenseNo);
     pdfString = pdfString.replace("[doctorPtrNo]", doctorData.ptrNo);
     pdfString = pdfString.replace("[patientName]", patientData.name);
@@ -800,8 +806,9 @@ export class Store {
       drugContent = drugContent.concat(innerString);
     });
     pdfString = pdfString.replace("[drugContent]", drugContent);
-    imgString = imgString.replace("[encryptedString]", qrImage);
-    pdfString = pdfString.replace("[qrContent]", imgString);
+
+    let qrString = imgString.replace("[encryptedString]", qrImage);
+    pdfString = pdfString.replace("[qrContent]", qrString);
     return pdfString;
   }
 

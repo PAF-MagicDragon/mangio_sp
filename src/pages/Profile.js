@@ -17,6 +17,7 @@ import ESRadioWithLabel from "../components/ESRadioWithLabel";
 import ESRadio from "../components/ESRadio";
 import ESDatePicker from "../components/ESDatePicker";
 import cloneDeep from "lodash/cloneDeep";
+import ESImageUploadWithLabel from "../components/ESImageUploadWithLabel";
 
 const Profile = ({ navigation, route }) => {
   let [request, setRequest] = useState(null);
@@ -191,6 +192,11 @@ const Profile = ({ navigation, route }) => {
                       isRowItem
                     />
                   </View>
+                  <ESImageUploadWithLabel
+                    label="Signature"
+                    onChange={(val) => onChange(val, request, "signature")}
+                    value={request.signature}
+                  />
                 </View>
               )}
               {request.type == constants.TYPE_MAIN_PATIENT && (
