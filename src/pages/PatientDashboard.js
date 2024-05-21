@@ -6,6 +6,8 @@ import {
   KeyboardAvoidingView,
   Alert,
   SafeAreaView,
+  Platform,
+  PermissionsAndroid,
 } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import ESSingleLabelValue from "../components/ESSingleLabelValue";
@@ -29,7 +31,7 @@ const PatientDashboard = ({ navigation }) => {
 
   let onScanQr = () => {
     // let PLSDELETESTRING =
-    //   '{"a":"|36bc0283-4da1-48b8-a72e-7f7786853f51|Franc Mangio","b":"|1715906867931|3123|22|33","c":"|nash mangio","d":["|Advil (Ibuprofen)  - capsule|100mg|2|8|1|5|2|1|take your medicine on time|3"]}';
+    //   '{"a":"|36bc0283-4da1-48b8-a72e-7f7786853f51|Franc Mangio","b":"|1715906867931|diagnosis|notes|22|33","c":"|nash mangio","d":["|Advil (Ibuprofen)  - capsule|100mg|2|8|1|5|2|1|take your medicine on time|3"]}';
     // store.saveValuesFromQr(PLSDELETESTRING, user.id);
     navigation.navigate("ScanQr");
   };
@@ -49,7 +51,37 @@ const PatientDashboard = ({ navigation }) => {
     );
   };
 
+  const requestNotificationPermission = async () => {
+    if (Platform.OS === "android") {
+      try {
+        PermissionsAndroid.check("android.permission.POST_NOTIFICATIONS")
+          .then((response) => {
+            if (!response) {
+              PermissionsAndroid.request(
+                "android.permission.POST_NOTIFICATIONS",
+                {
+                  title: "Notification",
+                  message:
+                    "App needs access to your notification " +
+                    "so you can get Updates",
+                  buttonNeutral: "Ask Me Later",
+                  buttonNegative: "Cancel",
+                  buttonPositive: "OK",
+                }
+              );
+            }
+          })
+          .catch((err) => {
+            console.log("Notification Error=====>", err);
+          });
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  };
+
   useEffect(() => {
+    requestNotificationPermission();
     navigation.setOptions({
       headerRight: () => (
         <View style={styles.row}>

@@ -14,7 +14,6 @@ const ScanQr = ({ navigation, route }) => {
   };
 
   let onChange = (val) => {
-    console.log("FRANC QR VAL", val);
     store.saveValuesFromQr(val, user.id, setTimeout(goBack, 1000)); //add delay since saving of schedule is async. needs to save before going back
   };
 

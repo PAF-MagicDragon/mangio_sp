@@ -76,6 +76,14 @@ const AddPrescription = ({ navigation, route }) => {
 
   let addEditPrescription = () => {
     request.drugList = drugList;
+    if (request.height == null || request.height.length == 0) {
+      alert("Height is required");
+      return;
+    }
+    if (request.weight == null || request.weight.length == 0) {
+      alert("Weight is required");
+      return;
+    }
     if (request.diagnosis == null || request.diagnosis.length == 0) {
       alert("Diagnosis is required");
       return;
@@ -138,7 +146,7 @@ const AddPrescription = ({ navigation, route }) => {
           </View>
           <View style={styles.row}>
             <ESTextFieldWithLabel
-              label="Height"
+              label="Height (cm)"
               onChangeText={(val) => onChange(val, request, "height")}
               maxLength={8}
               value={request.height}
@@ -146,7 +154,7 @@ const AddPrescription = ({ navigation, route }) => {
               withMarginRight
             />
             <ESTextFieldWithLabel
-              label="Weight"
+              label="Weight (kg)"
               onChangeText={(val) => onChange(val, request, "weight")}
               maxLength={8}
               value={request.weight}
@@ -158,6 +166,14 @@ const AddPrescription = ({ navigation, route }) => {
             onChangeText={(val) => onChange(val, request, "diagnosis")}
             maxLength={250}
             value={request.diagnosis}
+            numberOfLines={3}
+            multiline={true}
+          />
+          <ESTextFieldWithLabel
+            label="Notes (c/c, s/sx, allergies, hx)"
+            onChangeText={(val) => onChange(val, request, "notes")}
+            maxLength={250}
+            value={request.notes}
             numberOfLines={3}
             multiline={true}
           />

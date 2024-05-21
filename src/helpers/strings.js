@@ -1,2 +1,2 @@
-export const LABEL1 = "franc";
-export const LABEL2 = "franc";
+export const LABEL1 = "LABEL1";
+export const LABEL2 = "LABEL2";

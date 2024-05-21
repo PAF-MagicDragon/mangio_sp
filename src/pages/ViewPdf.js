@@ -20,6 +20,7 @@ import ESValue from "../components/ESValue";
 import { useFocusEffect, useIsFocused } from "@react-navigation/native";
 import QRCode from "react-native-qrcode-svg";
 import RNFS from "react-native-fs";
+import RNFetchBlob from "rn-fetch-blob";
 
 const ViewPdf = ({ navigation, route }) => {
   let [qrVal, setQrVal] = useState(null);
@@ -53,24 +54,27 @@ const ViewPdf = ({ navigation, route }) => {
     });
   };
 
-  // const saveQrCode = () => {
-  //   let fileName = "Expresscript_QR_" + new Date().getTime();
-  //   console.log("FILE PATH 1", RNFS.CachesDirectoryPath);
-  //   console.log("FILE PATH 2", RNFS.DocumentDirectoryPath);
-  //   let basePath =
-  //     "/storage/emulated/0/Android/data/com.sample/files/Downloads/"; //RNFS.CachesDirectoryPath + "/";
-  //   let fullPath = basePath + fileName;
-  //   qrRef.toDataURL((data) => {
-  //     RNFS.writeFile(fullPath, data, "base64")
-  //       .then((success) => {
-  //         //          return CameraRoll.saveToCameraRoll(fullPath, "photo");
-  //         alert(CameraRoll.saveToCameraRoll(fullPath, "photo"));
-  //       })
-  //       .catch((err) => {
-  //         console.log("FRANC FILE ERROR", err.message);
-  //       });
-  //   });
-  // };
+  const saveQrCode = () => {
+    let fileName = "Expresscript_QR_" + new Date().getTime();
+    try {
+      qrRef.toDataURL((data) => {
+        let filePath =
+          RNFetchBlob.fs.dirs.DownloadDir + "/" + fileName + ".png";
+        RNFetchBlob.fs
+          .writeFile(filePath, data, "base64")
+          .then((response) => {
+            console.log("Success Log:", response);
+            // alert("File saved to: " + filePath);
+            alert("File saved to: Downloads/" + fileName);
+          })
+          .catch((errors) => {
+            console.log("Error Log:", errors);
+          });
+      });
+    } catch (error) {
+      console.log("Failed to generate QR", error.message);
+    }
+  };
   const { width } = useWindowDimensions();
   return (
     <SafeAreaView style={styles.viewMain}>
@@ -87,8 +91,8 @@ const ViewPdf = ({ navigation, route }) => {
             />
           </View>
         )}
+        <ESButton title="Save QR Code" customClick={() => saveQrCode()} />
         <ESButton subButton title="Save PDF" customClick={() => savePDF()} />
-        {/* <ESButton title="Save QR Code" customClick={() => saveQrCode()} /> */}
       </View>
     </SafeAreaView>
   );

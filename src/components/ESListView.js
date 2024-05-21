@@ -18,8 +18,15 @@ let listViewItem = (
   customDeleteClick,
   customActionClick,
   customActionIcon,
-  addStyle
+  addStyle,
+  checkIfExpired
 ) => {
+  let isCustomActionVisible = true;
+  let actionColor = null;
+  if (checkIfExpired) {
+    isCustomActionVisible = Date.now() > item.intakeDate;
+    actionColor = "#FFFFFF";
+  }
   return (
     <TouchableOpacity onPress={() => customViewClick && customViewClick(item)}>
       <View
@@ -44,9 +51,10 @@ let listViewItem = (
                 customClick={() => customDeleteClick(item, index)}
               />
             )}
-            {customActionClick && (
+            {customActionClick && isCustomActionVisible && (
               <ESIcon
                 name={customActionIcon}
+                color={actionColor}
                 customClick={() => customActionClick(item, index)}
               />
             )}
@@ -68,6 +76,7 @@ const ESListView = (props) => {
   const customActionClick = props.customActionClick;
   const customActionIcon = props.customActionIcon;
   const addStyle = props.addStyle;
+  const checkIfExpired = props.checkIfExpired;
 
   return (
     <View style={styles.defaultBackground}>
@@ -99,7 +108,8 @@ const ESListView = (props) => {
               customDeleteClick,
               customActionClick,
               customActionIcon,
-              addStyle
+              addStyle,
+              checkIfExpired
             )
           }
         />

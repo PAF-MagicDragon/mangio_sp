@@ -10,7 +10,6 @@ const ESDatePicker = (props) => {
   const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
   const store = useContext(ESContext);
   const withTime = props.withTime;
-  console.log("FRANC DATE PICKER", props);
 
   const showDatePicker = () => {
     setDatePickerVisibility(true);
@@ -34,7 +33,6 @@ const ESDatePicker = (props) => {
         : store.convertDateIntToString(value)
       : "Choose Date";
 
-  console.log("FRANC DATE PLACEHOLDER", placeholder);
   return (
     <View
       style={[

@@ -42,7 +42,6 @@ export class Store {
           tx.executeSql(sql2, []);
           let sql3 = "CREATE TABLE IF NOT EXISTS " + name + "(" + cols + ")";
           tx.executeSql(sql3, []);
-          console.log("FRANC CREATE/DROP", sql2, sql3);
         }
         cb && cb();
       });
@@ -57,7 +56,7 @@ export class Store {
     );
     this.initializeTable(
       "ES_PRESCRIPTION",
-      "ID VARCHAR(50) PRIMARY KEY, CREATE_DATE INT(15), DIAGNOSIS VARCHAR(250), DOCTOR_ID VARCHAR(50), PATIENT_ID VARCHAR(50), HEIGHT VARCHAR(8), WEIGHT VARCHAR(8)"
+      "ID VARCHAR(50) PRIMARY KEY, CREATE_DATE INT(15), DIAGNOSIS VARCHAR(250), NOTES VARCHAR(250), DOCTOR_ID VARCHAR(50), PATIENT_ID VARCHAR(50), HEIGHT VARCHAR(8), WEIGHT VARCHAR(8)"
     );
     this.initializeTable(
       "ES_TEMPLATE",
@@ -135,7 +134,6 @@ export class Store {
     main.ptrNo = item["PTR_NO"];
     main.bday = item["BDAY"];
     main.gender = item["GENDER"];
-    console.log("FRANC MAIN USER", main, item);
   };
 
   @action mapPatientFromDb = (item) => {
@@ -157,11 +155,11 @@ export class Store {
   };
 
   @action mapPrescriptionFromDb = (item, showDoctor) => {
-    console.log("FRANC ITEM", item);
     let prescription = {};
     prescription.id = item["ID"];
     prescription.createDate = item["CREATE_DATE"];
     prescription.diagnosis = item["DIAGNOSIS"];
+    prescription.notes = item["NOTES"];
     prescription.doctorId = item["DOCTOR_ID"];
     prescription.patientId = item["PATIENT_ID"];
     prescription.height = item["HEIGHT"];
@@ -291,11 +289,11 @@ export class Store {
   @action getTemplates = (isDefault, cb) => {
     db.transaction((tx) => {
       let sql =
-        "SELECT * FROM ES_TEMPLATE ORDER BY BRAND COLLATE NOCASE, GENERIC COLLATE NOCASE";
+        "SELECT * FROM ES_TEMPLATE ORDER BY GENERIC COLLATE NOCASE, GENERIC COLLATE NOCASE";
       let val = [];
       if (isDefault != null) {
         sql =
-          "SELECT * FROM ES_TEMPLATE WHERE IS_DEFAULT = ? ORDER BY BRAND COLLATE NOCASE, GENERIC COLLATE NOCASE";
+          "SELECT * FROM ES_TEMPLATE WHERE IS_DEFAULT = ? ORDER BY GENERIC COLLATE NOCASE, GENERIC COLLATE NOCASE";
         val = [isDefault];
       }
       tx.executeSql(sql, val, (tx, results) => {
@@ -414,12 +412,13 @@ export class Store {
         let val = [
           request.createDate,
           request.diagnosis,
+          request.notes,
           request.height,
           request.weight,
           request.id,
         ];
         tx.executeSql(
-          "UPDATE ES_PRESCRIPTION SET (CREATE_DATE,DIAGNOSIS,HEIGHT,WEIGHT) = (?,?,?,?) WHERE ID = ? ",
+          "UPDATE ES_PRESCRIPTION SET (CREATE_DATE,DIAGNOSIS,NOTES,HEIGHT,WEIGHT) = (?,?,?,?,?) WHERE ID = ? ",
           val,
           (tx, results) => {
             tx.executeSql(
@@ -464,16 +463,16 @@ export class Store {
           id,
           request.createDate,
           request.diagnosis,
+          request.notes,
           request.doctorId,
           request.patientId,
           request.height,
           request.weight,
         ];
         tx.executeSql(
-          "INSERT INTO ES_PRESCRIPTION (ID,CREATE_DATE,DIAGNOSIS,DOCTOR_ID,PATIENT_ID,HEIGHT,WEIGHT) VALUES (?,?,?,?,?,?,?)",
+          "INSERT INTO ES_PRESCRIPTION (ID,CREATE_DATE,DIAGNOSIS,NOTES,DOCTOR_ID,PATIENT_ID,HEIGHT,WEIGHT) VALUES (?,?,?,?,?,?,?,?)",
           val,
           (tx, results) => {
-            let size = request.drugList.length;
             request.drugList.forEach((drug, i) => {
               let innerId = uuid.v4();
               let innerVal = [
@@ -547,7 +546,6 @@ export class Store {
   };
 
   @action deleteRecord = (table, id, whereField, cb) => {
-    console.log("FRANC DEL RECORD", table);
     db.transaction(function (tx) {
       let val = [id];
       let sql = "DELETE FROM " + table + " WHERE " + whereField + "";
@@ -594,9 +592,9 @@ export class Store {
     this.getTemplates(null, (list) => {
       let temp = [];
       list.forEach((x, i) => {
-        let s = x.brand;
-        if (x.generic != null) {
-          s = s + " (" + x.generic + ") ";
+        let s = x.generic;
+        if (x.brand != null) {
+          s = s + " (" + x.brand + ") ";
         }
         if (x.formulation != null) {
           s = s + " - " + x.formulation;
@@ -649,13 +647,29 @@ export class Store {
 
   @action convertDateIntToString(dateInt) {
     const value = dateInt != null ? new Date(dateInt) : null;
-    return value != null ? value.toLocaleDateString() : "";
+    return value != null
+      ? value.toLocaleString("default", {
+          month: "short",
+          day: "2-digit",
+          year: "numeric",
+        })
+      : "";
   }
 
   @action convertDateIntToStringWithTime(dateInt) {
     const value = dateInt != null ? new Date(dateInt) : null;
     return value != null
-      ? value.toLocaleDateString() + " " + value.toLocaleTimeString()
+      ? value.toLocaleString("default", {
+          month: "short",
+          day: "2-digit",
+          year: "numeric",
+          weekday: "short",
+        }) +
+          " " +
+          value.toLocaleTimeString("default", {
+            hour: "2-digit",
+            minute: "2-digit",
+          })
       : "";
   }
 
@@ -669,31 +683,20 @@ export class Store {
   }
 
   @action createQrString(doctorData, prescriptionData, patientData, drugList) {
-    console.log(
-      "FRANC CREATE QR",
-      doctorData,
-      prescriptionData,
-      patientData,
-      drugList
-    );
-
     let string1 = "";
     string1 = this.addValToQrString(string1, doctorData.id);
     string1 = this.addValToQrString(string1, doctorData.name);
 
-    console.log("FRANC STRING 1", string1);
-
     let string2 = "";
     string2 = this.addValToQrString(string2, prescriptionData.createDate);
     string2 = this.addValToQrString(string2, prescriptionData.diagnosis);
+    string2 = this.addValToQrString(string2, prescriptionData.notes);
     string2 = this.addValToQrString(string2, prescriptionData.height);
     string2 = this.addValToQrString(string2, prescriptionData.weight);
 
-    console.log("FRANC STRING 2", string2);
     let string3 = "";
     string3 = this.addValToQrString(string3, patientData.name);
 
-    console.log("FRANC STRING 3", string3);
     let list1 = [];
     drugList.forEach((drug, i) => {
       let inner = "";
@@ -707,11 +710,8 @@ export class Store {
       inner = this.addValToQrString(inner, drug.type);
       inner = this.addValToQrString(inner, drug.instructions);
       inner = this.addValToQrString(inner, drug.total);
-      console.log("FRANC STRING INNER", inner);
       list1.push(inner);
     });
-
-    console.log("FRANC STRING 4", list1);
 
     let obj = {
       a: string1,
@@ -721,7 +721,6 @@ export class Store {
     };
 
     let s = JSON.stringify(obj);
-    console.log("FRANC CREATE QR S", s);
     return s;
   }
 
@@ -757,13 +756,27 @@ export class Store {
     pdfString = pdfString.replace("[doctorPtrNo]", doctorData.ptrNo);
     pdfString = pdfString.replace("[patientName]", patientData.name);
     pdfString = pdfString.replace("[patientAddress]", patientData.address);
-    pdfString = pdfString.replace("[patientHeight]", prescriptionData.height);
-    pdfString = pdfString.replace("[patientWeight]", prescriptionData.weight);
+    pdfString = pdfString.replace(
+      "[patientHeight]",
+      prescriptionData.height + " cm"
+    );
+    pdfString = pdfString.replace(
+      "[patientWeight]",
+      prescriptionData.weight + " kg"
+    );
     let age = this.getAgeFromBday(patientData.bday);
     pdfString = pdfString.replace("[patientAge]", age);
     pdfString = pdfString.replace(
       "[prescriptionDate]",
       this.convertDateIntToStringWithTime(prescriptionData.createDate)
+    );
+    pdfString = pdfString.replace(
+      "[prescriptionDiagnosis]",
+      prescriptionData.diagnosis
+    );
+    pdfString = pdfString.replace(
+      "[prescriptionNotes]",
+      prescriptionData.notes != null ? prescriptionData.notes : ""
     );
     let drugContent = "";
     drugList.forEach((drug, i) => {
@@ -801,7 +814,7 @@ export class Store {
       innerString = innerString.replace("[drugDetails2]", drugDetails2);
       innerString = innerString.replace(
         "[drugInstructions]",
-        drug.instructions
+        drug.instructions != null ? drug.instructions : ""
       );
       drugContent = drugContent.concat(innerString);
     });
@@ -823,14 +836,13 @@ export class Store {
         base64: true,
       };
       let file = await RNHTMLtoPDF.convert(PDFOptions);
-      // if (!file.filePath) return;
-      // alert("File saved to: " + file.filePath);
       let filePath = RNFetchBlob.fs.dirs.DownloadDir + "/" + fileName + ".pdf";
       RNFetchBlob.fs
         .writeFile(filePath, file.base64, "base64")
         .then((response) => {
           console.log("Success Log:", response);
-          alert("File saved to: " + filePath);
+          // alert("File saved to: " + filePath);
+          alert("File saved to: Downloads/" + fileName);
         })
         .catch((errors) => {
           console.log("Error Log:", errors);
@@ -858,8 +870,9 @@ export class Store {
       let prescriptionData = {};
       prescriptionData.createDate = arr2[1];
       prescriptionData.diagnosis = arr2[2];
-      prescriptionData.height = arr2[3];
-      prescriptionData.weight = arr2[4];
+      prescriptionData.notes = arr2[3];
+      prescriptionData.height = arr2[4];
+      prescriptionData.weight = arr2[5];
       prescriptionData.doctorId = doctorData.id;
       prescriptionData.patientId = patientId;
 
@@ -883,14 +896,6 @@ export class Store {
       });
 
       prescriptionData.drugList = drugListData;
-
-      console.log(
-        "FRANC PARSED DATA",
-        doctorData,
-        prescriptionData,
-        drugListData,
-        scheduleListData
-      );
 
       this.checkAndInsertSubDoctor(doctorData, () =>
         this.addEditEsPrescription(
@@ -1029,7 +1034,6 @@ export class Store {
         }
       }
     }
-    console.log("FRANC DATE LIST 2", dateList);
     return dateList;
   }
 

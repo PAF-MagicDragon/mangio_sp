@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
   },
   datePickerIcon: {
     marginTop: 40,
-    marginRight: 50,
+    marginRight: 20,
   },
   valueNoMargin: {
     color: "#808080",

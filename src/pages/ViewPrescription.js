@@ -80,23 +80,27 @@ const ViewPrescription = ({ navigation, route }) => {
                 />
               )}
             </View>
-
             <ESValueWithLabel
               label="Diagnosis"
               value={prescription.diagnosis}
               noMarginTopValue
             />
+            <ESValueWithLabel
+              label="Notes"
+              value={prescription.notes}
+              noMarginTopValue
+            />
             <View style={styles.row}>
               <ESValueWithLabel
                 label="Height"
-                value={prescription.height}
+                value={prescription.height + " cm"}
                 noMarginTopValue
                 isRowItem
                 withMarginRight
               />
               <ESValueWithLabel
                 label="Weight"
-                value={prescription.weight}
+                value={prescription.weight + " kg"}
                 noMarginTopValue
                 isRowItem
               />
@@ -193,8 +197,7 @@ const ViewPrescription = ({ navigation, route }) => {
                   </View>
                 );
               }}
-              customActionClick={withEdit ? (item) => editTotal(item) : null}
-              customActionIcon="refresh-outline"
+              customEditClick={withEdit ? (item) => editTotal(item) : null}
             />
           </View>
           {/* </KeyboardAvoidingView>

@@ -143,17 +143,22 @@ const ViewPatient = ({ navigation, route }) => {
                     value={item.diagnosis}
                     customStyle={styles.valueNoMargin}
                   />
+                  <ESSingleLabelValue
+                    label="Notes"
+                    value={item.notes}
+                    customStyle={styles.valueNoMargin}
+                  />
                   <View style={styles.row}>
                     <ESSingleLabelValue
                       label="Height"
-                      value={item.height}
+                      value={item.height + " cm"}
                       customStyle={styles.valueNoMargin}
                       isRowItem
                       withMarginRight
                     />
                     <ESSingleLabelValue
                       label="Weight"
-                      value={item.weight}
+                      value={item.weight + " kg"}
                       customStyle={styles.valueNoMargin}
                       isRowItem
                     />

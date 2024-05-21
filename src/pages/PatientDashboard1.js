@@ -105,6 +105,7 @@ const PatientDashboard1 = ({ navigation }) => {
             )
           }
           customActionIcon="cafe-outline"
+          checkIfExpired
         />
       </View>
     </View>

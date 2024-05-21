@@ -34,10 +34,14 @@ const AddTemplate = ({ navigation, route }) => {
   }, []);
 
   let addEditTemplate = () => {
-    if (request.brand == null || request.brand.length == 0) {
-      alert("Brand is required");
+    if (request.generic == null || request.generic.length == 0) {
+      alert("Generic is required");
       return;
     }
+    // if (request.brand == null || request.brand.length == 0) {
+    //   alert("Brand is required");
+    //   return;
+    // }
     store.addEditEsTemplate(request, (results) => {
       console.log("Results", results);
       if (results != null && results.rowsAffected > 0) {
@@ -76,17 +80,17 @@ const AddTemplate = ({ navigation, route }) => {
               style={styles.keyboardAvoid}
             > */}
           <ESTextFieldWithLabel
-            label="Brand"
-            onChangeText={(val) => onChange(val, request, "brand")}
+            label="Generic"
+            onChangeText={(val) => onChange(val, request, "generic")}
             maxLength={100}
-            value={request.brand}
+            value={request.generic}
           />
           <View style={styles.row}>
             <ESTextFieldWithLabel
-              label="Generic"
-              onChangeText={(val) => onChange(val, request, "generic")}
+              label="Brand"
+              onChangeText={(val) => onChange(val, request, "brand")}
               maxLength={100}
-              value={request.generic}
+              value={request.brand}
               isRowItem
               withMarginRight
             />
