@@ -84,6 +84,7 @@ const ViewPdf = ({ navigation, route }) => {
         {qrVal && (
           <View style={[styles.qrView]}>
             <QRCode
+              quietZone={5}
               size={width - 50}
               style={[styles.showBorder]}
               value={qrVal}

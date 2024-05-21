@@ -150,6 +150,7 @@ const AddPrescription = ({ navigation, route }) => {
               onChangeText={(val) => onChange(val, request, "height")}
               maxLength={8}
               value={request.height}
+              keyboardType="decimal-pad"
               isRowItem
               withMarginRight
             />
@@ -158,6 +159,7 @@ const AddPrescription = ({ navigation, route }) => {
               onChangeText={(val) => onChange(val, request, "weight")}
               maxLength={8}
               value={request.weight}
+              keyboardType="decimal-pad"
               isRowItem
             />
           </View>
