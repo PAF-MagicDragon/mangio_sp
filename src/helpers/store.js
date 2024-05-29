@@ -68,7 +68,7 @@ export class Store {
     );
     this.initializeTable(
       "ES_SCHEDULE",
-      "ID VARCHAR(50) PRIMARY KEY, INTAKE_DATE INT(15), PRESCRIPTION_ID VARCHAR(50), DRUG_ID VARCHAR(50), PATIENT_ID VARCHAR(50), STATUS INT(1)"
+      "ID VARCHAR(50) PRIMARY KEY, INTAKE_DATE INT(15), ACTUAL_DATE INT(15), PRESCRIPTION_ID VARCHAR(50), DRUG_ID VARCHAR(50), PATIENT_ID VARCHAR(50), STATUS INT(1)"
     );
     this.initializeDefaultData(
       "ES_TEMPLATE",
@@ -193,6 +193,7 @@ export class Store {
     let schedule = {};
     schedule.id = item["ID"];
     schedule.intakeDate = item["INTAKE_DATE"];
+    schedule.actualDate = item["ACTUAL_DATE"];
     schedule.prescriptionId = item["PRESCRIPTION_ID"];
     schedule.drugId = item["DRUG_ID"];
     schedule.patientId = item["PATIENT_ID"];
@@ -852,7 +853,7 @@ export class Store {
     }
   };
 
-  @action saveValuesFromQr(qrString, patientId, cb) {
+  @action saveValuesFromQr(qrString, startDate, patientId, cb) {
     try {
       let qrObj = JSON.parse(qrString);
 
@@ -906,7 +907,8 @@ export class Store {
               drugId,
               prescriptionId,
               drugObj,
-              patientId
+              patientId,
+              startDate
             )
         )
       );
@@ -959,10 +961,16 @@ export class Store {
     });
   };
 
-  @action createScheduleFromDrug(drugId, prescriptionId, drugObj, patientId) {
+  @action createScheduleFromDrug(
+    drugId,
+    prescriptionId,
+    drugObj,
+    patientId,
+    startDate
+  ) {
     //create schedule from drug
     let scheduleList = [];
-    let dateList = this.createDateList(drugObj);
+    let dateList = this.createDateList(drugObj, startDate);
     dateList.forEach((date, i) => {
       let schedule = {};
       schedule.intakeDate = date;
@@ -985,45 +993,55 @@ export class Store {
     });
   }
 
-  @action createDateList(drugObj) {
+  @action getTypeCount(type) {
+    let typeCount = 0;
+    if (type == 1) {
+      //days
+      typeCount = 1;
+    } else if (type == 2) {
+      //weeks
+      typeCount = 7;
+    } else if (type == 3) {
+      //months
+      typeCount = 30;
+    }
+    return typeCount;
+  }
+
+  @action getFrequencyCount(frequency) {
+    let freqCount = 0;
+    if (frequency == 3) {
+      //once a day
+      freqCount = 1;
+    } else if (frequency == 4) {
+      //twice daily
+      freqCount = 2;
+    } else if (frequency == 5) {
+      //thrice daily
+      freqCount = 3;
+    } else if (frequency == 6) {
+      //four times a day
+      freqCount = 4;
+    } else if (frequency == 7) {
+      //every hour
+      freqCount = 24;
+    }
+    return freqCount;
+  }
+
+  @action createDateList(drugObj, date) {
     let dateList = [];
     let duration = drugObj.duration;
     let type = drugObj.type;
     let frequency = drugObj.frequency;
-    let startDate = new Date();
+    let startDate = new Date(date);
     if (duration != null) {
       for (let i = 0; i < duration; i++) {
         if (type != null) {
-          let typeCount = 0;
-          if (type == 1) {
-            //days
-            typeCount = 1;
-          } else if (type == 2) {
-            //weeks
-            typeCount = 7;
-          } else if (type == 3) {
-            //months
-            typeCount = 30;
-          }
+          let typeCount = this.getTypeCount(type);
           for (let j = 0; j < typeCount; j++) {
             if (frequency != null) {
-              let freqCount = 0;
-              if (frequency == 3) {
-                //once a day
-                freqCount = 1;
-              } else if (frequency == 4) {
-                //twice daily
-                freqCount = 2;
-              } else if (frequency == 5) {
-                //thrice daily
-                freqCount = 3;
-              } else if (frequency == 6) {
-                //four times a day
-                freqCount = 4;
-              } else if (frequency == 7) {
-                //every hour
-                freqCount = 24;
-              }
+              let freqCount = this.getFrequencyCount(frequency);
               let skipHours = 24 / freqCount;
               for (let k = 0; k < freqCount; k++) {
                 startDate = this.addHours(startDate, skipHours);
@@ -1049,8 +1067,10 @@ export class Store {
 
   @action updateSchedule = (item, status, cb) => {
     db.transaction(function (tx) {
-      let val = [status, item.id];
-      let sql = "UPDATE ES_SCHEDULE SET STATUS = ? WHERE ID = ?";
+      let currDate = new Date().getTime();
+      let val = [status, currDate, item.id];
+      let sql =
+        "UPDATE ES_SCHEDULE SET STATUS = ?, ACTUAL_DATE = ? WHERE ID = ?";
       tx.executeSql(sql, val, (tx, results) => {
         let val2 = [item.drugId];
         let sql2 =
@@ -1070,5 +1090,23 @@ export class Store {
         cb && cb(results);
       });
     });
+  };
+
+  @action computeTotal = (obj, field) => {
+    if (field == "duration" || field == "type" || field == "frequency") {
+      let duration = obj["duration"];
+      let type = obj["type"];
+      let frequency = obj["frequency"];
+      if (duration != null && type != null && frequency != null) {
+        if (this.checkIfDigitsOnly(duration) && duration > 0) {
+          let typeCount = this.getTypeCount(type);
+          let freqCount = this.getFrequencyCount(frequency);
+          let total = duration * typeCount * freqCount;
+          obj["total"] = total.toString();
+        } else {
+          obj["total"] = null;
+        }
+      }
+    }
   };
 }

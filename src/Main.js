@@ -25,6 +25,7 @@ import ScanQr from "./pages/ScanQr";
 import ViewTemplate from "./pages/ViewTemplate";
 import AddTemplate from "./pages/AddTemplate";
 import EditTotal from "./pages/EditTotal";
+import InputStartTime from "./pages/InputStartTime";
 import ESButton from "./components/ESButton";
 import { Text } from "react-native";
 import ESIcon from "./components/ESIcon";
@@ -188,6 +189,14 @@ const Main = () => {
             component={EditTotal}
             options={{
               title: "Replenish Total",
+              ...navOptions,
+            }}
+          />
+          <Stack.Screen
+            name="InputStartTime"
+            component={InputStartTime}
+            options={{
+              title: "Input Start Time",
               ...navOptions,
             }}
           />

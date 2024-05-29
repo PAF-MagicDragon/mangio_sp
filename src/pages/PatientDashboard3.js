@@ -78,6 +78,10 @@ const PatientDashboard3 = ({ navigation }) => {
                 {item.drugInstructions && (
                   <ESValue text={item.drugInstructions} />
                 )}
+                <ESSingleLabelValue
+                  label="Date Taken"
+                  value={store.convertDateIntToStringWithTime(item.actualDate)}
+                />
               </View>
             );
           }}

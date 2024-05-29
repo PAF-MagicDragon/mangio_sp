@@ -32,7 +32,7 @@ const PatientDashboard = ({ navigation }) => {
   let onScanQr = () => {
     // let PLSDELETESTRING =
     //   '{"a":"|36bc0283-4da1-48b8-a72e-7f7786853f51|Franc Mangio","b":"|1715906867931|diagnosis|notes|22|33","c":"|nash mangio","d":["|Advil (Ibuprofen)  - capsule|100mg|2|8|1|5|2|1|take your medicine on time|3"]}';
-    // store.saveValuesFromQr(PLSDELETESTRING, user.id);
+    // navigation.navigate("InputStartTime", PLSDELETESTRING);
     navigation.navigate("ScanQr");
   };
 

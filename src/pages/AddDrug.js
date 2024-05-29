@@ -123,6 +123,7 @@ const AddDrug = ({ navigation, route }) => {
 
   let onChange = (val, obj, field) => {
     obj[field] = val;
+    store.computeTotal(obj, field);
     setRequest((request) => ({
       ...request,
       ...obj,

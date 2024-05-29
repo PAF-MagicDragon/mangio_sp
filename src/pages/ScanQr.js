@@ -7,14 +7,15 @@ import ESQrScan from "../components/ESQrScan";
 
 const ScanQr = ({ navigation, route }) => {
   const store = useContext(ESContext);
-  let user = store.mainUser;
+  // let user = store.mainUser;
 
-  let goBack = () => {
-    navigation.pop();
-  };
+  // let goBack = () => {
+  //   navigation.pop();
+  // };
 
   let onChange = (val) => {
-    store.saveValuesFromQr(val, user.id, setTimeout(goBack, 1000)); //add delay since saving of schedule is async. needs to save before going back
+    navigation.replace("InputStartTime", val);
+    //store.saveValuesFromQr(val, user.id, setTimeout(goBack, 1000)); //add delay since saving of schedule is async. needs to save before going back
   };
 
   return (
