@@ -1,69 +1,31 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-
   <uses-permission android:name="android.permission.INTERNET"/>
-  <!-- OPTIONAL PERMISSIONS, REMOVE WHATEVER YOU DO NOT NEED -->
-  <!-- <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/> -->
-  <uses-permission android:name="android.permission.VIBRATE"/>
-  <uses-permission android:name="android.permission.CAMERA" />
-  <!-- These require runtime permissions on M -->
-  <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-  <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+  <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
+  <uses-permission android:name="android.permission.VIBRATE"/>
   <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-
-  <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
-  <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
-  <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-  <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
-
-  <!-- END OPTIONAL PERMISSIONS -->
-
   <queries>
-    <!-- Support checking for http(s) links via the Linking API -->
     <intent>
-      <action android:name="android.intent.action.VIEW" />
-      <category android:name="android.intent.category.BROWSABLE" />
-      <data android:scheme="https" />
+      <action android:name="android.intent.action.VIEW"/>
+      <category android:name="android.intent.category.BROWSABLE"/>
+      <data android:scheme="https"/>
     </intent>
   </queries>
-
-  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/icon_es" android:roundIcon="@mipmap/icon_es" android:allowBackup="false" android:theme="@style/AppTheme" android:requestLegacyExternalStorage="true">
-    <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="YOUR-APP-URL-HERE"/>
-    <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="YOUR-APP-SDK-VERSION-HERE"/>
+  <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="true" android:theme="@style/AppTheme" android:supportsRtl="true">
+    <meta-data android:name="expo.modules.updates.ENABLED" android:value="false"/>
+    <meta-data android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH" android:value="ALWAYS"/>
+    <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="0"/>
     <activity android:name=".MainActivity" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="com.anonymous.sample"/>
+      </intent-filter>
     </activity>
-    <activity android:name="com.facebook.react.devsupport.DevSettingsActivity" android:exported="false"/>
-
-
-<!-- Change the value to true to enable pop-up for in foreground (remote-only, for local use ignoreInForeground) -->
-    <meta-data  android:name="com.dieam.reactnativepushnotification.notification_foreground"
-                android:value="true"/>
-    <!-- Change the resource name to your App's accent color - or any other color you want -->
-    <meta-data  android:name="com.dieam.reactnativepushnotification.notification_color"
-                android:resource="@android:color/white"/> <!-- or @android:color/{name} to use a standard color -->
-
-    <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationActions"  android:exported="false"/>
-    <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationPublisher"  android:exported="false"/>
-    <receiver android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationBootEventReceiver" android:exported="false">
-        <intent-filter>
-            <action android:name="android.intent.action.BOOT_COMPLETED" />
-            <action android:name="android.intent.action.QUICKBOOT_POWERON" />
-            <action android:name="com.htc.intent.action.QUICKBOOT_POWERON"/>
-        </intent-filter>
-    </receiver>
-
-    <service
-        android:name="com.dieam.reactnativepushnotification.modules.RNPushNotificationListenerService"
-        android:exported="false" >
-        <intent-filter>
-            <action android:name="com.google.firebase.MESSAGING_EVENT" />
-        </intent-filter>
-    </service>
-
   </application>
 </manifest>

@@ -7,7 +7,7 @@ import {
   Alert,
   SafeAreaView,
   Platform,
-  PermissionsAndroid,
+  // PermissionsAndroid,
 } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import ESSingleLabelValue from "../components/ESSingleLabelValue";
@@ -23,6 +23,7 @@ import PatientDashboard1 from "./PatientDashboard1";
 import PatientDashboard2 from "./PatientDashboard2";
 import PatientDashboard3 from "./PatientDashboard3";
 import PushNotification from "react-native-push-notification";
+// import * as Permissions from 'expo-permissions';
 
 const PatientDashboard = ({ navigation }) => {
   const Tab = createBottomTabNavigator();
@@ -51,37 +52,37 @@ const PatientDashboard = ({ navigation }) => {
     );
   };
 
-  const requestNotificationPermission = async () => {
-    if (Platform.OS === "android") {
-      try {
-        PermissionsAndroid.check("android.permission.POST_NOTIFICATIONS")
-          .then((response) => {
-            if (!response) {
-              PermissionsAndroid.request(
-                "android.permission.POST_NOTIFICATIONS",
-                {
-                  title: "Notification",
-                  message:
-                    "App needs access to your notification " +
-                    "so you can get Updates",
-                  buttonNeutral: "Ask Me Later",
-                  buttonNegative: "Cancel",
-                  buttonPositive: "OK",
-                }
-              );
-            }
-          })
-          .catch((err) => {
-            console.log("Notification Error=====>", err);
-          });
-      } catch (err) {
-        console.log(err);
-      }
-    }
-  };
+  // const requestNotificationPermission = async () => {
+  //   if (Platform.OS === "android") {
+  //     try {
+  //       PermissionsAndroid.check("android.permission.POST_NOTIFICATIONS")
+  //         .then((response) => {
+  //           if (!response) {
+  //             PermissionsAndroid.request(
+  //               "android.permission.POST_NOTIFICATIONS",
+  //               {
+  //                 title: "Notification",
+  //                 message:
+  //                   "App needs access to your notification " +
+  //                   "so you can get Updates",
+  //                 buttonNeutral: "Ask Me Later",
+  //                 buttonNegative: "Cancel",
+  //                 buttonPositive: "OK",
+  //               }
+  //             );
+  //           }
+  //         })
+  //         .catch((err) => {
+  //           console.log("Notification Error=====>", err);
+  //         });
+  //     } catch (err) {
+  //       console.log(err);
+  //     }
+  //   }
+  // };
 
   useEffect(() => {
-    requestNotificationPermission();
+    // requestNotificationPermission();
     navigation.setOptions({
       headerRight: () => (
         <View style={styles.row}>

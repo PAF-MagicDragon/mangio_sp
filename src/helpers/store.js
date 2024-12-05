@@ -5,7 +5,9 @@ import { Alert, Platform } from "react-native";
 import uuid from "react-native-uuid";
 import RNHTMLtoPDF from "react-native-html-to-pdf";
 import PushNotification from "react-native-push-notification";
-import RNFetchBlob from "rn-fetch-blob";
+// import RNFetchBlob from "rn-fetch-blob";
+import * as FileSystem from 'expo-file-system';
+const { StorageAccessFramework } = FileSystem;
 
 var db = openDatabase({ name: "ESDatabase.db" });
 
@@ -837,19 +839,38 @@ export class Store {
         base64: true,
       };
       let file = await RNHTMLtoPDF.convert(PDFOptions);
-      let filePath = RNFetchBlob.fs.dirs.DownloadDir + "/" + fileName + ".pdf";
-      RNFetchBlob.fs
-        .writeFile(filePath, file.base64, "base64")
-        .then((response) => {
-          console.log("Success Log:", response);
-          // alert("File saved to: " + filePath);
-          alert("File saved to: Downloads/" + fileName);
-        })
-        .catch((errors) => {
-          console.log("Error Log:", errors);
-        });
+
+      const permissions = await StorageAccessFramework.requestDirectoryPermissionsAsync();
+      if (!permissions.granted) {
+        Alert.alert('Permission needed', 'Failed to save PDF. Please grant permission to save files');
+        return;
+      }
+
+      await StorageAccessFramework.createFileAsync(permissions.directoryUri, fileName, 'application/pdf')
+            .then(async(uri) => {
+                await FileSystem.writeAsStringAsync(uri, qrData, { encoding: FileSystem.EncodingType.Base64 });
+            })
+            .catch((e) => {
+                console.log(e);
+            });
+
+
+      // let filePath = RNFetchBlob.fs.dirs.DownloadDir + "/" + fileName + ".pdf";
+
+      
+
+      // RNFetchBlob.fs
+      //   .writeFile(filePath, file.base64, "base64")
+      //   .then((response) => {
+      //     console.log("Success Log:", response);
+      //     // alert("File saved to: " + filePath);
+      //     alert("File saved to: Downloads/" + fileName);
+      //   })
+      //   .catch((errors) => {
+      //     console.log("Error Log:", errors);
+      //   });
     } catch (error) {
-      console.log("Failed to generate pdf", error.message);
+      console.log("Failed to save PDF", error.message);
     }
   };
 
